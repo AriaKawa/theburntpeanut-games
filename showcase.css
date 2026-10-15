@@ -1,0 +1,11 @@
+* { box-sizing:border-box; }
+a { text-decoration:none; }
+.studio-brand { overflow-wrap:anywhere; }
+.vault-ui .studio-mark { letter-spacing:0; flex-shrink:0; }
+.intro { color:var(--muted); font-size:15px; line-height:1.7; margin:10px 0 0; }
+.vault-ui .paper-cover { object-fit:contain; background:#eee0b9; padding:18px; }
+.vault-ui .bunger-cover { object-fit:contain; background:#172639; padding:24px; }
+body.vault-ui .category-card--featured .category-card__title { display:flex; align-items:center; justify-content:space-between; width:100%; gap:12px; }
+.play { font-size:13px; font-weight:500; white-space:nowrap; }
+footer { color:var(--muted); font-size:12px; line-height:1.7; margin-top:36px; }
+@media(max-width:600px) { body.vault-ui .category__grid { grid-template-columns:1fr; } }

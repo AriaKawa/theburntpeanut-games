@@ -1,0 +1,35 @@
+/* Paper pieces sit on a shared grid; only the cut letters and hero tilt. */
+.peanut-book .arsenal-heading{align-items:center;margin:0 6px 16px;min-height:40px}
+.peanut-book h2.newspaper-title{display:flex;align-items:center;gap:3px;font-size:clamp(18px,2.5cqw,32px);line-height:1}
+.newspaper-title span{display:inline-block;padding:3px 4px;background:#e8d8b9;color:#332820;font-family:Georgia,serif;font-weight:900;box-shadow:1px 2px 1px #69472f40;transform:rotate(-5deg)}
+.newspaper-title span:nth-child(2n){background:#45372d;color:#f8e8c9;font-family:'Courier New',monospace;transform:rotate(4deg)}
+.newspaper-title span:nth-child(3n){background:#c9a77d;transform:rotate(-2deg);font-style:italic}
+.peanut-book .arsenal-cards{gap:14px 12px;padding:3px 6px 7px;align-content:start;grid-auto-rows:1fr}
+.peanut-book .arsenal-card,.peanut-book .arsenal-card.locked,.peanut-book .arsenal-card.equipped{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:48px 28px minmax(38px,1fr) 18px 18px 32px;gap:0;padding:22px 17px 18px;background:transparent url('assets/ability-sticker.png') center/100% 100% no-repeat;filter:drop-shadow(1px 3px 1px #68472b35);border:0;transform:none;min-width:0;text-align:center}
+.peanut-book .arsenal-card>*{grid-column:1;grid-row:auto;min-width:0}
+.peanut-book .ability-badge{width:46px;height:46px;margin:0 auto;align-self:center;justify-self:center;filter:drop-shadow(1px 2px 0 #fff4dc) drop-shadow(0 1px 1px #6a482c50)}
+.peanut-book .arsenal-card h3{display:flex;align-items:center;justify-content:center;min-height:0;margin:0;font-size:14px;line-height:1.05;color:#493321}
+.peanut-book .arsenal-card p{align-self:start;min-height:0;margin:3px 0 0;font-size:10px;line-height:1.35;color:#57422e}
+.peanut-book .arsenal-card .ability-power,.peanut-book .arsenal-card .ability-requirement{display:block;min-height:0;margin:0;font-size:10px;line-height:18px;color:#715239}
+.peanut-book .arsenal-card button{align-self:end;width:100%;min-height:29px;height:29px;margin:3px 0 0;border:1px solid #8b5d40;border-radius:3px 5px 4px 2px;box-shadow:0 1px 1px #6b432f30;background:#ac7955;color:#fff4da;font-size:12px}
+.peanut-book .arsenal-card.equipped button{background:#775342;box-shadow:0 1px 1px #6b432f30}
+.peanut-book .arsenal-card button:disabled{opacity:1;background:#d3b48d;color:#674931;border-color:#b4936c}
+.peanut-book .arsenal-card.equipped button:disabled{background:#775342;color:#fff4da;border-color:#684934}
+.peanut-book .book-right{padding:0 5%;gap:18px;justify-content:center}
+.peanut-book .book-hero{width:82%;max-width:320px;height:70%;max-height:410px;object-fit:contain;transform:rotate(7deg);filter:drop-shadow(2px 3px 1px #64452b55);flex:0 1 auto}
+.peanut-book .book-right .ribbon-button{width:90%;max-width:300px;align-self:center}
+@media(max-width:1100px) and (min-width:901px){.peanut-book .arsenal-card,.peanut-book .arsenal-card.locked,.peanut-book .arsenal-card.equipped{padding:20px 12px 15px;grid-template-rows:38px 28px minmax(38px,1fr) 17px 17px 30px}.peanut-book .ability-badge{width:36px;height:36px}.peanut-book .arsenal-card h3{font-size:12px}.peanut-book .arsenal-cards{gap:8px}}
+@media(max-width:900px){.peanut-book .arsenal-cards{grid-template-columns:1fr;grid-auto-rows:auto;gap:10px}.peanut-book .arsenal-heading{margin:0 5px 10px;gap:4px;flex-wrap:wrap}.peanut-book h2.newspaper-title{font-size:22px;gap:2px}.newspaper-title span{padding:2px 3px}.peanut-book .book-hero{width:90%;height:65%;max-height:410px}.peanut-book .book-right{padding:0 4%;gap:18px}}
+@media(max-width:480px){.peanut-book h2.newspaper-title{font-size:16px;gap:1px}.newspaper-title span{padding:2px}.peanut-book .arsenal-heading{min-height:34px;margin-bottom:6px}.peanut-book .arsenal-card,.peanut-book .arsenal-card.locked,.peanut-book .arsenal-card.equipped{padding:20px 12px 16px;grid-template-rows:40px 30px minmax(40px,1fr) 16px 28px 30px}.peanut-book .ability-badge{width:38px;height:38px}.peanut-book .arsenal-card h3{font-size:12px}.peanut-book .arsenal-card .ability-requirement{font-size:9px;line-height:12px;align-self:center}.peanut-book .arsenal-card .ability-power{font-size:9px}.peanut-book .book-right .ribbon-button{width:100%}.peanut-book .book-hero{width:92%;height:58%}}
+@media(max-height:650px) and (min-width:901px){.peanut-book .arsenal-card,.peanut-book .arsenal-card.locked,.peanut-book .arsenal-card.equipped{padding:16px 12px 14px;grid-template-rows:30px 24px minmax(30px,1fr) 16px 16px 29px}.peanut-book .ability-badge{width:30px;height:30px}.peanut-book .arsenal-heading{margin-bottom:6px;min-height:30px}.peanut-book h2.newspaper-title{font-size:24px}.peanut-book .arsenal-cards{gap:8px}.peanut-book .arsenal-card h3{font-size:12px}.peanut-book .arsenal-card p{font-size:9px}}
+/* Fit both sticker rows inside the page at laptop height. */
+@media(min-width:901px){
+.peanut-book .arsenal-card,.peanut-book .arsenal-card.locked,.peanut-book .arsenal-card.equipped{grid-template-rows:38px 24px minmax(32px,1fr) 16px 16px 29px;padding:16px 16px 12px}
+.peanut-book .ability-badge{width:36px;height:36px}
+.peanut-book .arsenal-heading{margin-bottom:8px}
+.peanut-book .arsenal-cards{gap:10px 12px}
+}
+.peanut-book .book-hero{position:absolute;top:1%;left:5%;width:65%;height:58%;max-height:300px;max-width:260px;transform:rotate(-8deg)}
+.peanut-book .book-right .ribbon-button{position:absolute;bottom:4%;left:5%;width:90%;max-width:none}
+@media(max-width:900px){.peanut-book .book-hero{top:9%;left:3%;width:82%;height:45%}.peanut-book .book-right .ribbon-button{left:0;width:100%;bottom:8%}}
+@media(max-height:560px) and (min-width:901px){.peanut-book .arsenal-card,.peanut-book .arsenal-card.locked,.peanut-book .arsenal-card.equipped{grid-template-rows:28px 22px minmax(28px,1fr) 14px 14px 27px;padding:14px 12px 10px}.peanut-book .ability-badge{width:28px;height:28px}}

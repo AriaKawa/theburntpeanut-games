@@ -1,0 +1,26 @@
+import {firebaseConfig} from './firebase-config.js?v=mp12';
+import {members,nextPhase,cleanCode,SKINS} from './room-model.js?v=mp12';
+const SDK='https://www.gstatic.com/firebasejs/13.0.0/';
+const deadline=(promise,label)=>Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(new Error(label+' timed out. Please try again.')),12000))]);
+export class FirebaseRoom {
+ constructor(onRoom,onError){this.onRoom=onRoom;this.onError=onError;this.unsub=[];this.offset=0;this.code=null;this.slot=null;this.phaseBusy=false;}
+ async connect(){if(this.db)return;if(!firebaseConfig?.databaseURL||!firebaseConfig?.apiKey)throw new Error('Online rooms are not connected yet. Firebase setup is pending.');
+  const [app,auth,db]=await deadline(Promise.all([import(SDK+'firebase-app.js'),import(SDK+'firebase-auth.js'),import(SDK+'firebase-database.js')]),'Firebase connection');this.sdk=db;
+  const instance=app.getApps()[0]||app.initializeApp(firebaseConfig);this.auth=auth.getAuth(instance);await auth.setPersistence(this.auth,auth.inMemoryPersistence);const result=await deadline(auth.signInAnonymously(this.auth),'Sign in');this.uid=result.user.uid;this.db=db.getDatabase(instance);
+  this.offsetStop=db.onValue(db.ref(this.db,'.info/serverTimeOffset'),snap=>this.offset=snap.val()||0);
+ }
+ now(){return Date.now()+this.offset;}
+ path(path=''){return this.sdk.ref(this.db,'bungermanRooms/'+this.code+(path?'/'+path:''));}
+ async create(character,mapId){await this.connect();const letters='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';for(let attempt=0;attempt<5;attempt++){const random=crypto.getRandomValues(new Uint8Array(6));this.code=Array.from(random,n=>letters[n%letters.length]).join('');const room={host:this.uid,createdAt:this.now(),mapId,seed:crypto.getRandomValues(new Uint32Array(1))[0],phase:{name:'lobby',startAt:0},players:{0:{uid:this.uid,character,ready:false}},closed:false};const result=await deadline(this.sdk.runTransaction(this.path(),old=>old?undefined:room,{applyLocally:false}),'Create room');if(result.committed){this.slot=0;await this.watch();return;}}throw new Error('Could not create a room. Try again.');}
+ async join(code,character){await this.connect();code=cleanCode(code);if(code.length!==6)throw new Error('Enter the six-character room code.');this.code=code;const room=(await deadline(this.sdk.get(this.path()),'Find room')).val();if(!room||room.closed)throw new Error('Room not found or closed.');if(room.phase?.name!=='lobby')throw new Error('This match has already started.');if(this.now()-room.createdAt>7200000)throw new Error('This room has expired.');
+  const result=await deadline(this.sdk.runTransaction(this.path(),current=>{if(!current||current.closed||current.phase?.name!=='lobby')return;const players=current.players||{};if(Object.values(players).some(p=>p?.uid===this.uid))return;const slot=[0,1,2,3].find(n=>!players[n]);if(slot===undefined)return;return {...current,players:{...players,[slot]:{uid:this.uid,character,ready:false}}};},{applyLocally:false}),'Join room');if(!result.committed)throw new Error('Room full, closed, or already starting.');this.slot=members(result.snapshot.val()).find(p=>p.uid===this.uid).slot;await this.watch();
+ }
+ async watch(){const {onDisconnect,onValue}=this.sdk;this.disconnect=onDisconnect(this.path('players/'+this.slot));await this.disconnect.remove();this.unsub.push(onValue(this.path(),snap=>{this.room=snap.val();if(!this.room||this.room.closed){this.onError(new Error('The host closed the room.'));return;}this.onRoom(this.room);},error=>this.onError(error)));if(this.slot===0){this.hostDisconnect=onDisconnect(this.path('closed'));await this.hostDisconnect.set(true);}}
+ get isHost(){return this.room?.host===this.uid;}
+ async select(character){if(!SKINS.includes(character))return;const result=await this.sdk.runTransaction(this.path('players/'+this.slot),p=>p&&!p.ready&&this.room?.phase?.name==='lobby'?{...p,character}:undefined,{applyLocally:false});if(!result.committed)throw new Error('Unready before changing characters.');}
+ async ready(){await this.sdk.runTransaction(this.path('players/'+this.slot),p=>p&&['lobby','countdown'].includes(this.room?.phase?.name)?{...p,ready:!p.ready}:undefined,{applyLocally:false});}
+ async tick(){if(!this.isHost||this.phaseBusy)return;const phase=nextPhase(this.room,this.now());if(!phase)return;this.phaseBusy=true;try{await this.sdk.runTransaction(this.path(),current=>{const next=nextPhase(current,this.now());return next?{...current,phase:next}:undefined;},{applyLocally:false});}catch(error){this.onError(error);}finally{this.phaseBusy=false;}}
+ sendInput(input){if(!this.code||!this.room||this.room.phase?.name!=='playing')return;return this.sdk.set(this.path('inputs/'+this.slot),{...input,at:this.now()}).catch(error=>this.onError(error));}
+ publish(snapshot){return this.sdk.set(this.path('state'),{json:JSON.stringify(snapshot),sentAt:this.now()}).catch(error=>this.onError(error));}
+ async leave(){const code=this.code;this.unsub.splice(0).forEach(stop=>stop());if(code&&this.db&&this.slot!==null){try{if(this.isHost)await this.sdk.set(this.path('closed'),true);await this.sdk.remove(this.path('players/'+this.slot));await this.disconnect?.cancel();await this.hostDisconnect?.cancel();}catch{}}this.code=null;this.slot=null;this.room=null;this.offsetStop?.();}
+}

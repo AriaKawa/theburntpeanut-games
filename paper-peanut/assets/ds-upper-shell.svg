@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 936" fill="none">
+<defs>
+ <linearGradient id="edge" x2="0" y2="1"><stop stop-color="#b7b9b1"/><stop offset=".08" stop-color="#626762"/><stop offset=".5" stop-color="#343b37"/><stop offset=".93" stop-color="#191e1c"/><stop offset="1" stop-color="#70746b"/></linearGradient>
+ <linearGradient id="case" x1="150" y1="0" x2="1330" y2="910" gradientUnits="userSpaceOnUse"><stop stop-color="#555a53"/><stop offset=".25" stop-color="#393e39"/><stop offset=".65" stop-color="#303530"/><stop offset="1" stop-color="#454a43"/></linearGradient>
+ <linearGradient id="hinge" x2="0" y2="1"><stop stop-color="#141a17"/><stop offset=".2" stop-color="#61675d"/><stop offset=".4" stop-color="#494e46"/><stop offset=".7" stop-color="#232a23"/><stop offset="1" stop-color="#111613"/></linearGradient>
+ <radialGradient id="rubber"><stop stop-color="#555c51"/><stop offset=".65" stop-color="#282f28"/><stop offset="1" stop-color="#151a16"/></radialGradient>
+ <pattern id="grain" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M1 1h.6M4 4h.4" stroke="#fff" stroke-opacity=".05"/></pattern>
+ <g id="speaker"><rect x="-42" y="-67" width="84" height="134" rx="31" fill="#1b221d"/><rect x="-39" y="-64" width="78" height="128" rx="29" fill="#303730" stroke="#697164" stroke-opacity=".3"/><g fill="#0b120e" stroke="#4c5549"><circle cx="-19" cy="-38" r="5"/><circle cy="-38" r="5"/><circle cx="19" cy="-38" r="5"/><circle cx="-19" cy="-13" r="5"/><circle cy="-13" r="5"/><circle cx="19" cy="-13" r="5"/><circle cx="-19" cy="13" r="5"/><circle cy="13" r="5"/><circle cx="19" cy="13" r="5"/><circle cx="-19" cy="38" r="5"/><circle cy="38" r="5"/><circle cx="19" cy="38" r="5"/></g></g>
+ <g id="screw"><circle r="8" fill="#1b221d" stroke="#70796b"/><path d="M-4 0h8" stroke="#788170" stroke-width="2"/></g>
+</defs>
+<rect x="10" y="10" width="1480" height="900" rx="62" fill="url(#edge)" stroke="#121a14" stroke-width="6"/>
+<rect x="20" y="18" width="1460" height="876" rx="54" fill="url(#case)" stroke="#858b7e" stroke-opacity=".5" stroke-width="2"/>
+<rect x="29" y="27" width="1442" height="856" rx="48" stroke="#141c16" stroke-width="3"/>
+<rect x="32" y="30" width="1436" height="850" rx="46" fill="url(#grain)"/>
+<path d="M83 35h1332c28 0 46 18 46 45" stroke="#bac0ac" stroke-opacity=".25" stroke-width="3"/>
+<rect x="201" y="43" width="1098" height="826" rx="10" fill="#131916" stroke="#73796a" stroke-opacity=".45" stroke-width="3"/>
+<rect x="215" y="54" width="1070" height="804" rx="4" fill="#040a07" stroke="#050706" stroke-width="4"/>
+<use href="#speaker" transform="translate(110 425)"/><use href="#speaker" transform="translate(1390 425)"/>
+<rect x="79" y="75" width="62" height="17" rx="8.5" fill="url(#rubber)"/><rect x="1359" y="75" width="62" height="17" rx="8.5" fill="url(#rubber)"/>
+<rect x="81" y="804" width="58" height="15" rx="7.5" fill="url(#rubber)"/><rect x="1361" y="804" width="58" height="15" rx="7.5" fill="url(#rubber)"/>
+<use href="#screw" transform="translate(55 58)"/><use href="#screw" transform="translate(1445 58)"/>
+<rect x="230" y="884" width="1040" height="42" rx="19" fill="url(#hinge)" stroke="#111a12" stroke-width="3"/>
+<path d="M383 888v33M1117 888v33" stroke="#111711" stroke-width="6"/><path d="M391 888v33M1125 888v33" stroke="#737d6a" stroke-opacity=".4" stroke-width="2"/>
+<rect x="1325" y="884" width="32" height="8" rx="4" fill="#aaca86"/><rect x="1371" y="884" width="32" height="8" rx="4" fill="#141a14"/>
+<path d="M43 305v156M1457 590v145" stroke="#adb397" stroke-opacity=".15" stroke-width="2"/>
+</svg>

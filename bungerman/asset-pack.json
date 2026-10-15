@@ -1,0 +1,242 @@
+{
+  "version": 9,
+  "purpose": "One shaded arcade edition with original painted character animation sheets and a generated cabinet. Each logical asset has its own image-generation output and exact prompt.",
+  "styles": {
+    "arcade2005": "Rounded, shaded 2005 handheld arcade characters with hand-painted highlights, depth and directional animation. Green inset arena, silver pillars, chunky brick, illustrated arcade cabinet."
+  },
+  "directory": "dist/assets/<style>/",
+  "required": [
+    {
+      "id": "peanut",
+      "file": "peanut.png",
+      "transparent": true,
+      "framing": "One centered subject, entirely visible, generous transparent margin",
+      "use": "Reference portrait retained in gallery. Live character uses the separate painted animation sheet."
+    },
+    {
+      "id": "hutch",
+      "file": "hutch.png",
+      "transparent": true,
+      "framing": "One centered subject, entirely visible, generous transparent margin",
+      "use": "Reference portrait retained in gallery. Live character uses the separate painted animation sheet."
+    },
+    {
+      "id": "ninja",
+      "file": "ninja.png",
+      "transparent": true,
+      "framing": "One centered subject, entirely visible, generous transparent margin",
+      "use": "Reference portrait retained in gallery. Live character uses the separate painted animation sheet."
+    },
+    {
+      "id": "logo",
+      "file": "logo.png",
+      "transparent": true,
+      "framing": "Wide BUNGERMAN wordmark, no other text",
+      "use": "logo"
+    },
+    {
+      "id": "floor",
+      "file": "floor.png",
+      "transparent": false,
+      "framing": "Opaque square seamless grass tile, edge to edge",
+      "use": "floor"
+    },
+    {
+      "id": "wall",
+      "file": "wall.png",
+      "transparent": true,
+      "framing": "One centered subject, entirely visible, generous transparent margin",
+      "use": "wall"
+    },
+    {
+      "id": "crate",
+      "file": "crate.png",
+      "transparent": true,
+      "framing": "One centered subject, entirely visible, generous transparent margin",
+      "use": "crate"
+    },
+    {
+      "id": "bomb",
+      "file": "bomb.png",
+      "transparent": true,
+      "framing": "One centered subject, entirely visible, generous transparent margin",
+      "use": "bomb"
+    },
+    {
+      "id": "pickup",
+      "file": "pickup.png",
+      "transparent": true,
+      "framing": "One centered subject, entirely visible, generous transparent margin",
+      "use": "pickup"
+    },
+    {
+      "id": "blast",
+      "file": "blast.png",
+      "transparent": true,
+      "framing": "One centered subject, entirely visible, generous transparent margin",
+      "use": "blast"
+    },
+    {
+      "id": "paused",
+      "file": "paused.png",
+      "transparent": true,
+      "framing": "One centered subject, entirely visible, generous transparent margin",
+      "use": "paused"
+    },
+    {
+      "id": "won",
+      "file": "won.png",
+      "transparent": true,
+      "framing": "One centered subject, entirely visible, generous transparent margin",
+      "use": "won"
+    },
+    {
+      "id": "lost",
+      "file": "lost.png",
+      "transparent": true,
+      "framing": "One centered subject, entirely visible, generous transparent margin",
+      "use": "lost"
+    },
+    {
+      "id": "roundWon",
+      "file": "roundWon.png",
+      "transparent": true,
+      "framing": "One centered subject, entirely visible, generous transparent margin",
+      "use": "Between-round menu illustration"
+    },
+    {
+      "id": "peanut-fluid",
+      "file": "peanut-fluid.png",
+      "transparent": true,
+      "framing": "6 columns × 10 rows; 60 painted poses. Twelve frames each for front, side, back walking and throwing; six front standing idles plus three side and three back standing idles.",
+      "use": "Live character animation, character selection and HUD."
+    },
+    {
+      "id": "hutch-fluid",
+      "file": "hutch-fluid.png",
+      "transparent": true,
+      "framing": "6 columns × 10 rows; 60 painted poses. Twelve frames each for front, side, back walking and throwing; six front standing idles plus three side and three back standing idles.",
+      "use": "Live character animation, character selection and HUD."
+    },
+    {
+      "id": "ninja-fluid",
+      "file": "ninja-fluid.png",
+      "transparent": true,
+      "framing": "6 columns × 10 rows; 60 painted poses. Twelve frames each for front, side, back walking and throwing; six front standing idles plus three side and three back standing idles.",
+      "use": "Live character animation, character selection and HUD."
+    },
+    {
+      "id": "tpain-fluid",
+      "file": "tpain-fluid.png",
+      "transparent": true,
+      "framing": "6 columns × 10 rows; 60 painted poses. Twelve frames each for front, side, back walking and throwing; six front standing idles plus three side and three back standing idles.",
+      "use": "Live character animation, character selection and HUD."
+    },
+    {
+      "id": "cabinet",
+      "file": "cabinet-v7.png",
+      "transparent": true,
+      "framing": "Direct frontal 1024x1536 navy and gold upright cabinet with peanut/bomb columns and full solid base/coin door, red joystick and exactly two gold buttons. Tight alpha crop142,0..882,1532=740x1532. Safe screen in crop166,311,404,350. Preserve native aspect ratio.",
+      "use": "Cabinet surrounding the live game screen."
+    },
+    {
+      "id": "peanut-sidewalk",
+      "file": "peanut-sidewalk.png",
+      "transparent": true,
+      "framing": "4 columns × 3 rows. Twelve dedicated side-walk poses with contact, recoil, passing and opposite-foot steps.",
+      "use": "Replaces the main-sheet side walk for a complete two-step gait; mirror for left facing."
+    },
+    {
+      "id": "hutch-sidewalk",
+      "file": "hutch-sidewalk.png",
+      "transparent": true,
+      "framing": "4 columns × 3 rows. Twelve dedicated side-walk poses with contact, recoil, passing and opposite-foot steps.",
+      "use": "Replaces the main-sheet side walk for a complete two-step gait; mirror for left facing."
+    },
+    {
+      "id": "ninja-sidewalk",
+      "file": "ninja-sidewalk.png",
+      "transparent": true,
+      "framing": "4 columns × 3 rows. Twelve dedicated side-walk poses with contact, recoil, passing and opposite-foot steps.",
+      "use": "Replaces the main-sheet side walk for a complete two-step gait; mirror for left facing."
+    },
+    {
+      "id": "tpain-sidewalk",
+      "file": "tpain-sidewalk.png",
+      "transparent": true,
+      "framing": "4 columns × 3 rows. Twelve dedicated side-walk poses with contact, recoil, passing and opposite-foot steps.",
+      "use": "Replaces the main-sheet side walk for a complete two-step gait; mirror for left facing."
+    },
+    {
+      "id": "range",
+      "file": "range.png",
+      "transparent": true,
+      "framing": "Blue diamond-shaped Viagra-style pill, shaded and readable at 22 pixels. No lettering.",
+      "use": "Live arena pickup and HUD where appropriate."
+    },
+    {
+      "id": "rpg",
+      "file": "rpg.png",
+      "transparent": true,
+      "framing": "Painted compact RPG launcher pickup, readable at 22 pixels. No lettering.",
+      "use": "Live arena pickup and HUD where appropriate."
+    },
+    {
+      "id": "speed",
+      "file": "speed.png",
+      "transparent": true,
+      "framing": "Single green Voodoo Ranger bottle with skeleton-hat label, fully visible.",
+      "use": "Silly juice speed pickup; ten seconds of 30% faster movement."
+    }
+  ],
+  "rules": [
+    "One image generation call per logical asset. Animation sheets count as one asset per character. Never reuse another character’s sheet. Preserve originals unchanged; source rectangles are selected at runtime.",
+    "Save exact prompts under asset-prompts/<style> and original output PNGs unchanged under dist/assets/<style>.",
+    "Peanut: anthropomorphic peanut, propeller cap, white gloves and shoes.",
+    "Hutch: human, extremely heavyset with large belly, backwards black cap, beard, black polo, jeans, tattoo arms.",
+    "Ninja: slender human, spiky blue hair, yellow headband, blue hoodie.",
+    "Use consistent perspective, lighting, palette, silhouette and outline weights within each pack.",
+    "UI buttons, borders, indicators and accessibility labels are code-native controls themed with each pack, not images of text.",
+    "Assets load atomically; never mix styles or silently substitute old assets. Disable Play during load and show a retryable error.",
+    "Original PNG images are preserved. Build scripts isolate painted frames and precompute anchors, then create compact transparent WebP delivery atlases; the browser only decodes and draws prepared rectangles.",
+    "Validate unique hashes and complete inventory, inspect each style in character selection, gameplay and menus at desktop and mobile sizes.",
+    "Environment animation: accelerating bomb pulse, placement bounce, burning fuse sparks, connected flame ignition and decay, brick debris, pickup rotation, warned inward steel-wall descent.",
+    "Pause must freeze gameplay animation and timers. Reduced motion must suppress cosmetic shake, bob and particles while keeping gameplay states readable.",
+    "T-Pain: Black human, beard and locs, sunglasses, hat, gold chain, purple jacket. Equal gameplay polish to the other three characters.",
+    "Use illustrated frames for all four characters in the arena, menu and HUD. Runtime may mirror side frames, but may not substitute geometric character rigs.",
+    "Each sheet: 12 front-walk frames, 12 right-walk, 12 back-walk, 12 throwing poses, 6 front standing idles, 3 side standing idles and 3 back standing idles. Feet remain grounded during idle.",
+    "AI uses reaction delays, persistent goals, personalities, and timed escape planning. No direct input reading or instant perfect reactions.",
+    "Gait advances once per 3.125 travelled tiles, not once per tile. Visual movement uses constant-speed travel; idle uses a dedicated relaxed standing loop.",
+    "Dedicated 12-frame side-walk sheets must include feet-together passing positions and opposing contacts; repeated spread-leg stances do not count as a complete walk.",
+    "HUD is a separate row above the arena with larger hearts, timer, sound, then pause. No heat meter, bomb-stock dots, Home button, control legend or Fan Demo footer.",
+    "Drag the arena or painted joystick to move; tap the arena or gold deck button to plant. A second finger can plant while dragging. The RPG button appears only while ammunition is available. Player damage produces a red edge pulse, sprite highlight, lost-heart floater and enlarged red hearts.",
+    "Production startup must not download the full source PNG sheets or scan pixels. Four prepared character atlases plus nine UI images must total less than 1 MB. All character, pack and cabinet delivery files use dist/assets/runtime/.",
+    "Keep the generated wide cabinet side columns at natural proportions; do not squeeze the side panels to enlarge the screen.",
+    "Image loading displays progress and fails with a retry control after a bounded timeout. Rebuild optimized delivery assets whenever source art changes.",
+    "Use an authentic upright cabinet with a marquee, recessed game screen, projecting joystick/button control deck, coin door and full tall base. Dark navy/charcoal body and dark grey page; no decorative frame substitute or hat.",
+    "Fill exactly the rounded 72% of eligible floor cells outside active spawn safe zones. A quarter of those crates are reinforced, visibly strapped; first explosion damages them, second destroys them.",
+    "Range pickups use the generated blue pill and float a small Range Up label above the collector. Each adds one blast tile, capped at three bonuses and six total range.",
+    "RPG pickups grant three rounds up to six carried. E or the in-screen RPG button fires along the facing direction with a small impact explosion. Bots use the same pickups with delayed decisions.",
+    "Space plants immediately. All actors have two active bombs maximum. No charging, throwing, airborne bombs or throw input remains. Original sheets retain unused poses for provenance.",
+    "Bomb and RPG flames persist for 0.56 seconds; AI hazard duration matches.",
+    "Three selectable maps: Garden checker pillars with green inset tiles; Foundry rail walls with copper/grated floor; Neon offset pillar clusters with purple circuit tiles and cyan metal. Preserve safe starts and connected permanent floor.",
+    "Silly juice uses the generated Voodoo Ranger bottle. Pickup floats Speed up and grants 30% movement speed for ten game seconds, indicated by a shrinking green ring. Another pickup refreshes ten seconds without stacking strength. Pausing freezes the timer.",
+    "Cabinet faces directly toward the player. Red joystick moves; left gold button plants and right gold button fires RPG. Exactly two painted buttons. Sound effects unlock on Play and respect the saved mute preference."
+  ],
+  "overtime": {
+    "startsAtSecondsRemaining": 25,
+    "warningSeconds": 1.5,
+    "intervalSeconds": 5,
+    "rings": 5,
+    "placement": "Seal successive outer playable rings with permanent immovable steel. Warning hatch and inward arrows precede each closure. Crush defeats actors even during invulnerability. Covered bombs, projectiles, flames and pickups are removed; bots see warnings and plan inward."
+  },
+  "delivery": {
+    "characters": "node scripts/build-character-atlases.mjs",
+    "uiAndCabinet": "python scripts/build-ui-assets.py",
+    "sourceImages": "dist/assets/arcade2005/",
+    "runtimeAssets": "dist/assets/runtime/",
+    "startupCharacterAndMenuBytes": 782602,
+    "characterFrames": 240,
+    "notes": "Original PNGs remain the art source and download gallery. Generated WebP atlases retain every pose with precomputed alpha masks, anchors and frame rectangles."
+  }
+}
