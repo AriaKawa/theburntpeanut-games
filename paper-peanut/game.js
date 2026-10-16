@@ -670,3 +670,12 @@ Promise.all(Object.entries({sewer:'goop-depot',bookspread:'peanut-book',hutch:'h
 }))).then(()=>{
   state.phase='title';makeActors();resize();home();$('start').disabled=false;$('start-label').textContent='Play';
 }).catch(()=>{setHidden('loading-error',false);$('start-label').textContent='A prop is missing';});
+
+$('game-back').addEventListener('click',event=>{
+ const view=$('title-screen').dataset.view;
+ if(state.phase==='loading'||(state.phase==='title'&&view==='home'))return;
+ event.preventDefault();
+ if(state.phase==='title'&&view==='arsenal')$('close-arsenal').click();
+ else if(state.phase==='title'&&view==='chapters')$('close-chapters').click();
+ else{home();$('game-back').focus();}
+});

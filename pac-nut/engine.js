@@ -93,3 +93,9 @@ $('#sound').onclick=toggleSound;$('#start').onclick=start;$('#pause').onclick=pa
 
 
 
+
+$('#game-back').addEventListener('click',event=>{
+ if(!$('#board').hidden){event.preventDefault();$('#board-close').click();return;}
+ if(mode==='ready')return;
+ event.preventDefault();fireHeld=false;mode='ready';score=0;level=1;lives=3;makeLevel();show();ui();$('#game-back').focus();
+});

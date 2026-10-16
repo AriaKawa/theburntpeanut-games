@@ -45,3 +45,12 @@ body.handheld #touch-rpg::before{content:'RPG'}
 body.handheld #touch-rpg:disabled{opacity:.3}
 body.handheld #touch-bomb:active,body.handheld #touch-rpg:active{transform:translateY(3px);box-shadow:inset 0 2px #fff,0 2px #915019}
 @media(orientation:landscape){body.handheld .cabinet{top:50%;transform:translateY(-50%);width:min(64vw,calc((100svh - 16px)*416/402))}body.handheld .deck-controls{inset:0 calc((100cqw - 100vw)/2);height:auto}body.handheld #joystick{left:max(14px,env(safe-area-inset-left));top:auto;bottom:12%;width:clamp(100px,14vw,140px)}body.handheld #touch-bomb{right:max(14px,env(safe-area-inset-right));bottom:12%;width:clamp(72px,11vw,96px)}body.handheld #touch-rpg{right:calc(max(14px,env(safe-area-inset-right)) + 12px);bottom:calc(12% + clamp(72px,11vw,96px) + 14px);width:clamp(52px,8vw,66px)}}
+
+/* Navigation follows the playable screen at every scale. */
+.game-navigation{position:absolute;z-index:20;left:22.4324%;top:20.3003%;width:54.5946%;transform:translateY(-100%);display:flex;align-items:center;justify-content:space-between;padding-bottom:6px;gap:8px;--nav-size:clamp(36px,5.8cqw,52px)}
+.game-back,.game-navigation .fullscreen-button{position:static;display:flex;align-items:center;justify-content:center;gap:.45em;min-height:var(--nav-size);border:2px solid #9cbbb5;border-radius:4px;background:linear-gradient(#dce8de,#88a59f);color:#244563;box-shadow:0 3px 0 #152c36;text-decoration:none;font:bold clamp(11px,1.9cqw,18px) monospace;padding:0 .8em;touch-action:manipulation}
+.game-navigation .fullscreen-button{width:var(--nav-size);height:var(--nav-size);padding:8px}
+.game-back:hover,.game-navigation .fullscreen-button:hover{background:#f9df86;color:#253742}.game-back:focus-visible{outline:3px solid #ffde63;outline-offset:3px}.game-back:active{translate:0 2px}
+:is(body.fullscreen,body.handheld) .game-navigation{top:0;left:0;width:100%;--nav-size:clamp(40px,6cqw,56px)}
+body.fullscreen:not(.handheld) .cabinet{top:calc(50% + 30px);width:min(96vw,calc((100svh - 100px)*416/402))}
+@media(orientation:landscape){body.handheld .cabinet{top:calc(50% + 24px);width:min(64vw,calc((100svh - 100px)*416/402))}}

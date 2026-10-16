@@ -42,14 +42,14 @@ function showState(state){resetTouches();menuState=state;toastTimer=0;$('toast')
  if(state==='select')return;const content={paused:['PAUSED','RESUME'],roundWon:['CLEAR!','NEXT'],won:['YOU WIN!','REPLAY'],lost:['COOKED.','RETRY']}[state];$('state-title').textContent=content[0];$('continue').innerHTML=content[1]+' <span aria-hidden="true">▶</span>';$('state-score').hidden=state==='paused';$('state-score').textContent=String(game.score).padStart(5,'0');drawMenuArt(state);if(multiplayer.active){$('continue').textContent='MENU';$('state-title').textContent=game.isDraw?'DRAW':state==='won'?'YOU WIN!':'COOKED.';}}
 function hideMenu(){menuState=null;toastTimer=0;$('toast').classList.remove('visible');$('menu').classList.add('hidden');document.body.classList.add('playing');$('pause').disabled=false;canvas.focus({preventScroll:true});}
 function start(){if(!packReady)return;unlockAudio();resetTouches();game=new Game(selected,Math.floor(Math.random()*999999),selectedMap);paused=false;document.body.classList.remove('paused');playerHit=0;keys.clear();particles=[];floaters=[];puddles=[];deaths=[];rings=[];animationStates=new WeakMap();menuDelay=0;pendingState=null;game.start();hideMenu();drawPortraits();tone(440,.12,'triangle',.04);updateHud();}
-function home(){if(multiplayer.inRoom){multiplayer.leave();return;}if(pendingState)return;updateBest();paused=false;document.body.classList.remove('paused');playerHit=0;keys.clear();game=new Game(selected,9187,selectedMap);particles=[];floaters=[];puddles=[];deaths=[];rings=[];menuDelay=0;pendingState=null;showState('select');drawPortraits();updateHud();}
+function home(){if(multiplayer.inRoom){multiplayer.leave();return;}pendingState=null;updateBest();paused=false;document.body.classList.remove('paused');playerHit=0;keys.clear();game=new Game(selected,9187,selectedMap);particles=[];floaters=[];puddles=[];deaths=[];rings=[];menuDelay=0;pendingState=null;showState('select');drawPortraits();updateHud();}
 function pause(){if(multiplayer.active){toast('ONLINE MATCH');return;}if(game.status!=='playing')return;paused=!paused;document.body.classList.toggle('paused',paused);keys.clear();if(paused)showState('paused');else hideMenu();}
 function proceed(){if(multiplayer.inRoom){multiplayer.leave();return;}if(paused){pause();return;}if(game.status==='roundWon'){game.next();particles=[];puddles=[];hideMenu();updateHud();return;}start();}
 $('play').addEventListener('click',start);$('continue').addEventListener('click',proceed);$('change-character').addEventListener('click',home);$('pause').addEventListener('click',pause);
 document.querySelectorAll('[data-character]').forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.character;document.querySelectorAll('.character').forEach(c=>{const active=c===b;c.classList.toggle('selected',active);c.setAttribute('aria-pressed',String(active));});game=new Game(selected,9187,selectedMap);drawPortraits();tone(460,.05,'triangle',.04);updateHud();}));
 $('sound').addEventListener('click',()=>{sound=!sound;unlockAudio();try{localStorage.setItem('bungerman-sound',sound?'on':'off');}catch{}tone(660,.08,'sine',.04);});
 const mapped={KeyW:[0,-1],ArrowUp:[0,-1],KeyD:[1,0],ArrowRight:[1,0],KeyS:[0,1],ArrowDown:[0,1],KeyA:[-1,0],ArrowLeft:[-1,0]};
-window.addEventListener('keydown',e=>{if(e.code==='Escape'&&document.body.classList.contains('fullscreen')){fullscreenUI(false);return;}if(e.code==='Escape'){e.preventDefault();if(!e.repeat)pause();return;}if(game.status!=='playing'||paused)return;if(e.code==='KeyE'){e.preventDefault();if(!e.repeat)fire();return;}if(mapped[e.code]||e.code==='Space'){e.preventDefault();if(!e.repeat){keys.delete(e.code);keys.add(e.code);if(e.code==='Space')plant();}}});
+window.addEventListener('keydown',e=>{if(e.code==='Escape'&&document.body.classList.contains('fullscreen')){fullscreenUI(false);document.exitFullscreen?.().catch(()=>{});return;}if(e.code==='Escape'){e.preventDefault();if(!e.repeat)pause();return;}if(game.status!=='playing'||paused)return;if(e.code==='KeyE'){e.preventDefault();if(!e.repeat)fire();return;}if(mapped[e.code]||e.code==='Space'){e.preventDefault();if(!e.repeat){keys.delete(e.code);keys.add(e.code);if(e.code==='Space')plant();}}});
 window.addEventListener('keyup',e=>{keys.delete(e.code);if(e.code==='Space'&&game.status==='playing')e.preventDefault();});
 window.addEventListener('blur',()=>{keys.clear();if(game.status==='playing'&&!paused)pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden&&game.status==='playing'&&!paused)pause();});
 // Screen drag and cabinet joystick move; taps or the painted deck button plant.
@@ -136,3 +136,9 @@ drawLogo();drawPortraits();updateHud();requestAnimationFrame(frame);
 
 
 
+
+$('game-back').addEventListener('click',event=>{
+ if(menuState==='select'&&!multiplayer.inRoom)return;
+ event.preventDefault();pendingState=null;home();$('game-back').focus();
+});
+new MutationObserver(()=>{$('game-back').setAttribute('aria-label',menuState==='select'?'Back to game shelf':'Back to character selection');}).observe($('menu'),{attributes:true,subtree:true,attributeFilter:['hidden','class','data-view']});
