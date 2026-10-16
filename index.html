@@ -1,307 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>theburntpeanut · Games</title>
-<meta name="description" content="Paper Peanut, Bungerman and Pacnut. Games made for theburntpeanut, together in one place.">
-<meta name="theme-color" content="#0d0c11">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffcf5a'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-weight='800' font-size='28' text-anchor='middle' fill='%230d0c11'%3Ep%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#100f15"><title>theburntpeanut Games</title>
+<meta name="description" content="Pacnut, Paper Peanut and Bungerman.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0d0c11; --panel: #17161d; --panel-2: #1f1d27; --line: #ffffff17; --line-strong: #ffffff2e;
-  --ink: #f4efe6; --muted: #a7a2b3; --faint: #6f6b7b; --accent: #ffcf5a; --accent-ink: #1a1408; --hot: #ff7a59;
-  --radius: 16px; --display: 'Bricolage Grotesque', system-ui, sans-serif; --body: 'Figtree', system-ui, sans-serif;
-  color-scheme: dark;
-}
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); font: 400 16px/1.5 var(--body);
-  background-image: radial-gradient(1200px 600px at 85% -10%, #3b2a5a33, transparent 60%), radial-gradient(900px 500px at -10% 30%, #5a3a1f26, transparent 60%);
-  background-attachment: fixed; -webkit-font-smoothing: antialiased;
-}
-a { color: inherit; }
-img { display: block; max-width: 100%; }
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
-.wrap { width: min(1240px, 100% - 32px); margin: 0 auto; }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-
-/* ---------- top bar ---------- */
-.top { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(14px) saturate(1.2); background: #0d0c11b8; border-bottom: 1px solid var(--line); }
-.top .wrap { display: flex; align-items: center; gap: 16px; height: 64px; }
-.mark { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font: 800 20px/1 var(--display); letter-spacing: -.02em; margin-right: auto; }
-.mark b { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: var(--accent); color: var(--accent-ink); font: 800 14px/1 var(--display); }
-.search { position: relative; flex: 0 1 300px; }
-.search svg { position: absolute; left: 12px; top: 50%; translate: 0 -50%; width: 16px; height: 16px; color: var(--faint); pointer-events: none; }
-.search input {
-  width: 100%; height: 40px; padding: 0 38px 0 36px; border-radius: 999px; border: 1px solid var(--line-strong);
-  background: var(--panel); color: var(--ink); font: 500 15px var(--body);
-}
-.search input::placeholder { color: var(--faint); }
-.search input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px #ffcf5a33; }
-.search kbd { position: absolute; right: 10px; top: 50%; translate: 0 -50%; font: 600 11px var(--body); color: var(--faint); border: 1px solid var(--line-strong); border-radius: 5px; padding: 1px 6px; }
-.search input:focus + kbd, .search input:not(:placeholder-shown) + kbd { display: none; }
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 999px;
-  border: 1px solid var(--line-strong); background: var(--panel); color: var(--ink); font: 600 14px var(--body); text-decoration: none; cursor: pointer;
-  transition: background .15s, border-color .15s, transform .15s;
-}
-.btn:hover { background: var(--panel-2); border-color: #ffffff40; }
-.btn:active { transform: translateY(1px); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
-.btn.primary:hover { background: #ffdb7d; }
-.btn svg { width: 16px; height: 16px; }
-
-/* ---------- hero ---------- */
-.hero { position: relative; margin: 28px 0 8px; border-radius: 24px; overflow: hidden; border: 1px solid var(--line); min-height: 360px; display: grid; grid-template-columns: 1.15fr 1fr; isolation: isolate; }
-.hero-bg { position: absolute; inset: -40px; z-index: -1; background-size: cover; background-position: center; filter: blur(40px) saturate(1.3) brightness(.45); transform: scale(1.1); transition: background-image .4s; }
-.hero-art { min-width: 0; align-self: center; margin: 24px 0 24px 24px; border-radius: 16px; overflow: hidden; box-shadow: 0 30px 60px #00000080; border: 1px solid var(--line-strong); }
-.hero-art img { width: 100%; height: auto; object-fit: cover; aspect-ratio: 16 / 10; }
-.hero-copy { min-width: 0; }
-.hero-copy { display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 32px 40px; }
-.eyebrow { font: 700 12px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
-.hero h1 { margin: 0; font: 800 clamp(34px, 5vw, 60px)/.95 var(--display); letter-spacing: -.035em; text-wrap: balance; }
-.hero .when { color: var(--muted); font-size: 15px; }
-.hero .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
-.hero .actions .btn { height: 46px; padding: 0 22px; font-size: 15px; }
-
-/* ---------- sections ---------- */
-.section-head { display: flex; align-items: baseline; gap: 12px; margin: 48px 0 18px; }
-.section-head h2 { margin: 0; font: 800 28px/1 var(--display); letter-spacing: -.02em; }
-.section-head .count { color: var(--faint); font: 600 14px var(--body); }
-.section-head p { margin: 0 0 0 auto; color: var(--muted); font-size: 14px; }
-
-/* ---------- cover cards ---------- */
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-.card { position: relative; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); transition: transform .2s cubic-bezier(.2,.8,.3,1), border-color .2s, box-shadow .2s; }
-.card:hover { transform: translateY(-4px); border-color: var(--line-strong); box-shadow: 0 18px 40px #00000070; }
-.card > a { display: block; text-decoration: none; border-radius: inherit; }
-.card .art { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--radius) var(--radius) 0 0; background: #000; }
-.card .art img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s cubic-bezier(.2,.8,.3,1), filter .3s; }
-.card:hover .art img { transform: scale(1.05); }
-.card .meta { display: flex; align-items: center; gap: 10px; padding: 12px 14px 14px; }
-.card .title { font: 700 17px/1.2 var(--display); letter-spacing: -.01em; margin-right: auto; }
-.card .age { color: var(--faint); font-size: 13px; white-space: nowrap; }
-.badge { position: absolute; left: 12px; top: 12px; padding: 4px 9px; border-radius: 999px; background: var(--hot); color: #1b0a05; font: 700 11px/1.2 var(--body); letter-spacing: .06em; text-transform: uppercase; box-shadow: 0 4px 12px #00000060; }
-.pin {
-  position: absolute; right: 10px; top: 10px; z-index: 2; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%;
-  border: 1px solid #ffffff33; background: #0d0c11a6; color: #fff; cursor: pointer; backdrop-filter: blur(6px); opacity: 0; transition: opacity .15s, background .15s, color .15s;
-}
-.pin svg { width: 17px; height: 17px; }
-.card:hover .pin, .card:focus-within .pin, .pin[aria-pressed="true"] { opacity: 1; }
-.pin[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-@media (hover: none) { .pin { opacity: 1; } }
-.pinned { margin-bottom: 28px; }
-.pinned h3 { margin: 0 0 12px; font: 700 13px var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
-
-/* ---------- everything else ---------- */
-.drawer { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.group { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 18px 10px; }
-.group h3 { margin: 0 0 8px; font: 700 13px var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
-.group h3 span { color: var(--faint); letter-spacing: 0; }
-.group ul { list-style: none; margin: 0; padding: 0; }
-.group li a { display: flex; align-items: baseline; gap: 10px; padding: 8px 10px; margin: 0 -10px; border-radius: 9px; text-decoration: none; transition: background .12s; }
-.group li a:hover { background: var(--panel-2); }
-.group li a span:first-child { margin-right: auto; font-weight: 600; }
-.group li a span:last-child { color: var(--faint); font-size: 13px; white-space: nowrap; }
-
-.empty { text-align: center; color: var(--muted); padding: 60px 0; font-size: 17px; }
-footer { margin: 64px 0 40px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--faint); font-size: 14px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-
-body.searching .hero { display: none; }
-[hidden] { display: none !important; }
-
-@media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; min-height: 0; }
-  .hero-art { margin: 16px 16px 0; }
-  .hero-copy { padding: 22px 22px 26px; gap: 12px; }
-  .drawer { grid-template-columns: 1fr; }
-}
-@media (max-width: 600px) {
-  .top .wrap { gap: 10px; }
-  .mark span { display: none; }
-  .search { flex: 1 1 auto; }
-  .search kbd { display: none; }
-  .btn.surprise span { display: none; }
-  .btn.surprise { width: 40px; padding: 0; }
-  .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-  .card .meta { padding: 10px 11px 12px; }
-  .card .title { font-size: 15px; }
-  .card .age { display: none; }
-  .section-head { margin-top: 36px; flex-wrap: wrap; }
-  .section-head p { margin: 0; width: 100%; }
-  .hero .actions .btn { flex: 1; }
-}
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
-
-
- .sr:focus { position:fixed; clip:auto; width:auto; height:auto; z-index:20; top:8px; left:8px; padding:10px; background:var(--accent); color:var(--accent-ink); }
- </style>
-</head>
-<body>
-<a class="sr" href="#shelf">Skip to the games</a>
-<header class="top">
-  <div class="wrap">
-    <a class="mark" href="./" aria-label="theburntpeanut games home"><b aria-hidden="true">p</b><span>theburntpeanut</span></a>
-    <label class="search">
-      <span class="sr">Search games</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="Find something" autocomplete="off">
-      <kbd aria-hidden="true">/</kbd>
-    </label>
-    <button class="btn surprise" id="surprise" type="button" title="Open a random game"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg><span>Surprise me</span></button>
-  </div>
-</header>
-
-<main class="wrap">
-  <section class="hero" id="hero" aria-labelledby="hero-title">
-    <div class="hero-bg" id="hero-bg"></div>
-    <a class="hero-art" id="hero-art" tabindex="-1" aria-hidden="true"><img id="hero-img" alt="" width="1600" height="1000"></a>
-    <div class="hero-copy">
-      <div class="eyebrow" id="hero-eyebrow">Pick of the day</div>
-      <h1 id="hero-title"></h1>
-      <div class="when" id="hero-when"></div>
-      <div class="actions">
-        <a class="btn primary" id="hero-play">Play <span aria-hidden="true">→</span></a>
-        <button class="btn" id="hero-next" type="button">Another pick</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="shelf" aria-labelledby="shelf-title">
-    <div class="section-head"><h2 id="shelf-title">The shelf</h2><span class="count" id="shelf-count"></span><p>Most recently worked on first. Pin a game to keep it up front.</p></div>
-    <div class="pinned" id="pinned-wrap" hidden><h3>Pinned</h3><div class="grid" id="pinned"></div></div>
-    <div class="grid" id="covers"></div>
-  </section>
-
-  <section id="everything" aria-labelledby="else-title">
-    <div class="section-head"><h2 id="else-title">Everything else</h2><span class="count" id="else-count"></span><p>Prototypes, tools and things still waiting for cover art.</p></div>
-    <div class="drawer" id="drawer"></div>
-  </section>
-
-  <p class="empty" id="empty" hidden></p>
-
-  <footer><span>Made for theburntpeanut. Unofficial fan games.</span><span id="total"></span></footer>
-</main>
-
-<script>
-// Games with cover art get a card on the shelf. `img` is a thumbnail in assets/shelf/ (plus a -wide version).
-const COVERS = [
- {id:'pac-nut',title:'Pacnut',href:'pac-nut/',date:'2026-10-16',tags:'maze arcade peanut'},
- {id:'paper-peanut',title:'Paper Peanut',href:'paper-peanut/',date:'2026-10-15',tags:'paper adventure peanut'},
- {id:'bungerman',title:'Bungerman',href:'bungerman/',date:'2026-10-14',tags:'bomb arcade peanut'},
-];
-const cover = (g, wide=false) => 'assets/shelf/'+g.id+'-gameplay.png';
-// Everything without cover art, in three drawers.
-const REST = {};
-
-const $ = id => document.getElementById(id);
-const DAY = 864e5, today = new Date(new Date().toDateString());
-const daysAgo = date => Math.max(0, Math.round((today - new Date(date + 'T00:00')) / DAY));
-function ago(date) {
-  const d = daysAgo(date);
-  if (d === 0) return 'today';
-  if (d === 1) return 'yesterday';
-  if (d < 14) return `${d} days ago`;
-  if (d < 60) return `${Math.round(d / 7)} weeks ago`;
-  return new Date(date + 'T00:00').toLocaleDateString(undefined, { month: 'short', year: today.getFullYear() === +date.slice(0, 4) ? undefined : 'numeric' });
-}
-const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
-
-// ---------- pins ----------
-let pins = new Set(store.get('peanut-shelf-pins', []));
-const PIN = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.8 14.8 8.6l6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z"/></svg>';
-
-function card(g) {
-  const fresh = daysAgo(g.date) <= 7;
-  return `<article class="card" data-id="${g.id}" data-search="${esc((g.title + ' ' + (g.tags || '')).toLowerCase())}">
-    <a href="${g.href}"><div class="art"><img src="${cover(g)}" alt="${esc(g.title)} gameplay" loading="lazy" decoding="async" width="960" height="600">${fresh ? '<span class="badge">Fresh</span>' : ''}</div>
-    <div class="meta"><span class="title">${esc(g.title)}</span><span class="age">${ago(g.date)}</span></div></a>
-    <button class="pin" type="button" aria-pressed="${pins.has(g.id)}" aria-label="${pins.has(g.id) ? 'Unpin' : 'Pin'} ${esc(g.title)}" title="${pins.has(g.id) ? 'Unpin' : 'Pin to the front'}">${PIN}</button>
-  </article>`;
-}
-function renderShelf() {
-  const pinned = COVERS.filter(g => pins.has(g.id)), rest = COVERS.filter(g => !pins.has(g.id));
-  $('pinned').innerHTML = pinned.map(card).join('');
-  $('pinned-wrap').hidden = !pinned.length;
-  $('covers').innerHTML = rest.map(card).join('');
-  $('shelf-count').textContent = COVERS.length;
-  filter();
-}
-document.addEventListener('click', e => {
-  const btn = e.target.closest('.pin');
-  if (!btn) return;
-  const id = btn.closest('.card').dataset.id;
-  pins.has(id) ? pins.delete(id) : pins.add(id);
-  store.set('peanut-shelf-pins', [...pins]);
-  renderShelf();
-  document.querySelector(`.card[data-id="${id}"] .pin`)?.focus();
-});
-
-// ---------- everything else ----------
-let restCount = 0;
-$('drawer').innerHTML = Object.entries(REST).map(([group, items]) => {
-  restCount += items.length;
-  const sorted = [...items].sort((a, b) => b[2].localeCompare(a[2]) || a[0].localeCompare(b[0]));
-  return `<div class="group" data-group><h3>${group} <span>${items.length}</span></h3><ul>${sorted.map(([t, href, date]) =>
-    `<li data-search="${esc(t.toLowerCase())}"><a href="${href}"><span>${esc(t)}</span><span>${ago(date)}</span></a></li>`).join('')}</ul></div>`;
-}).join('');
-$('else-count').textContent = restCount;
-$('total').textContent = `${COVERS.length + restCount} things on the shelf`;
-
-// ---------- hero: one pick a day, or another on request ----------
-let pick = Math.floor(today / DAY) % COVERS.length, picks = 0;
-function showHero(i, label) {
-  const g = COVERS[i];
-  $('hero-bg').style.backgroundImage = `url("${cover(g)}")`;
-  $('hero-img').src = cover(g, true);
-  $('hero-img').alt = g.title + ' gameplay';
-  $('hero-art').href = $('hero-play').href = g.href;
-  $('hero-title').textContent = g.title;
-  $('hero-when').textContent = `Last worked on ${ago(g.date)}`;
-  $('hero-eyebrow').textContent = label;
-  $('hero-play').setAttribute('aria-label', `Play ${g.title}`);
-}
-showHero(pick, 'Pick of the day');
-$('hero-next').addEventListener('click', () => {
-  pick = (pick + 1 + Math.floor(Math.random() * (COVERS.length - 1))) % COVERS.length;
-  showHero(pick, ++picks === 1 ? 'How about' : ['Or maybe', 'Try this', 'How about', 'Or this one'][picks % 4]);
-});
-
-// ---------- surprise me: anything on the site ----------
-$('surprise').addEventListener('click', () => {
-  const all = [...COVERS.map(g => g.href), ...Object.values(REST).flat().map(r => r[1])];
-  location.href = all[Math.floor(Math.random() * all.length)];
-});
-
-// ---------- search ----------
-function filter() {
-  const q = $('q').value.trim().toLowerCase();
-  document.body.classList.toggle('searching', !!q);
-  let shown = 0;
-  document.querySelectorAll('[data-search]').forEach(el => { const on = !q || el.dataset.search.includes(q); el.hidden = !on; if (on) shown++; });
-  document.querySelectorAll('[data-group]').forEach(g => { g.hidden = !g.querySelector('li:not([hidden])'); });
-  $('pinned-wrap').hidden = !document.querySelector('#pinned .card:not([hidden])');
-  $('shelf').hidden = !document.querySelector('#shelf .card:not([hidden])');
-  $('everything').hidden = !document.querySelector('#drawer li:not([hidden])');
-  $('empty').hidden = shown > 0;
-  if (!shown) $('empty').textContent = `Nothing on the shelf matches “${$('q').value.trim()}”.`;
-}
-$('q').addEventListener('input', filter);
-$('q').addEventListener('keydown', e => {
-  if (e.key === 'Escape') { $('q').value = ''; filter(); }
-  if (e.key === 'Enter') { const first = document.querySelector('.card:not([hidden]) a, #drawer li:not([hidden]) a'); if (first) location.href = first.href; }
-});
-document.addEventListener('keydown', e => {
-  if (e.key === '/' && document.activeElement !== $('q') && !e.metaKey && !e.ctrlKey) { e.preventDefault(); $('q').focus(); }
-});
-renderShelf();
-</script>
-
-</body>
-</html>
+:root{color-scheme:dark;--ink:#f4efe6;--accent:#ffcf5a}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--ink);font-family:Figtree,system-ui,sans-serif;background-color:#100f15;background-image:radial-gradient(ellipse at 12% 25%,#8a643122,transparent 50%),radial-gradient(ellipse at 90% 60%,#69489229,transparent 55%),radial-gradient(#ffffff09 .7px,transparent .7px);background-size:auto,auto,8px 8px;background-attachment:fixed}
+a{color:inherit;text-decoration:none}:focus-visible{outline:3px solid var(--accent);outline-offset:6px}
+.wrap{width:min(1240px,calc(100% - 40px));margin:auto}
+header{border-bottom:1px solid #ffffff0e;background:#100f1570;backdrop-filter:blur(14px)}
+.brand{display:inline-flex;align-items:center;gap:12px;min-height:84px;font:800 23px 'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.5px}
+.brand b{display:grid;place-items:center;background:var(--accent);color:#20190a;border-radius:11px;width:36px;height:36px;font-size:18px}
+main{padding:64px 0 88px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.card{display:block;min-width:0;border:1px solid #ffffff1b;border-radius:22px;background:linear-gradient(145deg,#26222d,#17161d);overflow:hidden;box-shadow:0 20px 50px #0004;transition:transform .2s,border-color .2s,box-shadow .2s}
+.card:hover{transform:translateY(-5px);border-color:#ffcf5a70;box-shadow:0 24px 60px #0007}
+.art{position:relative;aspect-ratio:1/1;overflow:hidden;background:radial-gradient(ellipse at center,#383127,#101014 75%);display:grid;place-items:center;border-bottom:1px solid #ffffff12}
+.art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.card:hover img{transform:scale(1.025)}
+.cabinet img{object-fit:contain;padding:14px 0;background:radial-gradient(ellipse at 50% 55%,#5d39213b,#111015 75%)}
+.book img{object-fit:contain;background:#201c19}
+.meta{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 24px}
+h1{font:700 22px/1.2 'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.4px;margin:0}
+.arrow{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#ffcf5a14;color:var(--accent);font-size:22px}
+.skip{position:absolute;left:20px;top:-100px;padding:12px;background:var(--accent);color:#15110a;z-index:10}.skip:focus{top:10px}
+@media(max-width:850px){.grid{gap:16px}.meta{padding:18px 16px}h1{font-size:19px}.arrow{width:28px;height:28px}}
+@media(max-width:650px){.wrap{width:calc(100% - 32px)}.brand{min-height:72px;font-size:21px}main{padding:28px 0 44px}.grid{grid-template-columns:1fr;gap:24px}.art{aspect-ratio:6/5}.cabinet{aspect-ratio:1/1}.meta{padding:18px 22px}h1{font-size:22px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.sound-toggle{display:grid;place-items:center;width:42px;height:42px;border:1px solid #ffffff25;border-radius:13px;background:#211e27;color:#ffcf5a;cursor:pointer;font-size:22px}.sound-toggle:hover{background:#302a35}.sound-toggle[aria-pressed="false"]{color:#a7a2b3}</style></head><body>
+<a class="skip" href="#games">Skip to games</a>
+<header><div class="wrap header-row"><a class="brand" href="./" aria-label="theburntpeanut games home"><b aria-hidden="true">p</b>theburntpeanut</a><button id="ui-sound" class="sound-toggle" type="button" aria-label="Mute button sounds" aria-pressed="true"><span aria-hidden="true">♪</span></button></div></header>
+<main class="wrap" id="games"><div class="grid" aria-label="Games">
+<a class="card" href="pac-nut/" aria-label="Play Pacnut"><div class="art"><img src="assets/shelf/pac-nut-maze.png" alt="Peanut and ghosts in Pacnut's maze" width="1200" height="750"></div><div class="meta"><h1>Pacnut</h1><span class="arrow" aria-hidden="true">&#8599;</span></div></a>
+<a class="card" href="paper-peanut/" aria-label="Play Paper Peanut"><div class="art book"><img src="assets/shelf/paper-peanut-book.png" alt="Paper Peanut's open book interface" width="1440" height="1000"></div><div class="meta"><h1>Paper Peanut</h1><span class="arrow" aria-hidden="true">&#8599;</span></div></a>
+<a class="card" href="bungerman/" aria-label="Play Bungerman"><div class="art cabinet"><img src="assets/shelf/bungerman-cabinet.png" alt="Bungerman arcade machine with its screen, joystick and buttons" width="700" height="1100"></div><div class="meta"><h1>Bungerman</h1><span class="arrow" aria-hidden="true">&#8599;</span></div></a>
+</div></main><script src="ui-sound.js" defer></script></body></html>
