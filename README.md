@@ -6,6 +6,8 @@ Only the three browser game builds and showcase assets are included. Paper Peanu
 
 Serve this directory with any static HTTP server. GitHub Pages serves the root of the main branch. No build step is required.
 
+Bungerman's view toolbar offers fullscreen (with an in-page fallback) and 60–140% game zoom via dial, wheel, keyboard, plus/minus and reset. The gallery has quiet synthesized button sounds with a saved mute preference. Pacnut's synthesized rifle report follows actual shots and its existing game sound toggle. No external audio assets or dependencies are used.
+
 Bungerman solo play runs in the browser. Its optional online rooms retain the original game's public Firebase client configuration and depend on that existing service. No new service or credentials are provisioned.
 
 Unofficial fan games; no streamer endorsement is implied.
