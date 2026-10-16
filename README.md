@@ -11,3 +11,5 @@ Bungerman's view toolbar offers fullscreen (with an in-page fallback) and 60–1
 Bungerman solo play runs in the browser. Its optional online rooms retain the original game's public Firebase client configuration and depend on that existing service. No new service or credentials are provisioned.
 
 Unofficial fan games; no streamer endorsement is implied.
+
+Each game has a themed top-left Back control. Subpages return to the game's menu; the menu returns to the gallery. Paper Peanut dialogs have their own Back control in the browser's modal layer. Bungerman's view controls follow the playfield at the top right and scale with it. Leaving a room or cancelling a connection returns immediately, with network cleanup in the background.

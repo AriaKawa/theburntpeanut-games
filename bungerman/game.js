@@ -1,4 +1,4 @@
-import {setupMultiplayer} from './multiplayer-ui.js?v=mp13';
+import {setupMultiplayer} from './multiplayer-ui.js?v=nav2';
 import {Game,CAST,COLS,ROWS,MAPS} from './engine.js?v=mp13';
 import {loadPack,drawAsset} from './packs.js?v=mp13';
 import {drawCharacter,loadCharacterSprites} from './characters.js?v=mp13';
@@ -49,7 +49,7 @@ $('play').addEventListener('click',start);$('continue').addEventListener('click'
 document.querySelectorAll('[data-character]').forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.character;document.querySelectorAll('.character').forEach(c=>{const active=c===b;c.classList.toggle('selected',active);c.setAttribute('aria-pressed',String(active));});game=new Game(selected,9187,selectedMap);drawPortraits();tone(460,.05,'triangle',.04);updateHud();}));
 $('sound').addEventListener('click',()=>{sound=!sound;unlockAudio();try{localStorage.setItem('bungerman-sound',sound?'on':'off');}catch{}tone(660,.08,'sine',.04);});
 const mapped={KeyW:[0,-1],ArrowUp:[0,-1],KeyD:[1,0],ArrowRight:[1,0],KeyS:[0,1],ArrowDown:[0,1],KeyA:[-1,0],ArrowLeft:[-1,0]};
-window.addEventListener('keydown',e=>{if(e.code==='Escape'&&document.body.classList.contains('fullscreen')){fullscreenUI(false);document.exitFullscreen?.().catch(()=>{});return;}if(e.code==='Escape'){e.preventDefault();if(!e.repeat)pause();return;}if(game.status!=='playing'||paused)return;if(e.code==='KeyE'){e.preventDefault();if(!e.repeat)fire();return;}if(mapped[e.code]||e.code==='Space'){e.preventDefault();if(!e.repeat){keys.delete(e.code);keys.add(e.code);if(e.code==='Space')plant();}}});
+window.addEventListener('keydown',e=>{if(e.code==='Escape'&&document.body.classList.contains('fullscreen')){fullscreenUI(false);document.exitFullscreen?.().catch(()=>{});return;}if(e.code==='Escape'){e.preventDefault();if(!e.repeat){if(menuState==='multiplayer'||menuState==='lobby')home();else pause();}return;}if(e.target.closest?.('a,button,input,textarea,[role=slider]'))return;if(game.status!=='playing'||paused)return;if(e.code==='KeyE'){e.preventDefault();if(!e.repeat)fire();return;}if(mapped[e.code]||e.code==='Space'){e.preventDefault();if(!e.repeat){keys.delete(e.code);keys.add(e.code);if(e.code==='Space')plant();}}});
 window.addEventListener('keyup',e=>{keys.delete(e.code);if(e.code==='Space'&&game.status==='playing')e.preventDefault();});
 window.addEventListener('blur',()=>{keys.clear();if(game.status==='playing'&&!paused)pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden&&game.status==='playing'&&!paused)pause();});
 // Screen drag and cabinet joystick move; taps or the painted deck button plant.

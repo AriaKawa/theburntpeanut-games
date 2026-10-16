@@ -636,11 +636,12 @@ window.addEventListener('resize',hideAbilityTip);
 document.addEventListener('scroll',hideAbilityTip,true);
 
 $('sound').onclick=()=>{audio.on=!audio.on;audio.init();syncSound();try{localStorage.setItem('paper-peanut-sound',audio.on?'on':'off');}catch{}if(audio.on)audio.tick();};
-$('fullscreen').onclick=async()=>{try{if(!document.fullscreenElement)await $('app').requestFullscreen();else await document.exitFullscreen();}catch{note('Fullscreen is unavailable here. The game still plays in this window.');}};
+$('fullscreen').onclick=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen();}catch{note('Fullscreen is unavailable here. The game still plays in this window.');}};
 document.addEventListener('fullscreenchange',()=>{$('fullscreen').setAttribute('aria-label',document.fullscreenElement?'Exit fullscreen':'Enter fullscreen');});
 window.addEventListener('keydown',event=>{
   if(state.paused)return;
   if(event.key==='Escape'){event.preventDefault();if(state.phase==='title'&&$('title-screen').dataset.view==='arsenal'){setArsenalPage(false);$('open-arsenal').focus();}else if(state.phase==='title'&&$('title-screen').dataset.view==='chapters'){setChapterPage(false);$('start').focus();}else pauseGame();return;}
+  if(event.target.closest?.('a,button,input,select,textarea'))return;
   if(event.code==='Space'||event.key==='Enter'){
     if(event.target instanceof Element && event.target.closest('nav button'))return;
     if(state.command||['attack','enemy'].includes(state.phase)){
