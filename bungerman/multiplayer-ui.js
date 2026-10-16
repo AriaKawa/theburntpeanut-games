@@ -1,6 +1,6 @@
-import {FirebaseRoom} from './firebase-room.js?v=mp12';
-import {MultiplayerMatch,hydrateMatch} from './match.js?v=mp12';
-import {members,SKINS} from './room-model.js?v=mp12';
+import {FirebaseRoom} from './firebase-room.js?v=mp13';
+import {MultiplayerMatch,hydrateMatch} from './match.js?v=mp13';
+import {members,SKINS} from './room-model.js?v=mp13';
 const $=id=>document.getElementById(id),names={peanut:'PEANUT',hutch:'HUTCH',ninja:'NINJA',tpain:'T-PAIN'};
 export function setupMultiplayer(api){
  let room=null,host=null,view=null,active=false,joining=false,leaving=false,bombSeq=0,rpgSeq=0,sendClock=0,publishClock=0,phaseClock=0,lastSnapshot=0,lastReceived=0,timer=null,lastTick=0,latestInput={dx:0,dy:0},finalPublished=false;

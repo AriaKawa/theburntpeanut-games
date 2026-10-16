@@ -1,4 +1,4 @@
-import {Game,CAST} from './engine.js?v=mp12';
+import {Game,CAST} from './engine.js?v=mp13';
 
 // The room transport binds authenticated member IDs to slots. It must never accept
 // a slot, position, health or character supplied by an input packet as authority.

@@ -1,8 +1,8 @@
-import {setupMultiplayer} from './multiplayer-ui.js?v=mp12';
-import {Game,CAST,COLS,ROWS,MAPS} from './engine.js?v=mp12';
-import {loadPack,drawAsset} from './packs.js?v=mp12';
-import {drawCharacter,loadCharacterSprites} from './characters.js?v=mp12';
-import {drawArena,drawBomb,drawFlames,drawClosingWalls,drawRockets} from './arena.js?v=mp12';
+import {setupMultiplayer} from './multiplayer-ui.js?v=mp13';
+import {Game,CAST,COLS,ROWS,MAPS} from './engine.js?v=mp13';
+import {loadPack,drawAsset} from './packs.js?v=mp13';
+import {drawCharacter,loadCharacterSprites} from './characters.js?v=mp13';
+import {drawArena,drawBomb,drawFlames,drawClosingWalls,drawRockets} from './arena.js?v=mp13';
 const $=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d');
 const W=416,H=352,T=30,OX=13,OY=11;
 canvas.width=W*3;canvas.height=H*3;ctx.scale(3,3);
@@ -54,16 +54,17 @@ window.addEventListener('keyup',e=>{keys.delete(e.code);if(e.code==='Space'&&gam
 window.addEventListener('blur',()=>{keys.clear();if(game.status==='playing'&&!paused)pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden&&game.status==='playing'&&!paused)pause();});
 // Screen drag and cabinet joystick move; taps or the painted deck button plant.
 const touches=new Map();let movingPointer=null;
-function resetTouches(){touches.clear();clearTouchMovement();stickPointer=null;}
+function resetTouches(){touches.clear();clearTouchMovement();stickPointer=null;centerStick();}
 function clearTouchMovement(){for(const code of Object.keys(mapped))if(code.startsWith('Arrow'))keys.delete(code);movingPointer=null;}
 canvas.addEventListener('pointerdown',e=>{if(menuState)return;e.preventDefault();canvas.setPointerCapture(e.pointerId);touches.set(e.pointerId,{x:e.clientX,y:e.clientY,moved:false});});
 canvas.addEventListener('pointermove',e=>{const t=touches.get(e.pointerId);if(!t)return;const dx=e.clientX-t.x,dy=e.clientY-t.y;if(Math.hypot(dx,dy)<12)return;if(movingPointer!==null&&movingPointer!==e.pointerId)return;t.moved=true;clearTouchMovement();movingPointer=e.pointerId;keys.add(Math.abs(dx)>Math.abs(dy)?dx>0?'ArrowRight':'ArrowLeft':dy>0?'ArrowDown':'ArrowUp');});
 function endTouch(e,cancel=false){const t=touches.get(e.pointerId);if(!t)return;if(movingPointer===e.pointerId)clearTouchMovement();if(!cancel&&!paused&&!menuState&&!t.moved)plant();touches.delete(e.pointerId);}
 canvas.addEventListener('pointerup',e=>endTouch(e));canvas.addEventListener('pointercancel',e=>endTouch(e,true));canvas.addEventListener('lostpointercapture',e=>endTouch(e,true));
 const stick=$('joystick');let stickPointer=null;
-function steerStick(e){if(e.pointerId!==stickPointer)return;const box=stick.getBoundingClientRect(),dx=e.clientX-box.left-box.width/2,dy=e.clientY-box.top-box.height/2;clearTouchMovement();if(Math.hypot(dx,dy)>box.width*.12)keys.add(Math.abs(dx)>Math.abs(dy)?dx>0?'ArrowRight':'ArrowLeft':dy>0?'ArrowDown':'ArrowUp');}
+function steerStick(e){if(e.pointerId!==stickPointer)return;const box=stick.getBoundingClientRect(),dx=e.clientX-box.left-box.width/2,dy=e.clientY-box.top-box.height/2;clearTouchMovement();const reach=box.width*.3,scale=Math.min(1,reach/(Math.hypot(dx,dy)||1));stick.style.setProperty('--kx',dx*scale+'px');stick.style.setProperty('--ky',dy*scale+'px');if(Math.hypot(dx,dy)>box.width*.12)keys.add(Math.abs(dx)>Math.abs(dy)?dx>0?'ArrowRight':'ArrowLeft':dy>0?'ArrowDown':'ArrowUp');}
+function centerStick(){stick.style.removeProperty('--kx');stick.style.removeProperty('--ky');}
 stick.addEventListener('pointerdown',e=>{if(menuState)return;e.preventDefault();stickPointer=e.pointerId;stick.setPointerCapture(e.pointerId);steerStick(e);});stick.addEventListener('pointermove',steerStick);
-for(const event of ['pointerup','pointercancel','lostpointercapture'])stick.addEventListener(event,()=>{stickPointer=null;clearTouchMovement();});
+for(const event of ['pointerup','pointercancel','lostpointercapture'])stick.addEventListener(event,()=>{stickPointer=null;clearTouchMovement();centerStick();});
 $('touch-rpg').addEventListener('click',()=>{if(!paused&&!menuState){fire();canvas.focus({preventScroll:true});}});
 $('touch-bomb').addEventListener('click',()=>{if(!paused&&!menuState){plant();canvas.focus({preventScroll:true});}});
 function drawMapPreviews(){const el=$('map-preview'),c=el.getContext('2d');el.width=W;el.height=H;el.dataset.mapPreview=selectedMap;drawArena(c,new Game(selected,9187,selectedMap),{time:0,reduced:true});$('map-name').textContent=selectedMap.toUpperCase();}
@@ -77,6 +78,8 @@ const multiplayer=setupMultiplayer({selected:()=>selected,map:()=>selectedMap,lo
  start(){unlockAudio();resetTouches();paused=false;keys.clear();particles=[];floaters=[];puddles=[];deaths=[];rings=[];animationStates=new WeakMap();pendingState=null;menuDelay=0;hideMenu();$('pause').disabled=true;},
  snapshot(next){game=next;drawCast(smallCanvas('hud-face',32,36),16,35,34,game.character);}
 });
+// Touch-first devices get the uncluttered big-screen layout with on-screen controls.
+const handheld=matchMedia('(pointer:coarse)');function syncHandheld(){document.body.classList.toggle('handheld',handheld.matches);}syncHandheld();handheld.addEventListener('change',syncHandheld);
 function fullscreenUI(on){document.body.classList.toggle('fullscreen',on);$('fullscreen').setAttribute('aria-pressed',String(on));$('fullscreen').setAttribute('aria-label',on?'Exit fullscreen game':'Enter fullscreen game');}
 $('fullscreen').addEventListener('click',async()=>{const on=!document.body.classList.contains('fullscreen');fullscreenUI(on);try{if(on)await document.documentElement.requestFullscreen?.();else if(document.fullscreenElement)await document.exitFullscreen();}catch{}});
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)fullscreenUI(false);});
@@ -85,7 +88,7 @@ const px=x=>OX+(x+.5)*T,py=y=>OY+(y+.5)*T;
 function burst(x,y,count,color){if(reduced)count=Math.ceil(count/3);for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,v=20+Math.random()*80;particles.push({x:px(x),y:py(y),vx:Math.cos(a)*v,vy:Math.sin(a)*v-20,life:.35+Math.random()*.35,max:.7,color,size:2+Math.floor(Math.random()*3)});}}
 function stateFor(e){let state=animationStates.get(e);if(!state){state={x:e.rx,y:e.ry,walk:0,moving:0,travelling:false,plant:0,hit:0};animationStates.set(e,state);}return state;}
 function events(){for(const ev of game.events.splice(0)){if(ev.type==='drop')sfx('drop');if(ev.type==='drop'&&ev.owner&&!ev.owner.environment)stateFor(ev.owner).plant=.34;if(ev.type==='overtime'){toast('WALLS CLOSING');tone(420,.2,'sawtooth',.03,180);}if(ev.type==='wallClose'){shake=reduced?0:5;tone(65,.22,'triangle',.06,25);for(const c of ev.cells)burst(c.x,c.y,3,'#a8b4b6');}if(ev.type==='rpgFire'){tone(200,.14,'sawtooth',.045,45);burst(ev.x,ev.y,4,'#ffcf68');}if(ev.type==='crateDamage')burst(ev.x,ev.y,4,'#a6bab9');if(ev.type==='explosion'){rings.push({x:px(ev.x),y:py(ev.y),life:.4,max:.4});sfx('explosion');shake=reduced?0:3;burst(ev.x,ev.y,14,'#ffb538');}if(ev.type==='crate')burst(ev.x,ev.y,7,'#bd965b');if(ev.type==='hit'){const entity=ev.player?game.player:game.bots.find(e=>e.x===ev.x&&e.y===ev.y);if(entity)stateFor(entity).hit=.42;sfx('hit');if(ev.player){playerHit=.95;shake=reduced?0:9;floaters.push({x:px(ev.x),y:py(ev.y)-26,text:'−1 ♥',life:1.25,hit:true});burst(ev.x,ev.y,12,'#ff665e');}}if(ev.type==='death'){deaths.push({...ev,life:.75,max:.75,dir:(ev.player?game.player:game.bots.find(e=>e.x===ev.x&&e.y===ev.y))?.dir||'down'});puddles.push({x:ev.x,y:ev.y,character:ev.character});burst(ev.x,ev.y,10,'#d8913d');if(!ev.player)floaters.push({x:px(ev.x),y:py(ev.y)-12,text:'KO',life:1});}if(ev.type==='pickup'){for(const f of floaters)if(Math.abs(f.x-px(ev.x))<45&&Math.abs(f.y-(py(ev.y)-23))<16)f.y-=16;if(ev.player!==false)sfx('pickup');floaters.push({x:px(ev.x),y:py(ev.y)-23,text:ev.pickupType==='range'?'Range Up':ev.pickupType==='rpg'?'RPG +3':ev.pickupType==='speed'?'Speed up':'+75',life:1.3,power:['range','rpg','speed'].includes(ev.pickupType)});const nearby=floaters.filter(f=>Math.abs(f.x-px(ev.x))<45).sort((a,b)=>b.y-a.y);for(let i=1;i<nearby.length;i++)nearby[i].y=Math.min(nearby[i].y,nearby[i-1].y-16);}if(ev.type==='empty')toast('WAIT!');if(ev.type==='blocked')toast('MOVE!');if(['roundWon','won','lost'].includes(ev.type)){updateBest();sfx(ev.type==='lost'?'lost':'win');pendingState=ev.type;menuDelay=reduced?.15:1;keys.clear();}}}
-function updateHud(){$('rpg-fire').hidden=menuState!==null||!(game.player.rpgAmmo>0);$('rpg-ammo').textContent=game.player.rpgAmmo||0;$('rpg-fire').setAttribute('aria-label','Fire RPG (E), '+(game.player.rpgAmmo||0)+' shots remaining');$('score').textContent=String(game.score).padStart(5,'0');$('score').setAttribute('aria-label','Score '+game.score);$('hearts').textContent='♥'.repeat(Math.max(0,game.player.hp))+'♡'.repeat(1-Math.max(0,game.player.hp));$('hearts').setAttribute('aria-label',game.player.hp+' health');const seconds=Math.ceil(Math.max(0,game.time));$('timer').textContent=String(seconds).padStart(2,'0');$('timer').style.color=game.overtime?'#ff9162':'';document.querySelector('.machine').classList.toggle('overtime',game.overtime);$('timer').setAttribute('aria-label',seconds+' seconds');}
+function updateHud(){$('touch-rpg').disabled=!(game.player.rpgAmmo>0);$('rpg-fire').hidden=menuState!==null||!(game.player.rpgAmmo>0);$('rpg-ammo').textContent=game.player.rpgAmmo||0;$('rpg-fire').setAttribute('aria-label','Fire RPG (E), '+(game.player.rpgAmmo||0)+' shots remaining');$('score').textContent=String(game.score).padStart(5,'0');$('score').setAttribute('aria-label','Score '+game.score);$('hearts').textContent='♥'.repeat(Math.max(0,game.player.hp))+'♡'.repeat(1-Math.max(0,game.player.hp));$('hearts').setAttribute('aria-label',game.player.hp+' health');const seconds=Math.ceil(Math.max(0,game.time));$('timer').textContent=String(seconds).padStart(2,'0');$('timer').style.color=game.overtime?'#ff9162':'';document.querySelector('.machine').classList.toggle('overtime',game.overtime);$('timer').setAttribute('aria-label',seconds+' seconds');}
 
 function rounded(x,y,w,h,r,fill){ctx.fillStyle=fill;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();}
 function ellipse(x,y,rx,ry,fill){ctx.fillStyle=fill;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();}
