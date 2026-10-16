@@ -137,8 +137,8 @@ body.searching .hero { display: none; }
   .hero .actions .btn { flex: 1; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
-.card[data-id="pac-nut"] .art img { object-fit:contain; padding:24px; background:#100b08; }
- .hero-art:has(img[src*="pac-nut"]) img { object-fit:contain; padding:32px; background:#100b08; }
+
+
  .sr:focus { position:fixed; clip:auto; width:auto; height:auto; z-index:20; top:8px; left:8px; padding:10px; background:var(--accent); color:var(--accent-ink); }
  </style>
 </head>
@@ -191,11 +191,11 @@ body.searching .hero { display: none; }
 <script>
 // Games with cover art get a card on the shelf. `img` is a thumbnail in assets/shelf/ (plus a -wide version).
 const COVERS = [
- {id:'pac-nut',title:'Pacnut',href:'pac-nut/',date:'2026-10-16',tags:'maze arcade peanut',img:'pac-nut/assets/title.png'},
+ {id:'pac-nut',title:'Pacnut',href:'pac-nut/',date:'2026-10-16',tags:'maze arcade peanut'},
  {id:'paper-peanut',title:'Paper Peanut',href:'paper-peanut/',date:'2026-10-15',tags:'paper adventure peanut'},
  {id:'bungerman',title:'Bungerman',href:'bungerman/',date:'2026-10-14',tags:'bomb arcade peanut'},
 ];
-const cover = (g, wide=false) => g.img || 'assets/shelf/'+g.id+(wide?'-wide':'')+'.webp';
+const cover = (g, wide=false) => 'assets/shelf/'+g.id+'-gameplay.png';
 // Everything without cover art, in three drawers.
 const REST = {};
 
@@ -220,7 +220,7 @@ const PIN = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><pa
 function card(g) {
   const fresh = daysAgo(g.date) <= 7;
   return `<article class="card" data-id="${g.id}" data-search="${esc((g.title + ' ' + (g.tags || '')).toLowerCase())}">
-    <a href="${g.href}"><div class="art"><img src="${cover(g)}" alt="" loading="lazy" decoding="async" width="960" height="600">${fresh ? '<span class="badge">Fresh</span>' : ''}</div>
+    <a href="${g.href}"><div class="art"><img src="${cover(g)}" alt="${esc(g.title)} gameplay" loading="lazy" decoding="async" width="960" height="600">${fresh ? '<span class="badge">Fresh</span>' : ''}</div>
     <div class="meta"><span class="title">${esc(g.title)}</span><span class="age">${ago(g.date)}</span></div></a>
     <button class="pin" type="button" aria-pressed="${pins.has(g.id)}" aria-label="${pins.has(g.id) ? 'Unpin' : 'Pin'} ${esc(g.title)}" title="${pins.has(g.id) ? 'Unpin' : 'Pin to the front'}">${PIN}</button>
   </article>`;
@@ -260,6 +260,7 @@ function showHero(i, label) {
   const g = COVERS[i];
   $('hero-bg').style.backgroundImage = `url("${cover(g)}")`;
   $('hero-img').src = cover(g, true);
+  $('hero-img').alt = g.title + ' gameplay';
   $('hero-art').href = $('hero-play').href = g.href;
   $('hero-title').textContent = g.title;
   $('hero-when').textContent = `Last worked on ${ago(g.date)}`;
