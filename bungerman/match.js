@@ -1,4 +1,4 @@
-import {Game,CAST,applyPerk} from './engine.js?v=mp14';
+import {Game,CAST,applyPerk} from './engine.js?v=mp15';
 
 // The room transport binds authenticated member IDs to slots. It must never accept
 // a slot, position, health or character supplied by an input packet as authority.

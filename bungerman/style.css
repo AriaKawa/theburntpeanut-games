@@ -51,7 +51,7 @@ body.handheld #touch-bomb:active,body.handheld #touch-rpg:active{transform:trans
 .game-back,.game-navigation .fullscreen-button{position:static;display:flex;align-items:center;justify-content:center;gap:.45em;min-height:var(--nav-size);border:2px solid #9cbbb5;border-radius:4px;background:linear-gradient(#dce8de,#88a59f);color:#244563;box-shadow:0 3px 0 #152c36;text-decoration:none;font:bold clamp(11px,1.9cqw,18px) monospace;padding:0 .8em;touch-action:manipulation}
 .game-navigation .fullscreen-button{width:var(--nav-size);height:var(--nav-size);padding:8px}
 .game-back:hover,.game-navigation .fullscreen-button:hover{background:#f9df86;color:#253742}.game-back:focus-visible{outline:3px solid #ffde63;outline-offset:3px}.game-back:active{translate:0 2px}
-:is(body.fullscreen,body.handheld,body.playing) .game-navigation{top:0;left:0;width:100%;--nav-size:clamp(40px,6cqw,56px)}
+
 body.fullscreen:not(.handheld) .cabinet{top:calc(50% + 30px);width:min(96vw,calc((100svh - 100px)*416/402))}
 @media(orientation:landscape){body.handheld .cabinet{top:calc(50% + 24px);width:min(64vw,calc((100svh - 100px)*416/402))}}
 

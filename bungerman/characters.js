@@ -1,4 +1,4 @@
-import { CHARACTER_ATLASES } from './assets/runtime/character-atlases.js?v=mp14';
+import { CHARACTER_ATLASES } from './assets/runtime/character-atlases.js?v=mp15';
 // Painted arcade cast and shared motion helpers.
 const TAU=Math.PI*2;
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));

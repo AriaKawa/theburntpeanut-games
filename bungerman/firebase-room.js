@@ -1,5 +1,5 @@
-import {firebaseConfig} from './firebase-config.js?v=mp14';
-import {members,nextPhase,cleanCode,SKINS} from './room-model.js?v=mp14';
+import {firebaseConfig} from './firebase-config.js?v=mp15';
+import {members,nextPhase,cleanCode,SKINS} from './room-model.js?v=mp15';
 const SDK='https://www.gstatic.com/firebasejs/13.0.0/';
 const deadline=(promise,label)=>Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(new Error(label+' timed out. Please try again.')),12000))]);
 export class FirebaseRoom {

@@ -1,0 +1,9 @@
+const {chromium}=require('C:/Users/Swagg/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const assert=require('node:assert/strict');
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
+for(const [width,height,touch] of [[1280,860,false],[390,844,true],[844,390,true]]){
+const context=await browser.newContext({viewport:{width,height},hasTouch:touch,isMobile:touch}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:5188/bungerman/');await page.waitForFunction(()=>!document.getElementById('play').disabled);
+const check=async()=>{const back=await page.locator('#game-back').boundingBox(),dock=await page.locator('.view-controls').boundingBox();assert(Math.abs(back.x-12)<1);assert(Math.abs(back.y-12)<1);assert(Math.abs(dock.x+dock.width-(width-12))<1);assert(Math.abs(dock.y-12)<1);assert(back.x+back.width<dock.x);return dock;};
+const normal=await check();await page.locator('#zoom-dial').focus();await page.keyboard.press('End');const zoomed=await check();assert(zoomed.height<normal.height);assert(zoomed.width<normal.width);await page.screenshot({path:__dirname+'/artifacts/navigation-'+width+'-140.png'});
+await page.locator('#zoom-dial').focus();await page.keyboard.press('Home');await check();await page.locator('#zoom-reset').click();await page.locator('#play').click();await check();await page.locator('#fullscreen').click();await check();await page.keyboard.press('Escape');await check();await page.locator('#game-back').click();await page.waitForSelector('#select-view:not([hidden])');await check();assert.deepEqual(errors,[]);console.log({width,height,normalHeight:normal.height,zoomedHeight:zoomed.height,errors});await context.close();
+}}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});

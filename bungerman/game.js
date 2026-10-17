@@ -1,10 +1,10 @@
-import {ArcadeMusic} from './music.js?v=mp14';
-import {ArcadeAudio} from './audio.js?v=mp14';
-import {setupMultiplayer} from './multiplayer-ui.js?v=mp14';
-import {Game,CAST,COLS,ROWS,MAPS,PERKS} from './engine.js?v=mp14';
-import {loadPack,drawAsset} from './packs.js?v=mp14';
-import {drawCharacter,loadCharacterSprites} from './characters.js?v=mp14';
-import {drawArena,drawBomb,drawFlames,drawClosingWalls,drawRockets} from './arena.js?v=mp14';
+import {ArcadeMusic} from './music.js?v=mp15';
+import {ArcadeAudio} from './audio.js?v=mp15';
+import {setupMultiplayer} from './multiplayer-ui.js?v=mp15';
+import {Game,CAST,COLS,ROWS,MAPS,PERKS} from './engine.js?v=mp15';
+import {loadPack,drawAsset} from './packs.js?v=mp15';
+import {drawCharacter,loadCharacterSprites} from './characters.js?v=mp15';
+import {drawArena,drawBomb,drawFlames,drawClosingWalls,drawRockets} from './arena.js?v=mp15';
 const $=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d');
 const W=416,H=352,T=30,OX=13,OY=11;
 canvas.width=W*3;canvas.height=H*3;ctx.scale(3,3);
