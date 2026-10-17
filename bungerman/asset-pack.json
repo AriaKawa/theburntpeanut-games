@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "purpose": "One shaded arcade edition with original painted character animation sheets and a generated cabinet. Each logical asset has its own image-generation output and exact prompt.",
   "styles": {
     "arcade2005": "Rounded, shaded 2005 handheld arcade characters with hand-painted highlights, depth and directional animation. Green inset arena, silver pillars, chunky brick, illustrated arcade cabinet."
@@ -108,28 +108,28 @@
       "id": "peanut-fluid",
       "file": "peanut-fluid.png",
       "transparent": true,
-      "framing": "6 columns × 10 rows; 60 painted poses. Twelve frames each for front, side, back walking and throwing; six front standing idles plus three side and three back standing idles.",
+      "framing": "6 columns \u00c3\u2014 10 rows; 60 painted poses. Twelve frames each for front, side, back walking and throwing; six front standing idles plus three side and three back standing idles.",
       "use": "Live character animation, character selection and HUD."
     },
     {
       "id": "hutch-fluid",
       "file": "hutch-fluid.png",
       "transparent": true,
-      "framing": "6 columns × 10 rows; 60 painted poses. Twelve frames each for front, side, back walking and throwing; six front standing idles plus three side and three back standing idles.",
+      "framing": "6 columns \u00c3\u2014 10 rows; 60 painted poses. Twelve frames each for front, side, back walking and throwing; six front standing idles plus three side and three back standing idles.",
       "use": "Live character animation, character selection and HUD."
     },
     {
       "id": "ninja-fluid",
       "file": "ninja-fluid.png",
       "transparent": true,
-      "framing": "6 columns × 10 rows; 60 painted poses. Twelve frames each for front, side, back walking and throwing; six front standing idles plus three side and three back standing idles.",
+      "framing": "6 columns \u00c3\u2014 10 rows; 60 painted poses. Twelve frames each for front, side, back walking and throwing; six front standing idles plus three side and three back standing idles.",
       "use": "Live character animation, character selection and HUD."
     },
     {
       "id": "tpain-fluid",
       "file": "tpain-fluid.png",
       "transparent": true,
-      "framing": "6 columns × 10 rows; 60 painted poses. Twelve frames each for front, side, back walking and throwing; six front standing idles plus three side and three back standing idles.",
+      "framing": "6 columns \u00c3\u2014 10 rows; 60 painted poses. Twelve frames each for front, side, back walking and throwing; six front standing idles plus three side and three back standing idles.",
       "use": "Live character animation, character selection and HUD."
     },
     {
@@ -143,28 +143,28 @@
       "id": "peanut-sidewalk",
       "file": "peanut-sidewalk.png",
       "transparent": true,
-      "framing": "4 columns × 3 rows. Twelve dedicated side-walk poses with contact, recoil, passing and opposite-foot steps.",
+      "framing": "4 columns \u00c3\u2014 3 rows. Twelve dedicated side-walk poses with contact, recoil, passing and opposite-foot steps.",
       "use": "Replaces the main-sheet side walk for a complete two-step gait; mirror for left facing."
     },
     {
       "id": "hutch-sidewalk",
       "file": "hutch-sidewalk.png",
       "transparent": true,
-      "framing": "4 columns × 3 rows. Twelve dedicated side-walk poses with contact, recoil, passing and opposite-foot steps.",
+      "framing": "4 columns \u00c3\u2014 3 rows. Twelve dedicated side-walk poses with contact, recoil, passing and opposite-foot steps.",
       "use": "Replaces the main-sheet side walk for a complete two-step gait; mirror for left facing."
     },
     {
       "id": "ninja-sidewalk",
       "file": "ninja-sidewalk.png",
       "transparent": true,
-      "framing": "4 columns × 3 rows. Twelve dedicated side-walk poses with contact, recoil, passing and opposite-foot steps.",
+      "framing": "4 columns \u00c3\u2014 3 rows. Twelve dedicated side-walk poses with contact, recoil, passing and opposite-foot steps.",
       "use": "Replaces the main-sheet side walk for a complete two-step gait; mirror for left facing."
     },
     {
       "id": "tpain-sidewalk",
       "file": "tpain-sidewalk.png",
       "transparent": true,
-      "framing": "4 columns × 3 rows. Twelve dedicated side-walk poses with contact, recoil, passing and opposite-foot steps.",
+      "framing": "4 columns \u00c3\u2014 3 rows. Twelve dedicated side-walk poses with contact, recoil, passing and opposite-foot steps.",
       "use": "Replaces the main-sheet side walk for a complete two-step gait; mirror for left facing."
     },
     {
@@ -187,10 +187,31 @@
       "transparent": true,
       "framing": "Single green Voodoo Ranger bottle with skeleton-hat label, fully visible.",
       "use": "Silly juice speed pickup; ten seconds of 30% faster movement."
+    },
+    {
+      "id": "shield",
+      "file": "shield.png",
+      "transparent": true,
+      "use": "Pickup and perk icon",
+      "promptFile": "asset-prompts/mp14.json"
+    },
+    {
+      "id": "capacity",
+      "file": "capacity.png",
+      "transparent": true,
+      "use": "Pickup and perk icon",
+      "promptFile": "asset-prompts/mp14.json"
+    },
+    {
+      "id": "kick",
+      "file": "kick.png",
+      "transparent": true,
+      "use": "Perk icon",
+      "promptFile": "asset-prompts/mp14.json"
     }
   ],
   "rules": [
-    "One image generation call per logical asset. Animation sheets count as one asset per character. Never reuse another character’s sheet. Preserve originals unchanged; source rectangles are selected at runtime.",
+    "One image generation call per logical asset. Animation sheets count as one asset per character. Never reuse another character\u00e2\u20ac\u2122s sheet. Preserve originals unchanged; source rectangles are selected at runtime.",
     "Save exact prompts under asset-prompts/<style> and original output PNGs unchanged under dist/assets/<style>.",
     "Peanut: anthropomorphic peanut, propeller cap, white gloves and shoes.",
     "Hutch: human, extremely heavyset with large belly, backwards black cap, beard, black polo, jeans, tattoo arms.",
@@ -217,7 +238,7 @@
     "Fill exactly the rounded 72% of eligible floor cells outside active spawn safe zones. A quarter of those crates are reinforced, visibly strapped; first explosion damages them, second destroys them.",
     "Range pickups use the generated blue pill and float a small Range Up label above the collector. Each adds one blast tile, capped at three bonuses and six total range.",
     "RPG pickups grant three rounds up to six carried. E or the in-screen RPG button fires along the facing direction with a small impact explosion. Bots use the same pickups with delayed decisions.",
-    "Space plants immediately. All actors have two active bombs maximum. No charging, throwing, airborne bombs or throw input remains. Original sheets retain unused poses for provenance.",
+    "Space plants immediately. Actors start with two active bombs; capacity pickups increase the cap to four. No charging, throwing, airborne bombs or throw input remains. Original sheets retain unused poses for provenance.",
     "Bomb and RPG flames persist for 0.56 seconds; AI hazard duration matches.",
     "Three selectable maps: Garden checker pillars with green inset tiles; Foundry rail walls with copper/grated floor; Neon offset pillar clusters with purple circuit tiles and cyan metal. Preserve safe starts and connected permanent floor.",
     "Silly juice uses the generated Voodoo Ranger bottle. Pickup floats Speed up and grants 30% movement speed for ten game seconds, indicated by a shrinking green ring. Another pickup refreshes ten seconds without stacking strength. Pausing freezes the timer.",

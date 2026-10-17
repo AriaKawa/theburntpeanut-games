@@ -1,4 +1,4 @@
-import {Game,CAST} from './engine.js?v=mp13';
+import {Game,CAST,applyPerk} from './engine.js?v=mp14';
 
 // The room transport binds authenticated member IDs to slots. It must never accept
 // a slot, position, health or character supplied by an input packet as authority.
@@ -10,7 +10,7 @@ export class MultiplayerMatch extends Game {
   if(sorted.some(p=>!Number.isInteger(p.slot)||p.slot<0||p.slot>3||!CAST[p.character]||typeof p.id!=='string'||!p.id)||new Set(sorted.map(p=>p.slot)).size!==sorted.length||new Set(sorted.map(p=>p.id)).size!==sorted.length)throw new Error('Invalid match roster.');
   super(sorted[0].character,seed,mapId);
   const spawns=[[1,1],[11,9],[11,1],[1,9]],template={...this.player};
-  this.actors=sorted.map(p=>{const [x,y]=spawns[p.slot];return {...template,x,y,rx:x,ry:y,id:p.id,slot:p.slot,character:p.character,hp:1,inv:1.2,cooldown:0};});
+  this.actors=sorted.map(p=>{const [x,y]=spawns[p.slot];return applyPerk({...template,x,y,rx:x,ry:y,id:p.id,slot:p.slot,character:p.character,hp:1,inv:1.2,cooldown:0});});
   this.player=this.actors[0];this.bots=this.actors.slice(1);this.inputs=new Map();this.history=[];this.eventSeq=0;this.tick=0;this.winnerSlot=null;this.multiplayer=true;
  }
  emit(type,data={}){if(['lost','won','roundWon'].includes(type))return;const event={type,...data,seq:++this.eventSeq};this.events.push(event);this.history?.push(event);if(this.history?.length>160)this.history.splice(0,this.history.length-160);}
@@ -24,9 +24,10 @@ export class MultiplayerMatch extends Game {
  }
  direction(entity){const input=this.inputs.get(entity.slot);return input&&this.elapsed-input.received<=.45?input:{};}
  think(entity){const input=this.direction(entity);if(input.dx||input.dy)this.move(entity,input.dx||0,input.dy||0);}
- hit(entity,reason,owner){
+ hit(entity,reason,owner,kind='bomb'){
   if(!entity.alive||entity.inv>0)return;
-  entity.hp=0;entity.alive=false;entity.inv=0;
+  if(reason==='blast'&&entity.shield>0){entity.shield=0;entity.inv=.6;this.emit('shield',{x:entity.x,y:entity.y,slot:entity.slot,owner:entity});return;}
+  entity.deathInfo={reason,killer:owner?.character??null,self:owner===entity,kind};entity.hp=0;entity.alive=false;entity.inv=0;
   this.emit('hit',{x:entity.x,y:entity.y,slot:entity.slot,player:entity===this.player,reason});
   this.emit('death',{x:entity.x,y:entity.y,slot:entity.slot,character:entity.character,player:entity===this.player});
   if(owner&&owner!==entity&&!owner.environment)owner.kills=(owner.kills??0)+1;
@@ -63,6 +64,7 @@ export function hydrateMatch(snapshot,localSlot,previous=null){
  const fresh=(snapshot.events??[]).filter(e=>e.seq>after).map(e=>{const event=revive(e);if(Number.isInteger(event.slot))event.player=event.slot===localSlot;if(event.type==='pickup')event.player=event.owner===view.player;if(event.type==='matchEnd')event.type=event.winnerSlot===localSlot?'won':'lost';return event;});
  view.events=[...(previous?.events??[]),...fresh];view.lastEventSeq=snapshot.eventSeq??0;
  view.status=snapshot.status==='finished'?(snapshot.winnerSlot===localSlot?'won':'lost'):snapshot.status;
+ view.deathInfo=view.player.deathInfo??(snapshot.time<=0?{reason:'timer'}:null);
  view.isDraw=snapshot.status==='finished'&&snapshot.winnerSlot===null;view.spectating=!view.player.alive&&view.status==='playing';
  view.update=function(dt){for(const actor of [this.player,...this.bots]){const distance=Math.hypot(actor.x-actor.rx,actor.y-actor.ry),step=Math.min(distance,this.speedFor(actor)*Math.max(0,Math.min(dt,.05)));if(distance){actor.rx+=(actor.x-actor.rx)/distance*step;actor.ry+=(actor.y-actor.ry)/distance*step;}}};
  view.plantBomb=()=>false;view.fireRpg=()=>false;view.next=()=>{};

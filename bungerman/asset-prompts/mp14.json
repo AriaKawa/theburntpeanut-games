@@ -1,0 +1,8 @@
+{
+  "tool": "Built-in image_gen",
+  "prompts": {
+    "shield": "Use case: stylized-concept. Asset type: Bungerman arcade2005 game pickup and perk icon. Create one centered chunky cyan enamel shield with golden rim, bold dark outline and painted highlights, rounded shaded 2005 handheld arcade style. Simple strong silhouette readable at 22 pixels. Entire shield visible, transparent margin, genuinely transparent background. No text, no ground shadow, no other objects.",
+    "capacity": "Use case: stylized-concept. Asset type: Bungerman arcade2005 bomb capacity pickup icon. One compact cluster of two round charcoal cartoon bombs, short gold fuses and tiny orange sparks. Rounded shaded 2005 handheld arcade style, hand-painted highlights, thick dark outlines, strong silhouette readable at 22 pixels. Centered fully visible with transparent margin, genuinely transparent background. No text, no ground shadow, no other objects.",
+    "kick": "Use case: stylized-concept. Asset type: Bungerman arcade2005 bomb-kick perk icon. One chunky purple sneaker with golden sole and white toe cap, side view pointing right with two tiny gold motion chevrons behind heel. Rounded shaded 2005 handheld arcade style, hand-painted highlights, thick dark outlines. Strong simple silhouette readable at 22 pixels. Centered fully visible with transparent margin, genuinely transparent background. No letters, no ground shadow, no other objects."
+  }
+}
