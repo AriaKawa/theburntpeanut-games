@@ -12,8 +12,7 @@
 @media(max-height:550px) and (min-width:601px){.desk-scene .arsenal-page .ability-slot{min-height:235px;padding:8px;gap:6px}.desk-scene .arsenal-page .sticker-control{width:85px;height:85px}.desk-scene .arsenal-page .ability-requirement,.desk-scene .arsenal-page .ability-slot small{font-size:11px}}
 
 /* The original chapter artwork stays at its native 3:2 proportions. */
-.desk-home[data-view=chapters] .desk-scene{width:min(1536px,100vw,calc((100svh - 100px)*1.5));height:auto;aspect-ratio:3/2;background:none;margin-bottom:42px}
-.book-cozy{position:absolute;top:100%;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:8px;width:max-content;max-width:96vw;color:#f6e4ec;font-size:13px;min-height:40px;white-space:nowrap}.book-cozy input{accent-color:#b58bc2}.book-cozy span{color:#d8bfd8;font-size:11px}
+.desk-home[data-view=chapters] .desk-scene{width:min(1536px,100vw,calc((100svh - 44px)*1.5));height:auto;aspect-ratio:3/2;background:none}
 .chapter-page .chapter-locked:not(:disabled){cursor:pointer}.chapter-page .chapter-locked:not(:disabled):hover,.chapter-page .chapter-locked:focus-visible{outline:2px dashed #f6d6a2;outline-offset:2px;box-shadow:0 0 14px #ffda9e55}
 /* A normal responsive upgrade panel, without a stretched book texture. */
 #result.upgrade-screen{width:min(820px,94%);padding:28px;background:#38243f;border:1px solid #9b77a3;border-radius:16px;box-shadow:0 18px 60px #11091c99;color:#f8e8f1;max-height:94%;overflow:auto}

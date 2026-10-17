@@ -703,9 +703,9 @@ $('resume').onclick=()=>modalClose('pause-dialog');
 $('restart').onclick=()=>{modalClose('pause-dialog');startGame();};
 document.querySelectorAll('[data-close]').forEach(button=>button.onclick=()=>modalClose(button.dataset.close));
 for(const id of ['help-dialog','pause-dialog'])$(id).addEventListener('cancel',event=>{event.preventDefault();modalClose(id);});
-for(const id of ['relaxed','chapter-cozy','pause-cozy']){
+for(const id of ['relaxed','pause-cozy']){
  $(id).checked=state.relaxed;
- $(id).onchange=event=>{state.relaxed=event.target.checked;for(const name of ['relaxed','chapter-cozy','pause-cozy'])$(name).checked=state.relaxed;try{localStorage.setItem('rat-tales-cozy',String(state.relaxed));}catch{}};
+ $(id).onchange=event=>{state.relaxed=event.target.checked;for(const name of ['relaxed','pause-cozy'])$(name).checked=state.relaxed;try{localStorage.setItem('rat-tales-cozy',String(state.relaxed));}catch{}};
 }
 function syncSound(){
   $('sound').innerHTML=`${audio.on?'♫':'♪'} <span>Sound ${audio.on?'on':'off'}</span>`;

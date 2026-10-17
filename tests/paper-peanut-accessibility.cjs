@@ -8,7 +8,7 @@ const out=__dirname+'/artifacts/paper-peanut';
  await page.addInitScript(()=>localStorage.setItem('paper-peanut-profile-v1',JSON.stringify({version:1,scrap:17,clears:9,runs:3,best:920,unlocked:['whirl','quake'],equipped:'quake'})));
  await page.goto('http://127.0.0.1:5268/paper-peanut/');await page.waitForFunction(()=>!document.querySelector('#start').disabled);
  await page.click('#start');assert(await page.locator('#chapter-2').isEnabled());assert(await page.locator('#chapter-3').isDisabled());
- await page.check('#chapter-cozy');await page.screenshot({path:out+'/chapter-book-portrait.png'});
+ await page.click('#help');await page.check('#relaxed');await page.locator('.ribbon-button[data-close="help-dialog"]').click();await page.screenshot({path:out+'/chapter-book-portrait.png'});
  await page.click('#close-chapters');await page.click('#open-arsenal');await page.screenshot({path:out+'/arsenal-portrait.png'});
  assert((await page.locator('#arsenal-cards').innerText()).includes('9 encounter clears required'));
  await page.click('#close-arsenal');await page.click('#start');await page.click('#chapter-rats');
