@@ -301,11 +301,13 @@ function projectileShape(ball){
 function splash(x,y,count=24){for(let i=0;i<count;i++){const angle=Math.random()*Math.PI*2,speed=100+Math.random()*240;state.particles.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-100,life:1,color:i%3?'#e4aa39':'#fff0ae',size:5+Math.random()*13,rot:angle,liquid:true});}}
 async function enterBattle(){
  document.activeElement?.blur();
+ const actors=state.actors;
+ actors.forEach(a=>{a.alpha=0;});
  const encounter=CHAPTERS[state.run.chapter],campaign=CAMPAIGNS[state.run.campaign];
  $('encounter-card').innerHTML=`<small>CHAPTER ${state.run.campaign+1} · ${state.run.chapter-campaign.start+1} / ${campaign.end-campaign.start+1}</small><strong>${encounter.subtitle}</strong><span>${encounter.title}</span>`;
  setHidden('encounter-card',false);await wait(state.reducedMotion?1100:1500);setHidden('encounter-card',true);
 
- const actors=state.actors;actors.forEach((a,i)=>{a.x=i===0?-a.width:state.W+a.width+i*90;a.y=a.homeY;});
+ actors.forEach((a,i)=>{a.x=i===0?-a.width:state.W+a.width+i*90;a.y=a.homeY;a.alpha=1;});
  await Promise.all(actors.map((a,i)=>{const start=a.x;return animate(1000+i*90,p=>{a.x=start+(a.homeX-start)*ease(p);const step=Math.sin(p*Math.PI*12);a.y=a.homeY-Math.abs(step)*13*(1-p);a.rot=step*.07*(1-p);});}));
  actors.forEach(a=>Object.assign(a,{x:a.homeX,y:a.homeY,rot:0}));await wait(150);
 }
@@ -529,6 +531,7 @@ function homeResultButton() {
 function endEncounter() {
   state.phase='result';hideCombat();$('pause').disabled=true;
   const r=state.run,scrap=rewardEncounter(profile,r);saveProfile();setHidden('result',false);
+  $('result').classList.toggle('upgrade-screen',r.chapter<CAMPAIGNS[r.campaign].end);
   if(r.chapter<CAMPAIGNS[r.campaign].end){
     $('result').innerHTML=`<h2>Upgrade</h2><div class="upgrade-grid" id="upgrade-choices"></div>`;
     for(const key of ['jump','bonk',r.special]){
@@ -555,6 +558,7 @@ function endEncounter() {
   homeResultButton();audio.victory();
 }
 function lose() {
+  $('result').classList.remove('upgrade-screen');
   state.phase='result';hideCombat();$('pause').disabled=true;state.actors[0].rot=-.6;setHidden('result',false);
   $('result').innerHTML=`<span class="eyebrow">RUN OVER</span><h2>Defeated</h2><p>Scrap saved.</p><div class="rewards"><span>◆ ${profile.scrap} scrap banked</span></div><div class="run-stats">${state.run.perfect} perfect timings · ${state.run.blocks} blocks</div>`;
   audio.defeat();resultButton('Requeue the run',startGame);homeResultButton();
@@ -675,8 +679,10 @@ function setChapterPage(open){
 function renderChapters(){
  const container=$('chapter-cards');container.replaceChildren();
  CAMPAIGNS.forEach((c,i)=>{
-   const button=document.createElement('button');button.id=i===0?'chapter-rats':`chapter-${i+1}`;button.className='campaign-card';button.disabled=i>=profile.chapters;
-   button.innerHTML=button.disabled?`<span class="locked-art">✧</span><small>CHAPTER ${i+1}</small><strong>${c.name}</strong><span>Clear Chapter ${i} to unlock</span>`:`<img src="assets/${c.art}" alt=""><small>CHAPTER ${i+1} · ${c.end-c.start+1} FIGHTS</small><strong>${c.name}</strong><span>${c.setting}</span><b>BEST · ${profile.chapterBest[i]||'—'}</b>`;
+   const button=document.createElement('button');button.id=i===0?'chapter-rats':`chapter-${i+1}`;button.className=i===0?'':'chapter-locked '+(i===1?'locked-two':'locked-three');button.disabled=i>=profile.chapters;
+   const label=i===0?'Me and My Rat Family':`??? · Chapter ${i+1}${button.disabled?` · Clear Chapter ${i} to unlock`:''}`;
+   button.innerHTML=`<span class="sr-only">${label}${profile.chapterBest[i]?` · Best ${profile.chapterBest[i]}`:''}</span>`;
+   button.setAttribute('aria-label',label);
    button.onclick=()=>{selectedCampaign=i;startGame();};container.append(button);
  });
 }
