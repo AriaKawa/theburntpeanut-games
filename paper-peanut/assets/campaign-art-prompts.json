@@ -1,0 +1,33 @@
+{
+  "generator": "built-in image_gen",
+  "prompts": [
+    {
+      "name": "rat-market",
+      "prompt": "Wide 1536x1024 landscape battle backdrop for Paper Peanut: underground rat flea market with bottlecap stalls, patchwork purple awnings, amber lanterns, tiny scrap goods, brick sewer arches. Handcrafted layered paper cutout diorama, tactile cardstock, cream cut edges, purple stitched scrapbook aesthetic. No characters, no words. Broad clear horizontal stone platform across lower quarter for combat, scenery behind. Warm plum and amber palette."
+    },
+    {
+      "name": "pipe-cathedral",
+      "prompt": "Wide 1536x1024 landscape battle backdrop for Paper Peanut: flooded pipe cathedral with towering organ pipes, teal water, purple stained-glass scraps, hanging paper stars, moonlight. Handcrafted layered paper cutout diorama with cream cut edges, tactile cardstock and stitched scrapbook style. No characters or text. Broad clear stone causeway across lower quarter for combat. Deep indigo, lavender and luminous turquoise."
+    },
+    {
+      "name": "rat-trickster",
+      "prompt": "Single full-body mischievous rat duelist with violet patched cape and small wooden practice sword, facing left, ready to feint. Handcrafted layered paper cut-out game character with thick cream sticker outline, tactile cardstock, expressive dark eyes, pink ears and curled tail. Cute scrappy sewer adventure style. Isolated transparent background. All limbs and tail in frame, no text."
+    },
+    {
+      "name": "rat-courier",
+      "prompt": "Single full-body nimble rat courier with orange scarf, patched teal vest and two bottlecap boxing gloves, facing left, ready for a double punch. Handcrafted layered paper cut-out game character with thick cream sticker outline, tactile cardstock, expressive dark eyes, pink ears and curled tail. Cute scrappy sewer adventure style. Isolated transparent background, all limbs in frame, no text."
+    },
+    {
+      "name": "snail-cantor",
+      "prompt": "Single full-body whimsical blue snail cantor carrying a purple conch horn, shell made of coiled brass pipe with paper patches, facing left. Handcrafted layered paper cut-out game character with thick cream sticker outline and tactile cardstock, expressive eyes. Cute sewer adventure style. Isolated transparent background, complete silhouette, no text."
+    },
+    {
+      "name": "market-boss",
+      "prompt": "Single full-body imposing but cute rat Market Regent boss, facing left, purple patchwork velvet coat, bottlecap crown, brass coin shield, stout body and extravagant curled tail. Handcrafted layered paper cut-out game character with thick cream sticker outline, tactile cardstock, pink ears and expressive eyes. Sewer scrapbook adventure style. Isolated transparent background, all limbs and props visible, no text."
+    },
+    {
+      "name": "cathedral-boss",
+      "prompt": "Single full-body imposing whimsical Pipe Organ Warden boss: amphibian newt in elaborate purple and teal paper robes with a crown of organ pipes and a brass tuning-fork staff, facing left. Handcrafted layered paper cut-out game character with thick cream sticker outline, tactile cardstock, expressive gold eyes. Cute flooded sewer cathedral adventure style. Isolated transparent background, all limbs and props visible, no text."
+    }
+  ]
+}

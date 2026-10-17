@@ -1,5 +1,6 @@
-import { CHAPTERS, MOVES, freshRun, attackDamage, incomingDamage, hitEnemy, advanceChapter, jumpHits, createContactCommand, pressContact, contactTiming, CONTACT_GRACE_MS, PACE, jumpPose, applyUpgrade } from './engine.mjs';
-import { PROFILE_KEY, ARSENAL, readProfile, unlockAbility, equipAbility, rewardEncounter } from './progression.mjs';
+import { touches, firstContact } from './contact.mjs';
+import { CHAPTERS, CAMPAIGNS, MOVES, freshRun, attackDamage, incomingDamage, hitEnemy, advanceChapter, jumpHits, createContactCommand, pressContact, contactTiming, CONTACT_GRACE_MS, PACE, jumpPose, applyUpgrade } from './engine.mjs';
+import { PROFILE_KEY, ARSENAL, readProfile, unlockAbility, equipAbility, rewardEncounter, tierOffer, upgradeAbility } from './progression.mjs';
 
 const $ = id => document.getElementById(id);
 const canvas = $('stage');
@@ -13,6 +14,7 @@ const state = {
   fxTime: 0, freeze: 0, impacts: [], trails: [], projectiles: [],
   reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
 };
+let selectedCampaign = 0;
 let best = 0;
 let profile=readProfile(null), storageAvailable=true;
 try {profile=readProfile(localStorage.getItem(PROFILE_KEY));} catch {storageAvailable=false;}
@@ -40,6 +42,15 @@ function renderArsenal() {
     sticker.onclick=()=>{if(!unlocked){showAbilityTip(sticker);return;}if(equipAbility(profile,key)){hideAbilityTip();saveProfile();renderArsenal();$('arsenal-status').textContent=a.name+' equipped.';}};
     card.append(sticker);
     if(!unlocked){const unlock=document.createElement('button');unlock.className='unlock-sticker';unlock.textContent='Unlock · '+a.cost+' scrap';unlock.disabled=profile.scrap<a.cost||profile.clears<a.clears;unlock.setAttribute('aria-label','Unlock '+a.name+' for '+a.cost+' scrap');unlock.onclick=()=>{if(unlockAbility(profile,key)){hideAbilityTip();saveProfile();renderArsenal();audio.good();$('arsenal-status').textContent=a.name+' unlocked.';}};card.append(unlock);}
+    const requirement=document.createElement('p');requirement.className='ability-requirement';
+    requirement.textContent=unlocked?a.short:`${a.clears} encounter clears required · ${Math.min(profile.clears,a.clears)}/${a.clears}`;card.append(requirement);
+    if(unlocked){
+      const offer=tierOffer(profile,key),tier=document.createElement('button');tier.className='tier-button';
+      tier.textContent=offer.level===2?'Mastered · +2 damage':`Tier ${offer.level+1} · +1 damage · ${offer.cost} scrap`;
+      tier.disabled=offer.level===2||profile.scrap<offer.cost||profile.clears<offer.clears;
+      tier.onclick=()=>{if(upgradeAbility(profile,key)){saveProfile();renderArsenal();audio.good();}};card.append(tier);
+      if(offer.level<2){const req=document.createElement('small');req.textContent=`${offer.clears} encounter clears required · ${Math.min(profile.clears,offer.clears)}/${offer.clears}`;card.append(req);}
+    }
     return card;
   }));
 }
@@ -147,11 +158,15 @@ function layoutActors() {
   const n = state.actors.length - 1, mobile = state.mobile;
   state.actors.forEach((a, i) => {
     a.homeX = state.W * (i === 0 ? .12 : n === 3 ? .58 + (i - 1) * .16 : .70 + (i - 1) * .20);
-    const bg = images.sewer, bgHeight = bg ? bg.height * Math.max(state.W / bg.width, state.H / bg.height) : state.H;
-    a.homeY = (state.H - bgHeight) / 2 + bgHeight * .735;
+    const bg = images[CAMPAIGNS[state.run.campaign].backdrop], bgHeight = bg ? bg.height * Math.max(state.W / bg.width, state.H / bg.height) : state.H;
+    a.homeY = backdropY(bgHeight)+bgHeight*CAMPAIGNS[state.run.campaign].floor;
     a.x = a.homeX; a.y = a.homeY;
-    a.width = mobile ? (a.kind === 'rat' ? 150 : a.kind === 'baron' ? 165 : 140) : a.kind === 'rat' ? 205 : a.kind === 'baron' ? 280 : 215;
+    a.width = mobile ? (a.kind === 'rat' ? 150 : (a.kind === 'baron'||a.enemy?.boss) ? 165 : 140) : a.kind === 'rat' ? 205 : (a.kind === 'baron'||a.enemy?.boss) ? 280 : 215;
   });
+}
+function backdropY(height){
+  const center=(state.H-height)/2,campaign=CAMPAIGNS[state.run.campaign];
+  return state.run.campaign>0&&!state.mobile?Math.min(center,state.H*.76-height*campaign.floor):center;
 }
 function resize() {
   const rect = gameEl.getBoundingClientRect();
@@ -168,7 +183,7 @@ function updateHUD() {
   const r = state.run;
   $('hp').textContent = r.hp;
   $('hp-bar').style.width = `${r.hp / r.maxHp * 100}%`;
-  $('hp-bar').style.background = r.hp <= 6 ? '#bd393c' : '#de7050';
+  $('hp-bar').style.background = r.hp <= 6 ? '#bd3965' : '#ab6caa';
   $('sp').textContent = '✦ '.repeat(r.sp) + '· '.repeat(r.maxSp - r.sp);
   $('sp').setAttribute('aria-label', `${r.sp} of ${r.maxSp} goop power`);
   $('cheese-count').textContent = `+8 ♥ · ×${r.cheese}`;
@@ -206,17 +221,16 @@ function choose() {
   $('footer-hint').textContent = 'Space at contact · 1–4 moves · ← → target · Esc pause';
 }
 async function startGame() {
+  document.activeElement?.blur();
   state.session++; state.tweens = []; state.command = null; state.floats = []; state.particles = []; state.impacts=[];state.trails=[];state.projectiles=[];state.freeze=0;state.shake=0;
   state.command=null;setHidden('action-cue',true);gameEl.dataset.action='';
-  state.run = freshRun(profile.equipped); state.selected = 0; state.paused = false; state.phase = 'intro';
+  state.run = freshRun(profile.equipped, selectedCampaign, profile.tiers); state.selected = 0; state.paused = false; state.phase = 'intro';
   $('pause').disabled = false;
   for (const id of ['title-screen', 'result', 'commands', 'targets', 'action-cue', 'callout']) setHidden(id, true);
   setHidden('hud', false); updateHUD(); makeActors();
   audio.init();
   note('BNN BREAKING: Peanut has entered the goop depot.');
-  state.actors[0].x = -200;
-  await move(state.actors[0], { x: state.actors[0].homeX }, 450);
-  await wait(180); choose();
+  await enterBattle(); choose();
 }
 function showCallout(text, grade, sub = '') {
   $('callout').replaceChildren(document.createTextNode(text));
@@ -255,10 +269,47 @@ async function finishContact() {
     else if (command.type !== 'jump') state.run.sp = Math.min(state.run.maxSp, state.run.sp + 1);
     audio.good();
   }
-  const text = success ? (command.type === 'block' ? 'BLOCKED!' : 'NICE!') : outcome === 'early' ? 'TOO EARLY' : outcome === 'late' ? 'TOO LATE' : command.type === 'block' ? 'OUCH!' : 'BONK!';
-  showCallout(text, success ? 'perfect' : 'miss', success ? (command.type === 'jump' ? 'DOUBLE STOMP!' : command.type === 'block' ? 'NO DAMAGE' : '+1 GOOP POWER') : 'Space right at contact');
+  const text = success ? (command.type === 'block' ? 'BLOCKED!' : 'NICE!') : outcome === 'early' ? 'TOO EARLY' : outcome === 'late' ? 'TOO LATE' : command.type === 'block' ? 'OUCH!' : 'HIT!';
+  showCallout(text, success ? 'perfect' : 'miss', success ? (command.type === 'jump' ? 'DOUBLE STOMP!' : command.type === 'block' ? 'NO DAMAGE' : '+1 GOOP POWER') : command.type==='block'?'Space right at contact':'Base damage');
   updateHUD(); return success ? 'perfect' : 'miss';
 }
+
+const masks=new WeakMap();
+function imageMask(img){
+ if(!masks.has(img)){const c=document.createElement('canvas');c.width=192;c.height=Math.max(1,Math.round(192*img.height/img.width));const cx=c.getContext('2d',{willReadFrequently:true});cx.drawImage(img,0,0,c.width,c.height);masks.set(img,cx.getImageData(0,0,c.width,c.height));}
+ return masks.get(img);
+}
+function actorShape(a){const height=actorHeight(a),sy=a.scale*a.stretchY;return {mask:imageMask(images[a.kind==='rat'?'pip':a.kind]),x:a.x,y:a.y-(a.rolling?height*.48:0),width:a.width*a.scale*a.stretchX,height:height*sy,pivot:(a.rolling?height*.48:0)*sy,rot:a.rot};}
+function blob(c){
+ c.beginPath();c.moveTo(-38,0);c.bezierCurveTo(-13,-5,-5,-22,15,-18);c.bezierCurveTo(43,-17,43,17,15,19);c.bezierCurveTo(-5,23,-13,5,-38,0);c.closePath();c.fillStyle='#db982b';c.fill();c.strokeStyle='#ffe4a2';c.lineWidth=3;c.stroke();
+ c.beginPath();c.ellipse(17,-7,11,4,-.2,0,Math.PI*2);c.fillStyle='#fff0bd';c.fill();
+}
+function paintProjectile(c,ball){
+ c.save();c.rotate(ball.rot||0);
+ if(ball.type==='quake'){c.drawImage(images.hutch,-50,-50,100,100);}
+ else if(ball.type==='whirl'){blob(c);}
+ else if(ball.type==='bolt'){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3;i?c.lineTo(Math.cos(a)*21,Math.sin(a)*21):c.moveTo(Math.cos(a)*21,Math.sin(a)*21);}c.closePath();c.fillStyle='#adb8b0';c.fill();c.strokeStyle='#f5ecd1';c.lineWidth=4;c.stroke();c.beginPath();c.arc(0,0,7,0,Math.PI*2);c.fillStyle='#415453';c.fill();}
+ else if(ball.type==='propeller'){c.fillStyle='#819cc5';c.strokeStyle='#fff1c5';c.lineWidth=3;for(const [x,y,w,h] of [[-46,-10,92,20],[-10,-46,20,92]]){c.beginPath();c.roundRect(x,y,w,h,9);c.fill();c.stroke();}c.fillStyle='#ffd13d';c.beginPath();c.arc(0,0,13,0,Math.PI*2);c.fill();}
+ else{c.fillStyle='#bd8098';c.strokeStyle='#ffe2ef';c.lineWidth=3;c.beginPath();c.ellipse(0,0,25,19,0,0,Math.PI*2);c.fill();c.stroke();}
+ c.restore();
+}
+const projectileMasks=new Map();
+function projectileShape(ball){
+ if(!projectileMasks.has(ball.type)){const c=document.createElement('canvas');c.width=c.height=128;const cx=c.getContext('2d',{willReadFrequently:true});cx.translate(64,64);paintProjectile(cx,{type:ball.type,rot:0});projectileMasks.set(ball.type,cx.getImageData(0,0,128,128));}
+ return {mask:projectileMasks.get(ball.type),x:ball.x,y:ball.y,width:128,height:128,pivot:64,rot:ball.rot||0};
+}
+function splash(x,y,count=24){for(let i=0;i<count;i++){const angle=Math.random()*Math.PI*2,speed=100+Math.random()*240;state.particles.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-100,life:1,color:i%3?'#e4aa39':'#fff0ae',size:5+Math.random()*13,rot:angle,liquid:true});}}
+async function enterBattle(){
+ document.activeElement?.blur();
+ const encounter=CHAPTERS[state.run.chapter],campaign=CAMPAIGNS[state.run.campaign];
+ $('encounter-card').innerHTML=`<small>CHAPTER ${state.run.campaign+1} · ${state.run.chapter-campaign.start+1} / ${campaign.end-campaign.start+1}</small><strong>${encounter.subtitle}</strong><span>${encounter.title}</span>`;
+ setHidden('encounter-card',false);await wait(state.reducedMotion?1100:1500);setHidden('encounter-card',true);
+
+ const actors=state.actors;actors.forEach((a,i)=>{a.x=i===0?-a.width:state.W+a.width+i*90;a.y=a.homeY;});
+ await Promise.all(actors.map((a,i)=>{const start=a.x;return animate(1000+i*90,p=>{a.x=start+(a.homeX-start)*ease(p);const step=Math.sin(p*Math.PI*12);a.y=a.homeY-Math.abs(step)*13*(1-p);a.rot=step*.07*(1-p);});}));
+ actors.forEach(a=>Object.assign(a,{x:a.homeX,y:a.homeY,rot:0}));await wait(150);
+}
+
 function actorHeight(a) {
   const img=images[a.kind==='rat'?'pip':a.kind];
   return a.width*(img?img.height/img.width:1);
@@ -287,7 +338,7 @@ async function hurtEnemy(actor,damage,moveName,grade='good') {
   const wasArmored=actor.enemy.armor;
   hitEnemy(actor.enemy,damage,moveName);
   const hitY=moveName==='jump'?contactTop(actor):actor.homeY-actorHeight(actor)*.38;
-  impact(actor.x,hitY,grade,moveName==='bonk');float(`−${damage}`,actor);
+  if(moveName==='whirl'){splash(actor.x,hitY,32);state.freeze=Math.max(state.freeze,50);if(!state.reducedMotion)state.shake=8;audio.hit();}else impact(actor.x,hitY,grade,moveName==='bonk');float(`−${damage}`,actor);
   actor.hit=state.time+180;
   if(wasArmored&&!actor.enemy.armor){
     burst(actor.x,hitY,'#9baf87',22,1.7);
@@ -304,18 +355,20 @@ async function hurtEnemy(actor,damage,moveName,grade='good') {
 async function jumpAttack(hero, target) {
   beginContact('jump', PACE.jumpWindup + PACE.jumpFlight, 'as Peanut lands');
   await move(hero, { stretchX: 1.16, stretchY: .84, rot: -.12 }, PACE.jumpWindup);
-  const startX = hero.x, landX = target.x, landY = contactTop(target) + actorHeight(hero) * 50/1536;
+  const startX = hero.x, landX = target.x; let landY = target.homeY;
   audio.jump();
-  const apexY = Math.max(actorHeight(hero) + state.H * .08, landY - 215);
+  const apexY = contactTop(target)-40;
+  const jumpPath=p=>{Object.assign(hero,jumpPose(p,startX,hero.homeY,landX,landY,apexY));hero.rot=-.12*(1-p);hero.stretchX=hero.stretchY=1;};
+  const jumpEnd=firstContact(jumpPath,()=>touches(actorShape(hero),actorShape(target)),.48);
   let lastTrail = 0;
   await animate(PACE.jumpFlight, p => {
-    Object.assign(hero, jumpPose(p, startX, hero.homeY, landX, landY, apexY));
-    hero.rot = -.12 * (1-p); hero.stretchX = 1; hero.stretchY = 1;
-    motion(p < .48 ? 'Peanut is rising.' : p < .86 ? 'Peanut is descending.' : 'Peanut is about to land.');
+    jumpPath(p*jumpEnd);
+    motion(p < .48 ? 'Peanut is rising.' : (1-p)*PACE.jumpFlight>70 ? 'Peanut is descending.' : 'Peanut is about to land.');
     if (!state.reducedMotion && state.time-lastTrail > 65 && p > .1 && p < .85) {
       state.trails.push({ x: hero.x, y: hero.y, rot: hero.rot, born: state.fxTime }); lastTrail = state.time;
     }
   });
+  landY=hero.y;
   const grade = await finishContact(), hits = jumpHits(grade === 'perfect', target.enemy, state.run.upgrades.jump);
   for (let i=0; i<hits.length; i++) {
     if (target.enemy.hp <= 0) break;
@@ -332,13 +385,15 @@ async function jumpAttack(hero, target) {
 }
 async function slamAttack(hero, target) {
   beginContact('slam', PACE.slamWindup + PACE.slamTravel, 'as the shells connect');
-  const contactX = target.x - hero.width * .35 - target.width * .34;
+  const contactX = target.x;
   await move(hero, { x:hero.homeX-35, rot:-.23, stretchX:1.1, stretchY:.88 }, PACE.slamWindup);
   audio.whoosh(450,.32);const startX=hero.x;
-  await animate(PACE.slamTravel, p => {
-    hero.x=startX+(contactX-startX)*p; hero.y=hero.homeY-Math.sin(p*Math.PI)*35;
+  const slamPath=p=>{hero.x=startX+(contactX-startX)*p;hero.y=hero.homeY-Math.sin(p*Math.PI)*35;hero.rot=-.23+.49*p;hero.stretchX=hero.stretchY=1;};
+  const slamEnd=firstContact(slamPath,()=>touches(actorShape(hero),actorShape(target)));
+  await animate(PACE.slamTravel, progress => {
+    const p=progress*slamEnd;hero.x=startX+(contactX-startX)*p; hero.y=hero.homeY-Math.sin(p*Math.PI)*35;
     hero.rot=-.23+.49*p; hero.stretchX=1; hero.stretchY=1;
-    motion(p < .92 ? 'Peanut is charging.' : 'Peanut is about to hit.');
+    motion((1-progress)*PACE.slamTravel>70 ? 'Peanut is charging.' : 'Peanut is about to hit.');
   });
   const grade=await finishContact();
   await Promise.all([hurtEnemy(target,attackDamage('bonk',grade,target.enemy,state.run.upgrades.bonk),'bonk',grade),move(hero,{x:hero.homeX,y:hero.homeY,rot:0,stretchX:1,stretchY:1},420)]);
@@ -356,13 +411,12 @@ async function specialAttack(hero, targets, name) {
   const startX=hero.x+hero.width*.36,startY=hero.homeY-actorHeight(hero)*.55;
   const flightTargets=name==='quake'?[targets.find(a=>a.enemy.id===state.selected)||targets[0]]:targets;
   state.projectiles=flightTargets.map(target=>({x:startX,y:startY,target,type:name,rot:0}));
-  await animate(PACE.burstFlight,p=>{
-    for(const ball of state.projectiles){
-      const endX=ball.target.x-ball.target.width*.32,endY=ball.target.homeY-actorHeight(ball.target)*.4;
-      ball.rot=p*Math.PI*2;ball.x=startX+(endX-startX)*p;ball.y=startY+(endY-startY)*p-Math.sin(p*Math.PI)*(name==='quake'?160:name==='propeller'?35:85);
-    }
-    motion(p<.91?'The attack is flying.':'The attack is about to hit.');
-  });
+  for(const ball of state.projectiles){
+    ball.path=p=>{const endX=ball.target.x,endY=ball.target.homeY-actorHeight(ball.target)*.4;ball.rot=name==='whirl'?0:p*Math.PI*2;ball.x=startX+(endX-startX)*p;ball.y=startY+(endY-startY)*p-Math.sin(p*Math.PI)*(name==='quake'?160:name==='propeller'?35:85);};
+    ball.end=firstContact(ball.path,()=>touches(projectileShape(ball),actorShape(ball.target)));
+  }
+  await animate(PACE.burstFlight,p=>{for(const ball of state.projectiles)ball.path(p*ball.end);motion((1-p)*PACE.burstFlight>70?'The attack is flying.':'The attack is about to hit.');});
+  if(name==='whirl')for(const ball of state.projectiles)splash(ball.x,ball.y);
   const grade=await finishContact();state.projectiles=[];
   await Promise.all(targets.map(target=>hurtEnemy(target,attackDamage(name,grade,target.enemy,state.run.upgrades[name]||0),name,grade)));
   if(name==='siphon'){
@@ -397,21 +451,53 @@ async function playerAction(name) {
   await enemiesTurn();
 }
 async function enemyAttack(enemy,hero) {
-  const kind=enemy.kind,hitX=hero.homeX+hero.width*.35,hitY=hero.homeY-actorHeight(hero)*.38;
-  const travel=kind==='scrapper'?900:kind==='slinger'?1050:1150;
-  beginContact('block',PACE.enemyWindup+travel,kind==='slinger'?'as the bolt hits you':kind==='baron'?'as the barrel hits you':'as the rat hits you');
-  await move(enemy,{x:enemy.homeX+(kind==='slinger'?6:20),rot:kind==='slinger'?.08:-.14,stretchX:kind==='slinger'?.92:1.18,stretchY:kind==='slinger'?1.05:.8},PACE.enemyWindup);
-  const startX=enemy.x,contactX=hitX+enemy.width*(kind==='baron'?.43:.45);
+  // Keep the original depot encounters' rhythm intact.
+  if(state.run.campaign===0){
+    await enemyStrike(enemy,hero,{kind:enemy.kind,travel:enemy.kind==='scrapper'?900:enemy.kind==='slinger'?1050:1150,windup:PACE.enemyWindup});
+    return;
+  }
+  const phase=enemy.enemy.boss&&enemy.enemy.hp<=enemy.enemy.maxHp/2?2:1;
+  const combo=enemy.kind==='courier'||(enemy.enemy.boss&&phase===2);
+  const feint=enemy.kind==='trickster'||enemy.kind==='regent';
+  const shots=enemy.kind==='cantor'||enemy.kind==='warden'||enemy.kind==='slinger';
+  const count=combo?2:1;
+  const intent=$('enemy-intent');setHidden('enemy-intent',false);
+  intent.textContent=`${enemy.enemy.name}${enemy.enemy.boss?` · PHASE ${phase}`:''} · ${feint?'Feint — wait for the real lunge':shots?(enemy.kind==='cantor'||(enemy.kind==='warden'&&phase===1)?'Slow drifting note':enemy.kind==='warden'&&phase===2?'Slow note, then fast bolt':'Fast scrap shot'):combo?'Two hits — press once for EACH hit':'Watch the wind-up'}`;
+  if(feint){
+    motion('A feint. Wait.');await move(enemy,{x:enemy.homeX-65,rot:-.18},260);
+    await wait(380);await move(enemy,{x:enemy.homeX,rot:0},220);
+  }
+  for(let hit=0;hit<count;hit++){
+    if(state.run.hp<=0)break;
+    const slow=enemy.kind==='cantor'||(enemy.kind==='warden'&&(phase===1||hit===0));
+    const travel=shots?(slow?1600:620):enemy.kind==='baron'?1150:780;
+    const windup=[420,740,1050][(state.run.round+enemy.enemy.id+hit)%3];
+    if(combo)intent.textContent=`${enemy.enemy.name} · ${enemy.enemy.boss?'PHASE 2 · ':''}HIT ${hit+1} / ${count} — ${shots?(slow?'slow note':'fast bolt'):'block each contact'}`;
+    await enemyStrike(enemy,hero,{kind:shots?'slinger':enemy.kind==='baron'?'baron':'scrapper',travel,windup});
+  }
+  setHidden('enemy-intent',true);
+}
+async function enemyStrike(enemy,hero,{kind,travel,windup}) {
+  const hitX=hero.homeX+hero.width*.35,hitY=hero.homeY-actorHeight(hero)*.38;
+  beginContact('block',windup+travel,'at visible contact');
+  await move(enemy,{x:enemy.homeX+(kind==='slinger'?6:20),rot:kind==='slinger'?.08:-.14,stretchX:kind==='slinger'?.92:1.18,stretchY:kind==='slinger'?1.05:.8},windup);
+  const startX=enemy.x,contactX=hero.x;
   if(kind==='slinger'){
     enemy.stretchX=1;enemy.stretchY=1;enemy.rot=0;
     const bolt={type:'bolt',x:enemy.x-enemy.width*.43,y:enemy.homeY-actorHeight(enemy)*.57};
     const bx=bolt.x,by=bolt.y;state.projectiles=[bolt];audio.tone(650,.09,'triangle',.07,.4);
-    await animate(travel,p=>{bolt.x=bx+(hitX-bx)*p;bolt.y=by+(hitY-by)*p-Math.sin(p*Math.PI)*40;motion(p<.9?'The bolt is flying.':'The bolt is about to hit Peanut.');});
+    const path=p=>{bolt.x=bx+(hero.x-bx)*p;bolt.y=by+(hitY-by)*p-Math.sin(p*Math.PI)*40;bolt.rot=p*Math.PI*4;};
+    const end=firstContact(path,()=>touches(projectileShape(bolt),actorShape(hero)));
+    await animate(travel,p=>{path(p*end);motion((1-p)*travel>70?'The bolt is flying.':'The bolt is about to hit Peanut.');});
   }else if(kind==='baron'){
     enemy.rolling=true;
-    await animate(travel,p=>{enemy.x=startX+(contactX-startX)*p;enemy.y=enemy.homeY-Math.sin(p*Math.PI*6)*5;enemy.rot=-p*Math.PI*4;enemy.stretchX=1;enemy.stretchY=1;motion(p<.91?'The barrel is rolling.':'The barrel is about to hit Peanut.');});
+    const path=p=>{enemy.x=startX+(contactX-startX)*p;enemy.y=enemy.homeY-Math.sin(p*Math.PI*6)*5;enemy.rot=-p*Math.PI*4;enemy.stretchX=enemy.stretchY=1;};
+    const end=firstContact(path,()=>touches(actorShape(enemy),actorShape(hero)));
+    await animate(travel,p=>{path(p*end);motion((1-p)*travel>70?'The barrel is rolling.':'The barrel is about to hit Peanut.');});
   }else{
-    await animate(travel,p=>{enemy.x=startX+(contactX-startX)*p;enemy.y=enemy.homeY-Math.sin(p*Math.PI)*115;enemy.rot=-.18+Math.sin(p*Math.PI)*.3;enemy.stretchX=1+.1*Math.sin(p*Math.PI);enemy.stretchY=1;motion(p<.89?'The rat is pouncing.':'The rat is about to hit Peanut.');});
+    const path=p=>{enemy.x=startX+(contactX-startX)*p;enemy.y=enemy.homeY-Math.sin(p*Math.PI)*115;enemy.rot=-.18+Math.sin(p*Math.PI)*.3;enemy.stretchX=1+.1*Math.sin(p*Math.PI);enemy.stretchY=1;};
+    const end=firstContact(path,()=>touches(actorShape(enemy),actorShape(hero)));
+    await animate(travel,p=>{path(p*end);motion((1-p)*travel>70?'The rat is pouncing.':'The rat is about to hit Peanut.');});
   }
   const grade=await finishContact();state.projectiles=[];enemy.rolling=false;enemy.rot=0;
   const damage=incomingDamage(enemy.enemy,grade);state.run.hp=Math.max(0,state.run.hp-damage);
@@ -435,7 +521,7 @@ function resultButton(text, fn) {
   $('result').append(button); button.focus({ preventScroll: true });
 }
 function hideCombat() {
-  for (const id of ['commands', 'targets', 'action-cue', 'message', 'callout']) setHidden(id, true);
+  for (const id of ['commands', 'targets', 'action-cue', 'message', 'callout', 'encounter-card', 'enemy-intent']) setHidden(id, true);
 }
 function homeResultButton() {
   const button=document.createElement('button');button.className='text-button';button.textContent='Home';button.onclick=home;$('result').append(button);
@@ -443,7 +529,7 @@ function homeResultButton() {
 function endEncounter() {
   state.phase='result';hideCombat();$('pause').disabled=true;
   const r=state.run,scrap=rewardEncounter(profile,r);saveProfile();setHidden('result',false);
-  if(r.chapter<2){
+  if(r.chapter<CAMPAIGNS[r.campaign].end){
     $('result').innerHTML=`<h2>Upgrade</h2><div class="upgrade-grid" id="upgrade-choices"></div>`;
     for(const key of ['jump','bonk',r.special]){
       const card=document.createElement('article');card.className='upgrade-card';
@@ -454,15 +540,16 @@ function endEncounter() {
         $('upgrade-choices').querySelectorAll('button').forEach(b=>b.disabled=true);
         advanceChapter(r);setHidden('result',true);state.phase='intro';$('pause').disabled=false;makeActors();updateHUD();
         showCallout('UPGRADED!','perfect',`${MOVES[key].name.toUpperCase()} +${r.upgrades[key]}`);audio.good();
-        state.actors[0].x=-180;await move(state.actors[0],{x:state.actors[0].homeX},450);await wait(180);choose();
+        await enterBattle();choose();
       };
       card.append(button);$('upgrade-choices').append(card);
     }
     $('upgrade-choices').querySelector('button').focus({preventScroll:true});
   }else{
     r.score+=r.hp*5;best=Math.max(best,r.score,profile.best);try{localStorage.setItem('goop-run-best',String(best));}catch{}
-    $('result').innerHTML=`<span class="eyebrow">RUN CLEARED · +${scrap} SCRAP BANKED</span><div class="stars">★ ★ ★</div><h2>Cleared</h2><div class="rewards"><span>${r.score} points</span><span>◆ ${profile.scrap} scrap</span></div><div class="run-stats">${r.perfect} perfect timings · ${r.blocks} blocks · ${r.hp} HP left</div><div class="best">PERSONAL BEST · ${best}</div>`;
+    $('result').innerHTML=`<span class="eyebrow">RUN CLEARED · +${scrap} SCRAP BANKED</span><div class="stars">★ ★ ★</div><h2>Cleared</h2><div class="rewards"><span>${r.score} points</span><span>◆ ${profile.scrap} scrap</span></div><div class="run-stats">${r.perfect} perfect timings · ${r.blocks} blocks · ${r.hp} HP left</div><div class="best">CHAPTER BEST · ${profile.chapterBest[r.campaign]}</div>`;
     resultButton('Run it back',startGame);
+    if(r.campaign<2)resultButton('Next chapter',()=>{selectedCampaign=r.campaign+1;startGame();});
     for(let i=0;i<6;i++)burst(state.W*(.2+Math.random()*.6),state.H*.25,['#ee896a','#f7cf6a','#add7bc'][i%3],20);
   }
   homeResultButton();audio.victory();
@@ -485,7 +572,7 @@ function star(x,y,r,rot=0,fill='#f7d578') {
 function drawActor(a, index) {
   if (a.alpha <= .01) return;
   const t=state.time/1000, idle = state.phase === 'title' || state.phase === 'choose' || state.phase === 'intro';
-  const wobble = Math.sin(t*3.1+index*1.8), breath = Math.sin(t*2.5+index);
+  const wobble = Math.sin(t*3.1+index*1.8), breath = idle?Math.sin(t*2.5+index):0;
   const img=images[a.kind==='rat'?'pip':a.kind]; if(!img)return;
   const width=a.width, height=width*img.height/img.width;
   ctx.save();ctx.globalAlpha=a.alpha;
@@ -502,14 +589,14 @@ function drawActor(a, index) {
   if(a.enemy&&a.enemy.hp>0&&state.phase!=='title'&&state.phase!=='loading'){
     const top=a.y-height-35, hp=a.enemy.hp/a.enemy.maxHp;
     ctx.save();ctx.globalAlpha=a.alpha;const bw=state.mobile?100:105;
-    roundedRect(a.x-bw/2,top,bw,11,5,'#332f26d9','#ddc8a6');
-    if(hp>0)roundedRect(a.x-bw/2+2,top+2,(bw-4)*hp,7,3,a.enemy.kind==='baron'?'#cc9256':'#9bb97d');
-    ctx.font=`600 ${state.mobile?18:22}px Fredoka, sans-serif`;ctx.textAlign='center';ctx.strokeStyle='#25342c';ctx.lineWidth=4;
+    roundedRect(a.x-bw/2,top,bw,11,5,'#422444ed','#e5bed8');
+    if(hp>0)roundedRect(a.x-bw/2+2,top+2,(bw-4)*hp,7,3,a.enemy.kind==='baron'?'#d7a65f':'#b77cb4');
+    ctx.font=`600 ${state.mobile?18:22}px Fredoka, sans-serif`;ctx.textAlign='center';ctx.strokeStyle='#3d2145';ctx.lineWidth=4;
     const label=a.enemy.name;
     if(selected){
       const textWidth=ctx.measureText(label).width;
-      roundedRect(a.x-textWidth/2-10,top-34,textWidth+20,31,7,'#ffdc58','#fff0a4');
-      ctx.fillStyle='#322d19';ctx.fillText(label,a.x,top-12);
+      roundedRect(a.x-textWidth/2-10,top-34,textWidth+20,31,7,'#dcb9db','#fff0d3');
+      ctx.fillStyle='#452448';ctx.fillText(label,a.x,top-12);
     }else{ctx.fillStyle='#fff0ce';ctx.strokeText(label,a.x,top-12);ctx.fillText(label,a.x,top-12);}
     ctx.font=`500 ${state.mobile?16:18}px Fredoka, sans-serif`;ctx.fillStyle='#fff0ce';
     const health=`${a.enemy.hp}/${a.enemy.maxHp}`;ctx.strokeText(health,a.x,top+32);ctx.fillText(health,a.x,top+32);
@@ -522,8 +609,8 @@ function draw(dt) {
   ctx.setTransform(canvas.width/W,0,0,canvas.height/H,0,0);ctx.clearRect(0,0,W,H);
   ctx.save();
   if(state.shake>.1){ctx.translate(Math.sin(state.fxTime*.07)*state.shake,Math.cos(state.fxTime*.1)*state.shake*.5);state.shake*=Math.max(0,1-dt*.014);}
-  const backdrop=state.phase==='title'&&images.home?images.home:images.sewer;
-  if(backdrop){const scale=Math.max(W/backdrop.width,H/backdrop.height);const w=backdrop.width*scale,h=backdrop.height*scale;ctx.drawImage(backdrop,(W-w)*(state.phase==='title'&&state.mobile?.65:.5),(H-h)/2,w,h);}
+  const backdrop=state.phase==='title'&&images.home?images.home:images[CAMPAIGNS[state.run.campaign].backdrop];
+  if(backdrop){const scale=Math.max(W/backdrop.width,H/backdrop.height);const w=backdrop.width*scale,h=backdrop.height*scale;ctx.drawImage(backdrop,(W-w)*(state.phase==='title'&&state.mobile?.65:.5),backdropY(h),w,h);}
   else {ctx.fillStyle='#193a3a';ctx.fillRect(0,0,W,H);}
   if(state.phase==='title'){const grad=ctx.createRadialGradient(W*.5,H*.3,20,W*.5,H*.35,W*.42);grad.addColorStop(0,'#123430aa');grad.addColorStop(1,'#12343000');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);}
   // Lantern light, dust motes, and moving water glints are separate from the printed set.
@@ -533,20 +620,7 @@ function draw(dt) {
   for(const trail of state.trails){const age=state.fxTime-trail.born,hero=state.actors[0];ctx.save();ctx.globalAlpha=Math.max(0,.18*(1-age/160));ctx.translate(trail.x,trail.y);ctx.rotate(trail.rot);ctx.drawImage(images.pip,-hero.width/2,-actorHeight(hero),hero.width,actorHeight(hero));ctx.restore();}
   state.trails=state.trails.filter(trail=>state.fxTime-trail.born<160);
   if(state.phase==='attack'){state.actors.slice(1).forEach((a,i)=>drawActor(a,i+1));drawActor(state.actors[0],0);}else if(state.phase!=='title'&&state.phase!=='loading') state.actors.forEach(drawActor);
-  for(const ball of state.projectiles){
-    ctx.save();ctx.translate(ball.x,ball.y);
-    if(ball.type==='bolt'){
-      ctx.rotate(state.time*.012);ctx.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3;i?ctx.lineTo(Math.cos(a)*21,Math.sin(a)*21):ctx.moveTo(Math.cos(a)*21,Math.sin(a)*21);}ctx.closePath();ctx.fillStyle='#adb8b0';ctx.fill();ctx.strokeStyle='#f5ecd1';ctx.lineWidth=4;ctx.stroke();ctx.beginPath();ctx.arc(0,0,7,0,Math.PI*2);ctx.fillStyle='#415453';ctx.fill();
-    }else if(ball.type==='propeller'){
-      ctx.rotate(state.time*.032);ctx.shadowColor='#b5d9fa';ctx.shadowBlur=14;
-      roundedRect(-46,-10,92,20,9,'#819cc5','#fff1c5');roundedRect(-10,-46,20,92,9,'#819cc5','#fff1c5');star(0,0,16,0,'#ffd13d');
-    }else if(ball.type==='quake'){
-      ctx.rotate(ball.rot||0);const size=100;ctx.drawImage(images.hutch,-size/2,-size/2,size,size);
-    }else{
-      ctx.rotate(state.time*.02);ctx.shadowColor=ball.type==='siphon'?'#d8a1b4':'#ffdb32';ctx.shadowBlur=22;star(0,0,30,0,ball.type==='siphon'?'#bd8098':'#ffe547');star(0,0,17,.4,'#fffaaf');
-    }
-    ctx.restore();
-  }
+  for(const ball of state.projectiles){ctx.save();ctx.translate(ball.x,ball.y);paintProjectile(ctx,ball);ctx.restore();}
   for(const hit of state.impacts){
     const age=state.fxTime-hit.born,p=age/300,r=(24+90*p)*hit.power;
     ctx.save();ctx.translate(hit.x,hit.y);ctx.globalAlpha=Math.max(0,1-p);
@@ -557,7 +631,7 @@ function draw(dt) {
   }
   state.impacts=state.impacts.filter(hit=>state.fxTime-hit.born<300);
   for(let i=0;i<18;i++){const x=(i*97.37+Math.sin(state.time*.0004+i)*15)%W,y=(i*57.93-state.time*.009)%H;ctx.fillStyle=`rgba(246,219,158,${.1+(Math.sin(state.time*.001+i)+1)*.09})`;ctx.beginPath();ctx.arc(x,y<0?y+H:y,1.5,0,Math.PI*2);ctx.fill();}
-  for(const p of state.particles){p.x+=p.vx*dt/1000;p.y+=p.vy*dt/1000;p.vy+=330*dt/1000;p.life-=dt/1100;p.rot+=dt*.003;ctx.globalAlpha=Math.max(0,p.life);if(p.star)star(p.x,p.y,p.size,p.rot,p.color);else{ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.color;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*.6);ctx.restore();}}
+  for(const p of state.particles){p.x+=p.vx*dt/1000;p.y+=p.vy*dt/1000;p.vy+=330*dt/1000;p.life-=dt/1100;p.rot+=dt*.003;ctx.globalAlpha=Math.max(0,p.life);if(p.liquid){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.color;ctx.beginPath();ctx.ellipse(0,0,p.size,p.size*.55,0,0,Math.PI*2);ctx.fill();ctx.restore();}else if(p.star)star(p.x,p.y,p.size,p.rot,p.color);else{ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.color;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*.6);ctx.restore();}}
   ctx.globalAlpha=1;state.particles=state.particles.filter(p=>p.life>0);
   for(const f of state.floats){const age=state.fxTime-f.born;const y=f.y-age*.065;ctx.save();ctx.translate(f.x,y);const pop=1+Math.max(0,1-age/180)*.35;ctx.scale(pop,pop);ctx.globalAlpha=Math.max(0,Math.min(1,(1000-age)/300));ctx.font=`600 ${f.small?19:50}px Fredoka, sans-serif`;ctx.textAlign='center';ctx.lineWidth=f.small?4:7;ctx.strokeStyle='#33321d';ctx.strokeText(f.text,0,0);ctx.fillStyle=f.color;ctx.fillText(f.text,0,0);ctx.restore();}
   state.floats=state.floats.filter(f=>state.fxTime-f.born<1000);
@@ -592,15 +666,24 @@ function setArsenalPage(open){
 $('open-arsenal').onclick=()=>{renderArsenal();setArsenalPage(true);$('close-arsenal').focus();};
 $('close-arsenal').onclick=()=>{setArsenalPage(false);$('open-arsenal').focus();};
 function setChapterPage(open){
+ if(open)renderChapters();
  hideAbilityTip();$('title-screen').dataset.view=open?'chapters':'home';
  document.querySelector('.chapter-page').hidden=!open;
  document.querySelector('.arsenal-page').hidden=true;
  document.querySelector('.desk-menu').hidden=open;
 }
+function renderChapters(){
+ const container=$('chapter-cards');container.replaceChildren();
+ CAMPAIGNS.forEach((c,i)=>{
+   const button=document.createElement('button');button.id=i===0?'chapter-rats':`chapter-${i+1}`;button.className='campaign-card';button.disabled=i>=profile.chapters;
+   button.innerHTML=button.disabled?`<span class="locked-art">✧</span><small>CHAPTER ${i+1}</small><strong>${c.name}</strong><span>Clear Chapter ${i} to unlock</span>`:`<img src="assets/${c.art}" alt=""><small>CHAPTER ${i+1} · ${c.end-c.start+1} FIGHTS</small><strong>${c.name}</strong><span>${c.setting}</span><b>BEST · ${profile.chapterBest[i]||'—'}</b>`;
+   button.onclick=()=>{selectedCampaign=i;startGame();};container.append(button);
+ });
+}
 function openChapters(){setChapterPage(true);$('chapter-rats').focus();}
 $('start').onclick=openChapters;
 $('close-chapters').onclick=()=>{setChapterPage(false);$('start').focus();};
-$('chapter-rats').onclick=startGame;
+$('chapter-rats').onclick=()=>{selectedCampaign=0;startGame();};
 $('go-home').onclick=()=>{modalClose('pause-dialog');home();};
 document.querySelector('.wordmark').onclick=event=>{event.preventDefault();if(state.phase==='title')return;if(state.phase==='result')home();else pauseGame();};
 document.querySelectorAll('[data-move]').forEach(button=>{
@@ -614,7 +697,10 @@ $('resume').onclick=()=>modalClose('pause-dialog');
 $('restart').onclick=()=>{modalClose('pause-dialog');startGame();};
 document.querySelectorAll('[data-close]').forEach(button=>button.onclick=()=>modalClose(button.dataset.close));
 for(const id of ['help-dialog','pause-dialog'])$(id).addEventListener('cancel',event=>{event.preventDefault();modalClose(id);});
-$('relaxed').onchange=event=>{state.relaxed=event.target.checked;try{localStorage.setItem('rat-tales-cozy',String(state.relaxed));}catch{}};
+for(const id of ['relaxed','chapter-cozy','pause-cozy']){
+ $(id).checked=state.relaxed;
+ $(id).onchange=event=>{state.relaxed=event.target.checked;for(const name of ['relaxed','chapter-cozy','pause-cozy'])$(name).checked=state.relaxed;try{localStorage.setItem('rat-tales-cozy',String(state.relaxed));}catch{}};
+}
 function syncSound(){
   $('sound').innerHTML=`${audio.on?'♫':'♪'} <span>Sound ${audio.on?'on':'off'}</span>`;
   $('sound').setAttribute('aria-pressed',String(audio.on));$('sound').setAttribute('aria-label',audio.on?'Mute sound':'Enable sound');$('sound').title=audio.on?'Mute sound':'Enable sound';
@@ -641,7 +727,7 @@ document.addEventListener('fullscreenchange',()=>{$('fullscreen').setAttribute('
 window.addEventListener('keydown',event=>{
   if(state.paused)return;
   if(event.key==='Escape'){event.preventDefault();if(state.phase==='title'&&$('title-screen').dataset.view==='arsenal'){setArsenalPage(false);$('open-arsenal').focus();}else if(state.phase==='title'&&$('title-screen').dataset.view==='chapters'){setChapterPage(false);$('start').focus();}else pauseGame();return;}
-  if(event.target.closest?.('a,button,input,select,textarea'))return;
+  if(event.target.closest?.('input,select,textarea') || (state.phase==='title'&&event.target.closest?.('a,button')))return;
   if(event.code==='Space'||event.key==='Enter'){
     if(event.target instanceof Element && event.target.closest('nav button'))return;
     if(state.command||['attack','enemy'].includes(state.phase)){
@@ -666,8 +752,8 @@ canvas.addEventListener('pointerdown',event=>{
 });
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&audio.ctx)audio.ctx.suspend();else if(!state.paused&&audio.on&&audio.ctx)audio.ctx.resume();});
 
-Promise.all(Object.entries({sewer:'goop-depot',bookspread:'peanut-book',hutch:'hutch-cannonball',bookribbon:'storybook-ribbon',pip:'peanut-happy',scrapper:'rat-scrapper',slinger:'rat-slinger',baron:'rat-boss'}).map(([name,file])=>new Promise((resolve,reject)=>{
-  const img=new Image();img.onload=()=>{images[name]=img;resolve();};img.onerror=reject;img.src=`assets/${file}.png`;
+Promise.all(Object.entries({sewer:'goop-depot',bookspread:'peanut-book',hutch:'hutch-cannonball',bookribbon:'storybook-ribbon',pip:'peanut-happy',scrapper:'rat-scrapper',slinger:'rat-slinger',baron:'rat-boss',market:'rat-market.webp',cathedral:'pipe-cathedral.webp',trickster:'rat-trickster.webp',courier:'rat-courier.webp',cantor:'snail-cantor.webp',regent:'market-boss.webp',warden:'cathedral-boss.webp',stitchedLabel:'stitched-label.webp',stitchedPanel:'stitched-panel.webp'}).map(([name,file])=>new Promise((resolve,reject)=>{
+  const img=new Image();img.onload=()=>{images[name]=img;resolve();};img.onerror=reject;img.src=`assets/${file.includes('.')?file:file+'.png'}`;
 }))).then(()=>{
   state.phase='title';makeActors();resize();home();$('start').disabled=false;$('start-label').textContent='Play';
 }).catch(()=>{setHidden('loading-error',false);$('start-label').textContent='A prop is missing';});

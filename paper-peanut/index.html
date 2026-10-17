@@ -17,6 +17,8 @@
   <link rel="preload" href="assets/goop-depot.png" as="image">
   <link rel="preload" href="assets/midnight-scrapbook.png" as="image">
 <link rel="stylesheet" href="navigation.css?v=nav1">
+<link rel="stylesheet" href="scrapbook-ui.css?v=2">
+<link rel="stylesheet" href="campaign.css?v=2">
 </head>
 <body>
 <div id="app" class="app">
@@ -44,11 +46,8 @@
             <button id="start" class="desk-play" disabled><span id="start-label" class="sr-only">Loading…</span></button>
           </div>
           <section class="chapter-page" aria-label="Choose a chapter" hidden>
- <h2 class="sr-only">Chapters</h2>
- <button id="close-chapters" aria-label="Back to home"><span class="sr-only">Back</span></button>
- <button id="chapter-rats" aria-label="Me and My Rat Family"><span class="sr-only">Me and My Rat Family</span></button>
- <button class="chapter-locked locked-two" disabled aria-label="Chapter 2 locked"><span class="sr-only">??? — Locked</span></button>
- <button class="chapter-locked locked-three" disabled aria-label="Chapter 3 locked"><span class="sr-only">??? — Locked</span></button>
+ <div class="chapter-heading"><button id="close-chapters" aria-label="Back to home">← Back</button><h2>The chapter book</h2><label><input id="chapter-cozy" type="checkbox"> Cozy timing <small>Wider contact window</small></label></div>
+ <div id="chapter-cards"><button id="chapter-rats">Chapter 1</button></div>
 </section>
 <section class="story-book peanut-book polished arsenal-page" aria-label="Arsenal page" hidden>
             <section class="book-left" aria-label="Arsenal">
@@ -74,6 +73,7 @@
         <button id="action-tap" type="button" aria-label="Press Space or tap at contact"><kbd>SPACE</kbd><span id="action-label">at contact</span></button>
         <span id="action-motion" class="sr-only"></span>
       </section>
+      <div id="encounter-card" hidden role="status"></div><div id="enemy-intent" hidden role="status"></div>
       <div id="callout" class="sr-only" aria-live="polite" hidden></div>
       <section id="result" class="result paper" hidden aria-live="polite"></section>
       <div id="loading-error" class="loading-error" hidden>One of the paper props did not load. <button onclick="location.reload()">Try again</button></div>
@@ -83,15 +83,15 @@
 <dialog id="help-dialog" class="modal paper">
   <button class="game-back modal-back" data-close="help-dialog" aria-label="Back to game">↶ Back</button><button class="close" data-close="help-dialog" aria-label="Close instructions">×</button><span class="eyebrow">CONTROLS</span><h2>Watch the characters.<br>Press at contact.</h2>
   <div class="instruction"><b>01</b><div><strong>Choose your move</strong><p>Click an enemy or use ← → to pick a target. Choose Jump, Shell Slam, your equipped special, or Silly Juice. Keys 1–4 work too.</p></div></div>
-  <div class="instruction"><b>02</b><div><strong>Space as your attack hits</strong><p>Jump: press as Peanut lands on the enemy. Shell Slam: press as the shells connect. Special moves: press as the projectile or shockwave hits. One well-timed press earns a second stomp or bonus damage. Watch the action itself.</p></div></div>
+  <div class="instruction"><b>02</b><div><strong>Space as your attack hits</strong><p>Jump: press as Peanut lands on the enemy. Shell Slam: press as the shells connect. Special moves: press as the projectile or shockwave hits. Every attack deals damage. One well-timed press earns a second stomp or bonus damage. Watch the action itself.</p></div></div>
   <div class="instruction"><b>03</b><div><strong>Space as they hit you</strong><p>Each rat winds up, then pounces, fires a bolt, or rolls toward you. Press right as it reaches Peanut to block the hit and take no damage. An early press uses your attempt, so wait for contact instead of mashing or holding the key.</p></div></div>
   <p class="modal-note">Space, Enter, or a tap on the stage all work.<br>Shell Slam cracks armor. Silly Juice heals 8 HP. Esc pauses. Clear encounters for scrap and one ability upgrade. Spend scrap in the home Arsenal for permanent special moves.</p>
   <label class="relaxed"><input type="checkbox" id="relaxed"> Cozy timing <span>A wider timing window</span></label>
   <button class="ribbon-button" data-close="help-dialog">Close</button>
 </dialog>
-<dialog id="pause-dialog" class="modal paper pause-modal"><button class="game-back modal-back" data-close="pause-dialog" aria-label="Back to game">↶ Back</button><h2>Paused</h2><button id="resume" class="ribbon-button">Resume</button><button id="restart" class="text-button">Restart</button><button id="go-home" class="text-button">Home</button></dialog>
+<dialog id="pause-dialog" class="modal paper pause-modal"><button class="game-back modal-back" data-close="pause-dialog" aria-label="Back to game">↶ Back</button><h2>Paused</h2><label class="relaxed"><input id="pause-cozy" type="checkbox"> Cozy timing <span>Wider contact window</span></label><button id="resume" class="ribbon-button">Resume</button><button id="restart" class="text-button">Restart</button><button id="go-home" class="text-button">Home</button></dialog>
 
-<script type="module" src="game.js?v=nav1"></script>
+<script type="module" src="game.js?v=campaign-2"></script>
 </body>
 </html>
 

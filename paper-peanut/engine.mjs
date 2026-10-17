@@ -10,11 +10,29 @@ export const CHAPTERS = [
   { title: 'The rats want your goop.', subtitle: 'THE GOOP DEPOT', enemies: [ ['scrapper', 7], ['slinger', 8] ] },
   { title: 'A little scrap trouble.', subtitle: 'RAT RUN ALLEY', enemies: [ ['slinger', 10], ['scrapper', 10], ['slinger', 9] ] },
   { title: 'The boss of the pipes.', subtitle: 'THE BARON’S STASH', enemies: [ ['slinger', 10], ['baron', 25] ] },
+  { title: 'Everything has a price.', subtitle: 'LANTERN MARKET', enemies: [['trickster',14],['courier',14]] },
+  { title: 'Special delivery. Twice.', subtitle: 'BOTTLECAP BOULEVARD', enemies: [['courier',16],['slinger',13],['trickster',14]] },
+  { title: 'A song for your scrap.', subtitle: 'THE NIGHT AUCTION', enemies: [['cantor',18],['trickster',17]] },
+  { title: 'The market takes its cut.', subtitle: 'THE MARKET REGENT', enemies: [['regent',48],['courier',16]] },
+  { title: 'Follow the rising tide.', subtitle: 'THE FLOODED NAVE', enemies: [['cantor',18],['slinger',16]] },
+  { title: 'Echoes have teeth.', subtitle: 'CHOIR OF THE PIPES', enemies: [['cantor',20],['courier',18],['cantor',18]] },
+  { title: 'One last breath.', subtitle: 'THE SUNKEN CLOISTER', enemies: [['trickster',22],['courier',22]] },
+  { title: 'Silence the deep.', subtitle: 'THE PIPE ORGAN WARDEN', enemies: [['warden',64],['cantor',18]] },
+];
+export const CAMPAIGNS = [
+  {name:'Me and My Rat Family',setting:'The Goop Depot',start:0,end:2,backdrop:'sewer',art:'goop-depot.png',floor:.735},
+  {name:'The Midnight Market',setting:'Lanterns, lies & bottlecaps',start:3,end:6,backdrop:'market',art:'rat-market.webp',floor:.67},
+  {name:'The Drowned Cathedral',setting:'A choir beneath the tide',start:7,end:10,backdrop:'cathedral',art:'pipe-cathedral.webp',floor:.75},
 ];
 export const ENEMIES = {
   scrapper: { name: 'Scrapper', attack: 'Gutter Pounce', power: 3 },
   slinger: { name: 'Bolt Slinger', attack: 'Scrap Shot', power: 3 },
   baron: { name: 'Scrap Baron', attack: 'Barrel Roll', power: 5 },
+  trickster: {name:'Cape Trickster',attack:'False Start',power:4},
+  courier: {name:'Cap Courier',attack:'Double Delivery',power:3},
+  cantor: {name:'Snail Cantor',attack:'Drifting Note',power:4},
+  regent: {name:'Market Regent',attack:'Royal Ruse',power:5,boss:true},
+  warden: {name:'Pipe Warden',attack:'Tidal Overture',power:5,boss:true},
 };
 export function makeEnemies(chapter) {
   return CHAPTERS[chapter].enemies.map(([kind, hp], id) => ({ id, kind, hp, maxHp: hp, armor: kind === 'baron', ...ENEMIES[kind] }));
@@ -22,7 +40,7 @@ export function makeEnemies(chapter) {
 export function attackDamage(move, grade, enemy, level = 0) {
   if (move === 'jump') return jumpHits(grade === 'success' || grade === 'perfect', enemy, level).reduce((sum, hit) => sum + hit, 0);
   const base = MOVES[move].base + level;
-  const bonus = grade === 'perfect' ? 2 : grade === 'good' ? 1 : 0;
+  const bonus = (grade === 'perfect' || grade === 'success') ? 2 : grade === 'good' ? 1 : 0;
   const armor = enemy.armor && move !== 'bonk' && !MOVES[move].pierce ? 2 : 0;
   return Math.max(1, base + bonus - armor);
 }
@@ -33,12 +51,12 @@ export function incomingDamage(enemy, grade) {
 // TTYD-style ordinary Jump: one hit, or two equal hits on command success.
 // Defense applies to each stomp separately. Three power fits this game's HP scale.
 export function jumpHits(success, enemy, level = 0) {
-  const damage = Math.max(0, MOVES.jump.base + level - (enemy.defense ?? (enemy.armor ? 2 : 0)));
+  const damage = Math.max(1, MOVES.jump.base + level - (enemy.defense ?? (enemy.armor ? 2 : 0)));
   return success ? [damage, damage] : [damage];
 }
 // Every command is anchored to physical contact, never a moving meter.
 // A small grace period accommodates a press on the rendered contact frame.
-export const CONTACT_WINDOW_MS = 8 * 1000 / 60;
+export const CONTACT_WINDOW_MS = 90;
 export const CONTACT_GRACE_MS = 65;
 export const PACE = Object.freeze({ jumpWindup: 300 / 1.6, jumpFlight: 1250 / 1.6, jumpBounce: 360 / 1.6, jumpReturn: 420 / 1.6, slamWindup: 420, slamTravel: 1000, burstWindup: 450, burstFlight: 1000, enemyWindup: 500, enemyTravel: 1100 });
 export function createContactCommand(contactAt, relaxed = false) {
@@ -64,9 +82,10 @@ export function hitEnemy(enemy, damage, move) {
   enemy.hp = Math.max(0, enemy.hp - damage);
   if (move === 'bonk' || move === 'quake') enemy.armor = false;
 }
-export function freshRun(special = 'whirl') {
+export function freshRun(special = 'whirl', campaign = 0, tiers = {}) {
   if (!['whirl', 'propeller', 'siphon', 'quake'].includes(special)) special = 'whirl';
-  return { hp: 20, maxHp: 20, sp: 4, maxSp: 4, cheese: 2, chapter: 0, round: 1, perfect: 0, blocks: 0, score: 0, special, upgrades: {jump:0, bonk:0, [special]:0}, rewarded: [], pendingUpgrade: false, enemies: makeEnemies(0) };
+  const chapter=CAMPAIGNS[campaign].start;
+  return { hp: 20, maxHp: 20, sp: 4, maxSp: 4, cheese: 2, campaign, chapter, round: 1, perfect: 0, blocks: 0, score: 0, special, upgrades: {jump:0, bonk:0, [special]:tiers[special]||0}, rewarded: [], pendingUpgrade: false, enemies: makeEnemies(chapter) };
 }
 export function applyUpgrade(run, move) {
   if (!run.pendingUpgrade || !['jump', 'bonk', run.special].includes(move)) return false;
@@ -75,7 +94,7 @@ export function applyUpgrade(run, move) {
   return true;
 }
 export function advanceChapter(run) {
-  if (run.chapter >= CHAPTERS.length - 1) return false;
+  if (run.chapter >= CAMPAIGNS[run.campaign].end) return false;
   run.chapter++;
   run.hp = Math.min(run.maxHp, run.hp + 7);
   run.sp = Math.min(run.maxSp, run.sp + 2);
