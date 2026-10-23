@@ -7,6 +7,14 @@
   const key = button.dataset.musicKey + '-song';
   let enabled = true, leaving = false;
   try { enabled = localStorage.getItem(key) !== 'off'; } catch {}
+  let dead=false, mixContext, mixGain, mixFilter;
+  function connectMix(){
+    if(mixContext){mixContext.resume().catch(()=>{});return;}
+    try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;mixContext=new C();const source=mixContext.createMediaElementSource(track);mixFilter=mixContext.createBiquadFilter();mixFilter.type='lowpass';mixFilter.frequency.value=dead?650:20000;mixGain=mixContext.createGain();mixGain.gain.value=dead?.16:1;source.connect(mixFilter);mixFilter.connect(mixGain);mixGain.connect(mixContext.destination);mixContext.resume().catch(()=>{});}catch{}
+  }
+  function deathMix(value){dead=value;if(mixContext&&mixGain){const t=mixContext.currentTime;mixGain.gain.cancelScheduledValues(t);mixGain.gain.setTargetAtTime(dead?.16:1,t,.3);mixFilter.frequency.cancelScheduledValues(t);mixFilter.frequency.setTargetAtTime(dead?650:20000,t,.3);}else{const from=track.volume,to=dead?.036:.225,start=performance.now();function fade(now){const f=Math.min(1,(now-start)/1000);track.volume=from+(to-from)*f;if(f<1)requestAnimationFrame(fade)}requestAnimationFrame(fade);}}
+  document.addEventListener('pacnut:death',()=>deathMix(true));
+  document.addEventListener('pacnut:revive',()=>deathMix(false));
   function render() {
     button.setAttribute('aria-pressed', String(enabled));
     button.setAttribute('aria-label', enabled ? 'Mute music' : 'Enable music');
@@ -26,7 +34,7 @@
       }).catch(() => {}); // Retry on interaction if the browser blocks autoplay.
     } catch {}
   }
-  function unlock(event) {
+  function unlock(event) {connectMix();
     if (event.target.closest?.('#music')) return;
     sync();
   }
@@ -34,7 +42,7 @@
     document.addEventListener(type, unlock, {capture:true});
   }
   button.addEventListener('click', () => {
-    enabled = !enabled;
+    connectMix();enabled = !enabled;
     try { localStorage.setItem(key, enabled ? 'on' : 'off'); } catch {}
     render(); sync();
   });
