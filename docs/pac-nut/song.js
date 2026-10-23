@@ -11,7 +11,8 @@
     button.setAttribute('aria-pressed', String(enabled));
     button.setAttribute('aria-label', enabled ? 'Mute music' : 'Enable music');
     button.title = enabled ? 'Mute music' : 'Enable music';
-    button.innerHTML = '<span aria-hidden="true">' + (enabled ? '\u266a' : '\u266a\u0338') + '</span>';
+    if (button.dataset.goldIcon) button.className = 'icon ' + (enabled ? 'sound' : 'mute');
+    else button.innerHTML = '<span aria-hidden="true">' + (enabled ? '\u266a' : '\u266a\u0338') + '</span>';
   }
   function sync() {
     if (!enabled || document.hidden || !unlocked) { track.pause(); return; }
