@@ -652,7 +652,7 @@ function frame(now) {
     const active=state.tweens;state.tweens=[];
     for(const tw of active){const p=Math.max(0,Math.min(1,(state.time-tw.start)/tw.duration));tw.update(p);if(p>=1)tw.resolve();else state.tweens.push(tw);}
     if(state.calloutUntil&&state.time>state.calloutUntil){setHidden('callout',true);state.calloutUntil=0;}
-    audio.music();
+    // Background song is controlled independently by song.js.
   }
   draw(fxdt); requestAnimationFrame(frame);
 }
