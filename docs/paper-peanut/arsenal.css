@@ -1,0 +1,20 @@
+/* Generated paper cards and die-cut badges on a cloth-bound arsenal. */
+.arsenal-modal{background:#163b39 url('assets/arsenal-board.png') center/100% 100%;border:0;border-radius:15px;padding:38px;max-width:1000px;box-shadow:0 18px 60px #0009;color:#ffe4a8}
+.arsenal-modal .close{color:#ffe3ad;right:20px;top:14px;width:36px;height:36px;line-height:1;background:#30241c99;border-radius:50%;font-size:26px}
+.arsenal-heading{padding-right:36px;margin:0 0 16px}.arsenal-heading h2{color:#ffe4a8;text-shadow:0 2px 2px #0006;margin:8px 0;font-size:34px}
+.arsenal-heading>span{background:#a46a2c;color:#fff0b9;border:1px solid #e6b65c;box-shadow:0 3px #50351f;font-size:17px}
+.arsenal-cards{gap:15px;align-items:stretch}
+.arsenal-card,.arsenal-card.locked,.arsenal-card.equipped{position:relative;background:transparent url('assets/arsenal-card.png') center/100% 100%;border:0;border-radius:0;box-shadow:none;padding:22px 18px 26px;filter:drop-shadow(0 6px 3px #0004);text-align:center;min-width:0;transition:transform .16s ease}
+.arsenal-card:hover{transform:translateY(-3px)}
+.ability-badge{display:block;width:118px;height:118px;max-width:100%;aspect-ratio:1;flex-shrink:0;align-self:center;background:url('assets/arsenal-badges.png') 0 0/200% 200% no-repeat;margin:0 auto 6px;filter:drop-shadow(0 4px 2px #59391d40)}
+.arsenal-card[data-ability=propeller] .ability-badge{background-position:100% 0}.arsenal-card[data-ability=siphon] .ability-badge{background-position:0 100%}.arsenal-card[data-ability=quake] .ability-badge{background-position:100% 100%}
+.arsenal-card h3{font:600 20px/1.1 var(--round);color:#3d291b;min-height:44px;display:grid;place-items:center;margin:3px 0 7px}
+.arsenal-card p{font-size:12px;line-height:1.45;color:#49311d;margin:0 0 12px;min-height:52px}
+.arsenal-card .ability-power{color:#60411d;font-size:11px;letter-spacing:0;margin-bottom:12px}.arsenal-card .ability-requirement{color:#593c24;font-size:11px;min-height:18px;margin:0 0 12px}
+.arsenal-card button{margin-top:auto;color:#fff3ca;background:#865036;border:1px solid #593b25;box-shadow:0 3px #583620,inset 0 1px #f6c77b66;border-radius:4px 8px 4px 8px;font-size:14px;min-height:40px}
+.arsenal-card[data-ability=propeller] button{background:#365f77}.arsenal-card[data-ability=siphon] button{background:#3e694b}.arsenal-card[data-ability=quake] button{background:#8f4832}
+.arsenal-card button:disabled{opacity:.72}.arsenal-card.equipped button{opacity:1;background:#456445;border-color:#2c4934;color:#fff5d5;box-shadow:0 3px #293c2d,inset 0 1px #b7cb8b88}
+.arsenal-card button:not(:disabled):hover{filter:brightness(1.15)}
+@media(max-width:760px){.arsenal-modal{padding:28px 22px;background-size:auto 100%;width:calc(100% - 20px)}.arsenal-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.arsenal-heading h2{font-size:28px}.arsenal-card{padding:17px 15px 23px}.ability-badge{width:94px;height:94px}.arsenal-card h3{font-size:18px;min-height:39px}.arsenal-card p{min-height:36px}.arsenal-card .ability-power{margin-bottom:8px}}
+@media(max-width:430px){.arsenal-modal{padding:26px 15px 20px}.arsenal-cards{gap:8px}.arsenal-card,.arsenal-card.locked,.arsenal-card.equipped{padding:14px 12px 22px}.ability-badge{width:76px;height:76px;margin-bottom:2px}.arsenal-card h3{font-size:16px;min-height:36px}.arsenal-card p{font-size:11px;min-height:48px}.arsenal-card .ability-power,.arsenal-card .ability-requirement{font-size:10px}.arsenal-card button{font-size:12px;min-height:36px}.arsenal-heading{margin-bottom:10px}.arsenal-heading>span{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.arsenal-card{transition:none}.arsenal-card:hover{transform:none}}
