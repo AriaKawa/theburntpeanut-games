@@ -5,9 +5,9 @@ try { enabled = localStorage.getItem('peanut-ui-sound') !== 'off'; } catch {}
 
 function update() {
   toggle.setAttribute('aria-pressed', String(enabled));
-  toggle.setAttribute('aria-label', enabled ? 'Mute button sounds' : 'Enable button sounds');
-  toggle.title = enabled ? 'Mute sounds' : 'Enable sounds';
-  toggle.querySelector('span').textContent = enabled ? '♪' : '♪̸';
+  toggle.setAttribute('aria-label', enabled ? 'Sound on. Mute button sounds' : 'Sound off. Enable button sounds');
+  toggle.title = enabled ? 'Sound on — Mute sounds' : 'Sound off — Enable sounds';
+  toggle.querySelector('span').innerHTML = enabled ? "<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M11 5 6 9H3v6h3l5 4V5Z\"/><path d=\"M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13\"/></svg>" : "<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M11 5 6 9H3v6h3l5 4V5Z\"/><path d=\"m16 9 5 6m0-6-5 6\"/></svg>";
 }
 
 function audioContext() {
