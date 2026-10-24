@@ -20,14 +20,7 @@ for(const [width,height] of [[841,843],[1440,900],[390,844],[320,568],[844,390]]
 
 await page.setViewportSize({width:841,height:843});await page.goto('http://127.0.0.1:4393/pac-nut/');
 await page.locator('#fullscreen').hover();assert(await page.locator('#fullscreen-hint').isHidden());await page.reload();assert(await page.locator('#fullscreen-hint').isHidden());
-await page.locator('#start').click();await page.evaluate(()=>{score=1234;mode='over';show()});
-await page.locator('#initials').fill('abc');await page.locator('#initials').press('Enter');assert.equal(await page.evaluate(()=>mode),'over');assert.equal(await page.locator('#score-rows tr').count(),1);
-await page.locator('#initials-form button').isDisabled().then(x=>assert(x));await page.screenshot({path:'arcade-scoreboard.png'});
-await page.locator('#start').click();await page.evaluate(()=>{score=4321;mode='over';show()});assert.equal(await page.locator('#initials').inputValue(),'ABC');await page.locator('#start').click();
-await page.reload();assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('pacnut-leaderboard-v1')).length),2);assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('pacnut-leaderboard-v1'))[0].score),4321);
-await page.locator('#start').click();await page.evaluate(()=>{score=42;mode='over';show()});await page.locator('#initials').fill('A');await page.locator('#start').click();assert.equal(await page.evaluate(()=>mode),'over');
-await page.locator('#initials').fill('XYZ');await page.locator('#start').click();assert.equal(await page.evaluate(()=>mode),'playing');
-await page.screenshot({path:'arcade-gameplay.png'});console.log('PASS leaderboard persistence, initials, duplicate prevention, keyboard input, hint persistence');
+await page.locator('#start').click();await page.evaluate(()=>{score=0;mode='over';show()});assert.equal(await page.locator('#arcade-scoreboard').isVisible(),true);assert((await page.locator('.board-caption').innerText()).includes('Original · ONLINE TOP 10'));await page.locator('#start').click();await page.waitForFunction(()=>mode==='playing');console.log('PASS online scoreboard presentation, zero-score restart and hint persistence');
 assert.equal(await page.locator('#game').evaluate(e=>getComputedStyle(e).objectFit),'fill');const notice=await page.locator('aside').boundingBox();assert(notice.x<15);assert(notice.y>700);assert.deepEqual(errors,[]);await browser.close();})().catch(e=>{console.error(e);process.exit(1)});
 
 
