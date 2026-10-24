@@ -41,7 +41,13 @@ function renderArsenal() {
     sticker.dataset.tip=detail;
     sticker.onclick=()=>{if(!unlocked){showAbilityTip(sticker);return;}if(equipAbility(profile,key)){hideAbilityTip();saveProfile();renderArsenal();$('arsenal-status').textContent=a.name+' equipped.';}};
     card.append(sticker);
-    if(!unlocked){const unlock=document.createElement('button');unlock.className='unlock-sticker';unlock.textContent='Unlock · '+a.cost+' scrap';unlock.disabled=profile.scrap<a.cost||profile.clears<a.clears;unlock.setAttribute('aria-label','Unlock '+a.name+' for '+a.cost+' scrap');unlock.onclick=()=>{if(unlockAbility(profile,key)){hideAbilityTip();saveProfile();renderArsenal();audio.good();$('arsenal-status').textContent=a.name+' unlocked.';}};card.append(unlock);}
+    const action=document.createElement('button');action.className='unlock-sticker arsenal-action';
+    action.textContent=equipped?'✓ Equipped':unlocked?'Equip':'🔒 '+a.cost+' Scrap';
+    action.disabled=!unlocked&&(profile.scrap<a.cost||profile.clears<a.clears);
+    action.setAttribute('aria-label',equipped?a.name+' equipped':unlocked?'Equip '+a.name:'Unlock '+a.name+' for '+a.cost+' scrap');
+    action.title=detail;
+    action.onclick=()=>{if(unlocked){sticker.click();return;}if(unlockAbility(profile,key)){hideAbilityTip();saveProfile();renderArsenal();audio.good();$('arsenal-status').textContent=a.name+' unlocked.';}};
+    card.append(action);
     const requirement=document.createElement('p');requirement.className='ability-requirement';
     requirement.textContent=unlocked?a.short:`${a.clears} encounter clears required · ${Math.min(profile.clears,a.clears)}/${a.clears}`;card.append(requirement);
     if(unlocked){

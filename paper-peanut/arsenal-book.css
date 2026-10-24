@@ -1,0 +1,29 @@
+/* The generated spread and its controls share the same 1536 x 1024 coordinates. */
+.desk-home[data-view=arsenal] .desk-scene{width:min(1536px,100vw,calc((100svh - 44px)*1.5));height:auto;aspect-ratio:3/2;background:none}
+.desk-scene .story-book.arsenal-page{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;display:block;border:0;border-radius:0;box-shadow:none;overflow:visible;background:url('assets/arsenal-spread-hutch-v2.png') center/100% 100% no-repeat;transform:none}
+.desk-scene .story-book.arsenal-page[hidden]{display:none}
+.desk-scene .arsenal-page .book-left,.desk-scene .arsenal-page .arsenal-heading,.desk-scene .arsenal-page .arsenal-cards{position:absolute;inset:0;width:100%;height:100%;padding:0;margin:0;display:block;pointer-events:none}
+.desk-scene .arsenal-page .newspaper-title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.desk-scene .arsenal-page #close-arsenal{position:absolute;left:11.2%;top:9.4%;width:7%;height:10.3%;padding:0;border:0;border-radius:50%;background:transparent;box-shadow:none;font-size:0;pointer-events:auto}
+.desk-scene .arsenal-page .arsenal-heading>span{position:absolute;left:75.4%;top:13.1%;right:auto;width:14.8%;height:6.4%;padding:0;display:grid;place-items:center;background:#ead0a9;color:#40203d;border:1px dashed #a78166;border-radius:1cqw;font:700 2.4cqw/1 Georgia,serif;pointer-events:auto}
+.desk-scene .arsenal-page .arsenal-heading>span::after{content:' Scrap';white-space:pre}
+.desk-scene .arsenal-page .arsenal-heading>span{display:flex;justify-content:center;align-items:center}
+.desk-scene .arsenal-page .ability-slot,.desk-scene .arsenal-page .ability-slot:nth-child(n){position:absolute;left:12.5%;top:23.5%;width:35.6%;height:28.1%;min-height:0;padding:0;margin:0;display:block;border:0;border-radius:0;background:none;box-shadow:none;pointer-events:none}
+.desk-scene .arsenal-page .ability-slot[data-ability=propeller]{left:52.6%}
+.desk-scene .arsenal-page .ability-slot[data-ability=siphon]{top:54.4%}
+.desk-scene .arsenal-page .ability-slot[data-ability=quake]{left:52.6%;top:54.4%}
+.desk-scene .arsenal-page .ability-slot .sticker-control{position:absolute;left:0;top:0;width:52%;height:98%;max-width:none;max-height:none;min-height:0;padding:0;margin:0;background:none;border:0;border-radius:50%;box-shadow:none;filter:none;transform:none;pointer-events:auto}
+.desk-scene .arsenal-page .sticker-control>span{display:none}
+.desk-scene .arsenal-page .sticker-control::after{display:none}
+.desk-scene .arsenal-page .ability-slot.locked .sticker-control{opacity:1;filter:none}
+.desk-scene .arsenal-page .ability-slot .arsenal-action{position:absolute;left:55.4%;top:51.8%;width:41.8%;height:27%;min-height:0;margin:0;padding:0;border:1px dashed #c69eae;outline:3px solid #5b335b;border-radius:2cqw;background:#593253;color:#fff0d6;box-shadow:0 .3cqw .5cqw #2d172d66;display:grid;place-items:center;font:700 2.1cqw/1 Georgia,serif;pointer-events:auto}
+.desk-scene .arsenal-page .ability-slot.equipped .arsenal-action{background:#704875;outline-color:#704875}
+.desk-scene .arsenal-page .ability-slot .arsenal-action{top:51%;height:32%}
+.desk-scene .arsenal-page .ability-slot[data-ability=propeller] .arsenal-action,.desk-scene .arsenal-page .ability-slot[data-ability=quake] .arsenal-action{left:52.2%;width:52%}
+.desk-scene .arsenal-page .ability-slot .arsenal-action:disabled{background:#735b70;outline-color:#735b70;color:#f0dcca;opacity:1;cursor:not-allowed}
+.desk-scene .arsenal-page .ability-requirement,.desk-scene .arsenal-page .ability-slot small{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.desk-scene .arsenal-page .ability-slot .tier-button{position:absolute;left:52%;top:85%;width:48%;min-height:0;height:14%;padding:.2cqw;border:1px dashed #9b7596;border-radius:.6cqw;background:#f0dec6;color:#482b46;font:700 .85cqw/1.2 Georgia,serif;pointer-events:auto;margin:0;opacity:1}
+.desk-scene .arsenal-page .tier-button:disabled{color:#765d72;background:#e2cdb9}
+.desk-scene .arsenal-page button:focus-visible{outline:2px solid #ffdf8f;outline-offset:3px}
+.desk-scene .arsenal-page #close-arsenal:hover,.desk-scene .arsenal-page .sticker-control:hover{box-shadow:0 0 1.2cqw #ffdf8f99}
+.desk-scene .arsenal-page .arsenal-action:not(:disabled):hover{filter:brightness(1.18);background:#704875}
