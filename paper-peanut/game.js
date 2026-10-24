@@ -130,7 +130,25 @@ const audio = {
   victory(){[392,494,587,784].forEach((f,i)=>this.tone(f,.35,'triangle',.09,1,i*.11));},
   defeat(){[220,185,147].forEach((f,i)=>this.tone(f,.35,'triangle',.07,.8,i*.16));},
   good() { this.tone(660, .24, 'sine', .1); this.tone(990, .32, 'triangle', .035); },
+  contactSuccess() {
+    // Keep the woody hit, then lift it with a distinct, bright confirmation.
+    this.hit(true);
+    this.tone(740, .12, 'triangle', .13, 1.5, .015);
+    this.tone(1110, .28, 'sine', .1, 1, .075);
+    this.tone(1480, .22, 'sine', .045, 1, .09);
+  },
   block() { this.tone(880,.18,'triangle',.12,1.5);this.tone(1760,.25,'sine',.07,.75); },
+  armorBreak() {
+    this.tone(210,.11,'sawtooth',.08,.18);
+    this.tone(1200,.07,'square',.045,.23,.035);
+    this.tone(680,.16,'triangle',.075,.32,.085);
+  },
+  knockout(final = false) {
+    this.tone(145,.2,'triangle',.16,.22);
+    this.tone(392,.14,'triangle',.1,1,.045);
+    this.tone(final?784:587,.3,'sine',.09,1,.13);
+    if(final)this.tone(988,.34,'sine',.055,1,.2);
+  },
   tick() { this.tone(420, .035, 'sine', .025); },
   music() {
     if (!this.on || !this.ctx || state.paused || state.phase==='title' || state.time < this.nextBeat) return;
@@ -185,8 +203,27 @@ function resize() {
 }
 new ResizeObserver(resize).observe(gameEl);
 
+// Keep the lost health visible briefly, including across consecutive hits.
+function damageTrail(holder, hp, maxHp) {
+  let trail = holder.healthTrail;
+  if (!trail) trail = holder.healthTrail = {hp, from:hp, at:state.fxTime};
+  const value = () => trail.from + (trail.hp-trail.from)*Math.max(0,Math.min(1,(state.fxTime-trail.at-220)/430));
+  if (hp !== trail.hp) {
+    trail.from = hp < trail.hp ? Math.max(hp,value()) : hp;
+    trail.hp = hp; trail.at = state.fxTime;
+  }
+  return (state.reducedMotion ? hp : value()) / maxHp;
+}
+const hpTrail = document.createElement('span');
+hpTrail.id='hp-trail';hpTrail.setAttribute('aria-hidden','true');
+hpTrail.style.cssText='position:absolute;left:0;top:0;height:100%;background:#ffd785;pointer-events:none';
+$('hp-bar').parentElement.style.position='relative';
+$('hp-bar').style.position='relative';$('hp-bar').style.zIndex='1';
+$('hp-bar').parentElement.prepend(hpTrail);
+
 function updateHUD() {
   const r = state.run;
+  hpTrail.style.width = `${damageTrail(r,r.hp,r.maxHp)*100}%`;
   $('hp').textContent = r.hp;
   $('hp-bar').style.width = `${r.hp / r.maxHp * 100}%`;
   $('hp-bar').style.background = r.hp <= 6 ? '#bd3965' : '#ab6caa';
@@ -273,7 +310,8 @@ async function finishContact() {
     state.run.perfect++; state.run.score += 20;
     if (command.type === 'block') state.run.blocks++;
     else if (command.type !== 'jump') state.run.sp = Math.min(state.run.maxSp, state.run.sp + 1);
-    audio.good();
+    state.actors[0].contactGlowAt = state.fxTime;
+    audio.contactSuccess();
   }
   const text = success ? (command.type === 'block' ? 'BLOCKED!' : 'NICE!') : outcome === 'early' ? 'TOO EARLY' : outcome === 'late' ? 'TOO LATE' : command.type === 'block' ? 'OUCH!' : 'HIT!';
   showCallout(text, success ? 'perfect' : 'miss', success ? (command.type === 'jump' ? 'DOUBLE STOMP!' : command.type === 'block' ? 'NO DAMAGE' : '+1 GOOP POWER') : command.type==='block'?'Space right at contact':'Base damage');
@@ -350,6 +388,14 @@ async function hurtEnemy(actor,damage,moveName,grade='good') {
   actor.hit=state.time+180;
   if(wasArmored&&!actor.enemy.armor){
     burst(actor.x,hitY,'#9baf87',22,1.7);
+    audio.armorBreak();
+    state.floats.push({text:'ARMOR BROKEN',x:actor.x,y:actor.y-actorHeight(actor)-25,color:'#ffe19a',born:state.fxTime,small:true});
+  }
+  const knockedOut = actor.enemy.hp<=0;
+  const finalKnockout = knockedOut && !state.run.enemies.some(e=>e.hp>0);
+  if(knockedOut){
+    audio.knockout(finalKnockout);
+    state.freeze=Math.max(state.freeze,finalKnockout?150:95);
   }
   updateHUD();
   const stomp=moveName==='jump';
@@ -358,6 +404,7 @@ async function hurtEnemy(actor,damage,moveName,grade='good') {
     state.run.score+=actor.kind==='baron'?100:30;
     burst(actor.x,actor.y-55,actor.kind==='baron'?'#aaa47b':'#bd9c83',24,1.2);
     await move(actor,{alpha:0,y:actor.homeY+45,x:actor.x+35,rot:.7,scale:.55},230);
+    if(finalKnockout)await wait(180);
   }else await move(actor,{rot:0,x:actor.homeX,y:actor.homeY,stretchX:1,stretchY:1},170);
 }
 async function jumpAttack(hero, target) {
@@ -512,7 +559,12 @@ async function enemyStrike(enemy,hero,{kind,travel,windup}) {
   if(damage>0){
     impact(hitX,hitY,'good');hero.hit=state.time+240;float(`−${damage}`,hero,'#ffb990');
     hero.x-=24;hero.rot=-.16;hero.stretchX=.8;hero.stretchY=1.1;
-  }else{float('0',hero,'#c4faff');impact(hitX,hitY,'perfect');audio.block();}
+  }else{
+    float('0',hero,'#c4faff');impact(hitX,hitY,'perfect');audio.block();
+    hero.blockAt=state.fxTime;
+    // A stopped lunge bounces back; ranged attackers only get a small kick.
+    await move(enemy,{x:enemy.x+(kind==='slinger'?10:55),rot:kind==='slinger'?.08:.26,stretchX:.88,stretchY:1.08},90);
+  }
   updateHUD();
   await Promise.all([move(enemy,{x:enemy.homeX,y:enemy.homeY,rot:0,stretchX:1,stretchY:1},400),move(hero,{x:hero.homeX,rot:0,stretchX:1,stretchY:1},250)]);
 }
@@ -591,15 +643,37 @@ function drawActor(a, index) {
   ctx.fillStyle='#151c1bb0';ctx.filter='blur(5px)';ctx.beginPath();ctx.ellipse(a.x+8,a.homeY-4,width*.34*shadowScale,13*shadowScale,0,0,Math.PI*2);ctx.fill();ctx.filter='none';
   ctx.translate(a.x,a.y-(a.rolling?height*.48:0));ctx.rotate(a.rot+(idle?wobble*.015:0));ctx.scale(a.scale*a.stretchX*(1+breath*.01),a.scale*a.stretchY*(1-breath*.012));
   const selected=state.phase==='choose'&&a.enemy?.id===state.selected;
+  const glowAge = a.contactGlowAt === undefined ? 650 : state.fxTime - a.contactGlowAt;
+  const glow = a.kind === 'rat' ? Math.max(0, 1 - glowAge / 650) : 0;
+  if (glow > 0) {
+    const halo = ctx.createRadialGradient(0, -height*.5, width*.12, 0, -height*.5, height*.7);
+    halo.addColorStop(0, `rgba(255,224,100,${glow*.25})`);
+    halo.addColorStop(.55, `rgba(255,202,65,${glow*.16})`);
+    halo.addColorStop(1, 'rgba(255,202,65,0)');
+    ctx.fillStyle = halo;
+    ctx.fillRect(-height*.7, -height*1.2, height*1.4, height*1.4);
+  }
   ctx.filter='drop-shadow(7px 7px 1px #18202177)';
+  if (glow > 0) ctx.filter += ` drop-shadow(0 0 ${8+glow*8}px rgba(255,232,128,${glow})) drop-shadow(0 0 18px rgba(255,190,45,${glow*.65}))`;
   if (a.hit > state.time && Math.floor(state.time/70)%2===0) ctx.filter += ' brightness(1.6)';
   ctx.drawImage(img,-width/2,-height+(a.rolling?height*.48:0),width,height);ctx.filter='none';ctx.shadowBlur=0;
+  const blockAge=a.blockAt===undefined?360:state.fxTime-a.blockAt;
+  if(a.kind==='rat'&&blockAge<360){
+    ctx.save();ctx.globalAlpha*=Math.max(0,1-blockAge/360);
+    ctx.translate(width*.38,-height*.48);
+    const shieldScale=state.reducedMotion?1:1+Math.min(1,blockAge/180)*.12;ctx.scale(shieldScale,shieldScale);
+    ctx.beginPath();ctx.moveTo(0,-48);ctx.lineTo(37,-34);ctx.quadraticCurveTo(40,22,0,52);ctx.quadraticCurveTo(-40,22,-37,-34);ctx.closePath();
+    ctx.fillStyle='#a6f5ff66';ctx.strokeStyle='#dcffff';ctx.lineWidth=5;ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-15,0);ctx.lineTo(-3,12);ctx.lineTo(20,-15);ctx.stroke();ctx.restore();
+  }
   if(a.kind==='baron'&&a.enemy&&!a.enemy.armor){ctx.beginPath();ctx.moveTo(25,-height*.65);ctx.lineTo(5,-height*.5);ctx.lineTo(27,-height*.43);ctx.lineTo(12,-height*.3);ctx.strokeStyle='#ead6a7';ctx.lineWidth=3;ctx.stroke();}
   ctx.restore();
   if(a.enemy&&a.enemy.hp>0&&state.phase!=='title'&&state.phase!=='loading'){
     const top=a.y-height-35, hp=a.enemy.hp/a.enemy.maxHp;
+    const trail=damageTrail(a,a.enemy.hp,a.enemy.maxHp);
     ctx.save();ctx.globalAlpha=a.alpha;const bw=state.mobile?100:105;
     roundedRect(a.x-bw/2,top,bw,11,5,'#422444ed','#e5bed8');
+    if(trail>hp)roundedRect(a.x-bw/2+2,top+2,(bw-4)*trail,7,3,'#ffd785');
     if(hp>0)roundedRect(a.x-bw/2+2,top+2,(bw-4)*hp,7,3,a.enemy.kind==='baron'?'#d7a65f':'#b77cb4');
     ctx.font=`600 ${state.mobile?18:22}px Fredoka, sans-serif`;ctx.textAlign='center';ctx.strokeStyle='#3d2145';ctx.lineWidth=4;
     const label=a.enemy.name;
@@ -616,6 +690,7 @@ function drawActor(a, index) {
 }
 function draw(dt) {
   const {W,H}=state;
+  hpTrail.style.width=`${damageTrail(state.run,state.run.hp,state.run.maxHp)*100}%`;
   ctx.setTransform(canvas.width/W,0,0,canvas.height/H,0,0);ctx.clearRect(0,0,W,H);
   ctx.save();
   if(state.shake>.1){ctx.translate(Math.sin(state.fxTime*.07)*state.shake,Math.cos(state.fxTime*.1)*state.shake*.5);state.shake*=Math.max(0,1-dt*.014);}
