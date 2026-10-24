@@ -1,6 +1,6 @@
 (() => {
   const button = document.getElementById('music');
-  const track = new Audio('assets/music.mp3');
+  const track = new Audio('assets/music.mp3?v=sun-test-9-20261024');
   track.loop = true;
   track.preload = 'auto';
   track.volume = .19125;
