@@ -1,0 +1,44 @@
+/* The nine-slice fascia is decorative; every control remains a real DOM element. */
+body{background:#070d17;color:#ffe0a4}
+main{width:min(900px,100%);padding:6px;gap:0}
+.game-navigation{height:38px;min-height:38px}
+main>h1{position:absolute;width:1px;height:1px;min-height:0;overflow:hidden;clip-path:inset(50%)}
+.cabinet{--marquee:clamp(38px,8.9vw,98px);--rail:clamp(16px,5.5vw,60px);position:relative;isolation:isolate;border:0!important;border-radius:8px;background:#030507;padding:var(--marquee) var(--rail) 12px;box-shadow:0 12px 50px #000b;overflow:hidden}
+.cabinet:before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;border-style:solid;border-color:transparent;border-width:var(--marquee) var(--rail) 110px;border-image:url('assets/cabinet-blue-orange.png') 112 115 175 115 fill / var(--marquee) var(--rail) 110px / 0 stretch}
+.map-picker{order:1;min-height:40px;padding:4px 10px;background:linear-gradient(#151e29,#080c12);border:1px solid #34404c;border-bottom:0;flex-wrap:nowrap;border-radius:5px 5px 0 0}
+.map-picker select{background:#101925;border-color:#a65c1e;min-height:32px;color:#ffe8bc}
+.screen{order:2;border:2px solid #080b10;border-radius:0 0 6px 6px;background:#030507;box-shadow:0 0 0 2px #28303b,inset 0 0 20px #000;z-index:0}
+.hud{order:3;height:44px;min-height:44px;padding:5px 12px 0;gap:8px}
+.hud output{font:bold clamp(15px,2.4vw,22px) monospace;letter-spacing:2px;color:#ffe3a1;text-shadow:0 0 7px #ff990066}
+.hud output:before{display:block;font:700 9px monospace;letter-spacing:2px;line-height:13px;color:#ffdfa1}
+#score:before,#best:before{content:none}#best{text-align:right;color:#ffe3a1}
+.score-block{align-items:flex-start}.score-block:last-child{align-items:flex-end}
+#lives{justify-content:center;flex:1;min-width:0}#lives img{width:12px;height:25px}
+.controls{order:4;height:48px;min-height:48px;padding:2px 10px;gap:10px}
+.controls .icon,.controls .fullscreen-button{width:40px;height:40px;flex-shrink:0}
+.controls .icon{border-radius:50%;box-shadow:0 2px 3px #000,0 0 0 2px #111,0 0 0 3px #6a6760}
+#progress{min-width:8px;background:linear-gradient(90deg,#ff932b var(--progress,0%),#0a111c var(--progress,0%));box-shadow:0 1px 0 #637184}
+.fire-button{flex-shrink:0;width:54px;height:38px;background:#111a27;border-color:#98602e}
+.ghost-guide{top:calc(clamp(38px,8.9vw,98px) + 48px);right:calc(clamp(16px,5.5vw,60px) + 14px);font-size:10px}
+.ghost-guide summary{padding:6px 8px;background:#101925;border-color:#647386}
+.ghost-guide>div{background:#0c1420f5;border-color:#647386}
+.icon:focus-visible,.fire-button:focus-visible,.map-picker select:focus-visible{outline:3px solid #74d6ff;outline-offset:2px}
+@media(max-width:700px){
+ main{padding:3px 3px 72px}
+ .cabinet{padding-bottom:10px}
+ .cabinet:before{border-bottom-width:106px;border-image-width:var(--marquee) var(--rail) 106px}
+ .hud{padding:4px 5px 0;height:42px;min-height:42px}.hud output{font-size:15px;letter-spacing:1px}.hud output:before{font-size:8px;letter-spacing:1px}
+ .controls{padding:3px 4px;gap:8px}.controls .icon{width:36px;height:36px}.fire-button{width:44px}
+ .map-picker{padding:4px 6px;gap:6px}.map-picker select{max-width:145px}
+ .touch{position:static;flex:0 0 94px;display:block;opacity:1;margin:0;padding-top:5px}.touch .icon{width:40px;height:40px;margin:1px 4px}.touch>div{gap:4px}
+ .ghost-guide{right:calc(clamp(16px,5.5vw,60px) + 8px);top:calc(clamp(38px,8.9vw,98px) + 46px)}
+}
+@media(max-height:500px){
+ .cabinet{padding-bottom:6px}.cabinet:before{border-bottom-width:88px;border-image-width:var(--marquee) var(--rail) 88px}
+ .hud{height:34px;min-height:34px}.controls{height:42px;min-height:42px}.map-picker{min-height:34px}.map-picker select{min-height:26px;padding:3px 8px}
+ .ghost-guide{top:calc(clamp(38px,8.9vw,98px) + 48px)}.hero{height:45%}#start{width:55px;height:55px}#overlay{gap:8px}
+}
+
+
+.cabinet{width:100%}.screen{aspect-ratio:auto}.controls .board-button{width:36px;height:36px;flex-shrink:0}canvas{object-fit:contain}
+

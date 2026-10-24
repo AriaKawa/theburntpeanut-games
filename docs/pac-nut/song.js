@@ -9,7 +9,7 @@
   track.preload = 'auto';
   track.volume = .19125;
   const key = button.dataset.musicKey + '-song';
-  let enabled = true, leaving = false;
+  let enabled = true, leaving = false, autoplayBlocked = false;
   try { enabled = localStorage.getItem(key) !== 'off'; } catch {}
   let dead=false, mixContext, mixGain, mixFilter;
   function connectMix(){
@@ -21,9 +21,9 @@
   document.addEventListener('pacnut:death',()=>{track.playbackRate=.9;deathMix(true);});
   document.addEventListener('pacnut:revive',()=>deathMix(false));
   function render() {
-    button.setAttribute('aria-pressed', String(enabled));
-    button.setAttribute('aria-label', enabled ? 'Mute music' : 'Enable music');
-    button.title = enabled ? 'Mute music' : 'Enable music';
+    button.setAttribute('aria-pressed', String(enabled && !autoplayBlocked));
+    button.setAttribute('aria-label', enabled ? (autoplayBlocked ? 'Start music' : 'Mute music') : 'Enable music');
+    button.title = enabled ? (autoplayBlocked ? 'Start music' : 'Mute music') : 'Enable music';
     if (button.dataset.goldIcon) button.className = 'icon ' + (enabled ? 'sound' : 'mute');
     else button.innerHTML = '<span aria-hidden="true">' + (enabled ? '\u266a' : '\u266a\u0338') + '</span>';
   }
@@ -35,8 +35,12 @@
     try {
       const play = track.play();
       if (play) play.then(() => {
+        autoplayBlocked = false;
         if (!enabled || document.hidden || leaving) track.pause();
-      }).catch(() => {}); // Retry on interaction if the browser blocks autoplay.
+        render();
+      }).catch(error => {
+        if (error.name === 'NotAllowedError' && track.paused) { autoplayBlocked = true; render(); }
+      });
     } catch {}
   }
   function unlock(event) {connectMix();
@@ -47,7 +51,7 @@
     document.addEventListener(type, unlock, {capture:true});
   }
   button.addEventListener('click', () => {
-    connectMix();enabled = !enabled;
+    connectMix();enabled = autoplayBlocked ? true : !enabled; autoplayBlocked = false;
     try { localStorage.setItem(key, enabled ? 'on' : 'off'); } catch {}
     render(); sync();
   });
