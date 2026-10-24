@@ -169,23 +169,23 @@
     },
     {
       "id": "range",
-      "file": "range.png",
+      "file": "range-pixel.png",
       "transparent": true,
-      "framing": "Blue diamond-shaped Viagra-style pill, shaded and readable at 22 pixels. No lettering.",
+      "framing": "Crisp pixel-art pickup sprite; original generation preserved, compact nearest-neighbor lossless delivery.",
       "use": "Live arena pickup and HUD where appropriate."
     },
     {
       "id": "rpg",
-      "file": "rpg.png",
+      "file": "rpg-pixel.png",
       "transparent": true,
-      "framing": "Painted compact RPG launcher pickup, readable at 22 pixels. No lettering.",
+      "framing": "Crisp pixel-art pickup sprite; original generation preserved, compact nearest-neighbor lossless delivery.",
       "use": "Live arena pickup and HUD where appropriate."
     },
     {
       "id": "speed",
-      "file": "speed.png",
+      "file": "speed-pixel.png",
       "transparent": true,
-      "framing": "Single green Voodoo Ranger bottle with skeleton-hat label, fully visible.",
+      "framing": "Crisp pixel-art pickup sprite; original generation preserved, compact nearest-neighbor lossless delivery.",
       "use": "Silly juice speed pickup; ten seconds of 30% faster movement."
     },
     {

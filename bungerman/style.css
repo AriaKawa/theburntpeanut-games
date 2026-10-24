@@ -1,6 +1,6 @@
 :root{color-scheme:dark;font-family:Arial,Helvetica,sans-serif;color:#f6f6dc;font-weight:800}*{box-sizing:border-box}body{margin:0;height:100svh;overflow:hidden;background:radial-gradient(ellipse at 50% 16%,#3b3b3d 0%,transparent 62%),repeating-linear-gradient(125deg,#ffffff02 0 1px,transparent 1px 5px),#242426}button{font:inherit;cursor:pointer;color:inherit;touch-action:manipulation}button:focus-visible,[tabindex]:focus-visible{outline:3px solid #ffde63;outline-offset:3px}button:disabled{opacity:.4;cursor:default}[hidden]{display:none!important}
 /* The complete upright machine extends below its playable screen. */
-.cabinet{position:fixed;top:0;container-type:inline-size;width:min(98vw,calc(100svh*.87));min-width:0;left:50%;transform:translateX(-50%);margin:0;padding:0;aspect-ratio:740/1532;filter:drop-shadow(0 15px 30px #000b)}
+.cabinet{position:fixed;top:0;container-type:inline-size;width:min(98vw,calc(100svh*1.044));min-width:0;left:50%;transform:translateX(-50%);margin:0;padding:0;aspect-ratio:740/1532;filter:drop-shadow(0 15px 30px #000b)}
 .cabinet-art{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none}
 header{position:absolute;width:1px;height:1px;overflow:hidden;opacity:0}#logo{width:1px;height:1px}
 .machine{position:absolute;left:22.4324%;top:20.3003%;width:54.5946%;height:22.846%;border-radius:3px;overflow:hidden;background:#071921;box-shadow:0 0 12px #061822 inset}
@@ -82,3 +82,44 @@ body.handheld .perk canvas{width:4cqw;height:4cqw}body.handheld .perk small{font
 #lobby-view #lobby-ready{font-size:calc(var(--lu)*1.8);padding:calc(var(--lu)*.6) calc(var(--lu)*2);align-self:center;line-height:1.1}
 #lobby-view .connection-status{font-size:calc(var(--lu)*1.15);min-height:0;max-width:100%;margin:0;line-height:1.15}
 #lobby-view #lobby-leave{font-size:calc(var(--lu)*1.2);margin:0;padding:calc(var(--lu)*.25);align-self:center}
+
+/* Character choices on the left, factual drop instructions on the right. */
+.selection-content{display:grid;grid-template-columns:1fr 1fr;gap:1.5cqw;align-items:center;flex:1;min-height:0}
+#select-view .selection-content .roster{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1cqw;margin:0}
+.selection-content .character{width:100%;padding-bottom:.6cqw;box-shadow:none}
+.selection-content .portrait{height:7.5cqw;width:auto;max-width:100%}
+.selection-content .character span{font-size:1.25cqw}
+.selection-content .character i{display:none}
+.drop-guide{display:flex;flex-direction:column;gap:1.4cqw;text-align:left}
+.drop-row{display:flex;align-items:center;gap:.7cqw;min-width:0}
+.drop-row img{width:4cqw;height:4.5cqw;object-fit:contain;flex:none}
+.drop-row p{margin:0;font-size:1.55cqw;font-weight:400;line-height:1.3;color:#e4eaf0}
+.drop-row strong{display:block;margin-bottom:.25cqw;font-size:1.65cqw;color:#ffe18a}
+body.fullscreen .selection-content{gap:3cqw}
+body.fullscreen #select-view .selection-content .roster{gap:2cqw;margin:0}
+body.fullscreen .selection-content .portrait{height:15cqw}
+body.fullscreen .selection-content .character span{font-size:2.5cqw}
+body.fullscreen .drop-guide{gap:3cqw}
+body.fullscreen .drop-row{gap:1.4cqw}
+body.fullscreen .drop-row img{width:8cqw;height:9cqw}
+body.fullscreen .drop-row p{font-size:3cqw}
+body.fullscreen .drop-row strong{font-size:3.2cqw}
+
+.drop-row img,#rpg-fire img{image-rendering:pixelated}
+
+/* Match the footer columns to the character/drop columns. */
+#select-view .menu-footer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5cqw}
+#select-view .map-picker{justify-self:center;justify-content:center}
+#select-view .menu-actions{justify-self:end}
+body.fullscreen #select-view .menu-footer{gap:3cqw}
+
+/* Keep the control and its hint aligned using one shared corner inset. */
+:root{--fullscreen-size:76px;--fullscreen-margin:12px}
+.fullscreen-button{top:max(var(--fullscreen-margin),env(safe-area-inset-top));right:max(var(--fullscreen-margin),env(safe-area-inset-right));width:var(--fullscreen-size);height:var(--fullscreen-size);padding:16px;border-radius:12px}
+.fullscreen-hint{position:fixed;z-index:13;top:max(var(--fullscreen-margin),env(safe-area-inset-top));right:calc(max(var(--fullscreen-margin),env(safe-area-inset-right)) + var(--fullscreen-size) + 10px);min-height:var(--fullscreen-size);display:flex;align-items:center;gap:10px;max-width:calc(100vw - var(--fullscreen-size) - 46px);color:#fff;font-size:19px;font-weight:700;line-height:1.2;text-shadow:0 2px 4px #000;pointer-events:none}
+.fullscreen-hint-arrow{font-size:40px;line-height:1;font-weight:400;flex:none}
+@media(max-width:600px){:root{--fullscreen-size:60px;--fullscreen-margin:10px}.fullscreen-button{padding:12px}.fullscreen-hint{font-size:15px;gap:8px}.fullscreen-hint-arrow{font-size:32px}}
+
+
+/* Keep the drop guide readable on touch layouts as well as fullscreen. */
+body.handheld .selection-content{gap:2cqw}body.handheld .selection-content .portrait{height:13cqw}body.handheld .selection-content .character span{font-size:2.5cqw}body.handheld .drop-row img{width:7cqw;height:8cqw}body.handheld .drop-row p{font-size:2.5cqw}body.handheld .drop-row strong{font-size:2.8cqw}.icon-button svg{width:65%;height:65%}.pixel-button svg{width:1em;height:1em;vertical-align:middle}.map-picker button svg,.lobby-character-picker button svg{width:1em;height:1em}

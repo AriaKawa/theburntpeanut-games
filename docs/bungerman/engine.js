@@ -3,7 +3,7 @@ export const CAST={peanut:{name:'Burnt Peanut',sprite:0,color:'#ed9853'},hutch:{
 export const PERKS={peanut:{icon:'range',text:'+1 blast range'},hutch:{icon:'shield',text:'Block one blast'},ninja:{icon:'speed',text:'10% faster'},tpain:{icon:'kick',text:'Kick 1 tile'}};
 export function applyPerk(e){Object.assign(e,{rangeUp:e.character==='peanut'?1:0,shield:e.character==='hutch'?1:0,canKick:e.character==='tpain',capacity:2});return e;}
 export const MAPS=[{id:'garden',name:'Peanut Garden'},{id:'foundry',name:'Roast Foundry'},{id:'neon',name:'Neon Arcade'}];
-export const FLAME_DURATION=.56;
+export const FLAME_DURATION=.46;
 const SPAWNS=[[1,1],[11,9],[11,1],[1,9],[7,5],[5,7]];
 function steelAt(map,x,y){if(x===0||y===0||x===COLS-1||y===ROWS-1)return true;if(map==='garden')return x%2===0&&y%2===0;if(SPAWNS.some(([sx,sy])=>Math.abs(x-sx)+Math.abs(y-sy)<=1))return false;if(map==='foundry')return [4,8].includes(x)&&[2,3,4,6,7,8].includes(y);return [[3,3],[8,3],[3,7],[8,7]].some(([sx,sy])=>x>=sx&&x<=sx+1&&y>=sy&&y<=sy+1);}
 export const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];

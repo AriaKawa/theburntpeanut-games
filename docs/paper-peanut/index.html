@@ -20,8 +20,8 @@
 <link rel="stylesheet" href="scrapbook-ui.css?v=download-back-20261024">
 <link rel="stylesheet" href="campaign.css?v=download-back-20261024">
 <link rel="stylesheet" href="song.css?v=download-back-20261024">
-<link rel="stylesheet" href="arsenal-book.css?v=download-back-20261024"></head>
-<body><aside aria-label="Unofficial concept notice" style="position:fixed;bottom:8px;left:8px;z-index:2147483647;max-width:min(420px,calc(100vw - 32px));padding:9px 12px;border:1px solid #ffcf5a88;border-radius:8px;background:#100f15f2;color:#f4efe6;font:12px/1.4 system-ui,sans-serif;pointer-events:none">Unofficial fan-made concept preview. Not affiliated with or endorsed by TheBurntPeanut. This unlisted link is accessible to anyone who has it.</aside>
+<link rel="stylesheet" href="arsenal-book.css?v=download-back-20261024"><link rel="stylesheet" href="preview-fixes.css?v=reconcile-20261024"></head>
+<body>
 <div id="app" class="app">
   <header class="topbar"><a id="game-back" class="game-back" href="../" aria-label="Back"><span aria-hidden="true">↶</span> Back</a>
     <a class="wordmark" href="./" aria-label="Paper Peanut home">PAPER PEANUT</a>
@@ -31,7 +31,7 @@
       <button id="pause" class="utility" disabled aria-label="Pause game">Ⅱ <span>Pause</span></button>
       <button id="fullscreen" class="utility" aria-label="Enter fullscreen">⛶</button>
     </nav>
-  </header>
+  </header><aside class="preview-notice" aria-label="Unofficial concept notice">Unofficial fan-made preview · Not affiliated with or endorsed by TheBurntPeanut.</aside>
     <main id="game" class="game" aria-label="Paper Peanut battle game">
       <canvas id="stage" width="1440" height="1080" aria-label="Peanut faces enemy rats on a paper sewer stage"></canvas>
       <div class="vignette" aria-hidden="true"></div>
@@ -81,7 +81,7 @@
     </main>
   <footer hidden><span id="footer-hint"></span></footer>
 </div>
-<dialog id="help-dialog" class="modal paper">
+<dialog id="help-dialog" class="modal paper"><div class="instructions-content">
   <button class="game-back modal-back" data-close="help-dialog" aria-label="Back to game">↶ Back</button><button class="close" data-close="help-dialog" aria-label="Close instructions">×</button><span class="eyebrow">CONTROLS</span><h2>Watch the characters.<br>Press at contact.</h2>
   <div class="instruction"><b>01</b><div><strong>Choose your move</strong><p>Click an enemy or use ← → to pick a target. Choose Jump, Shell Slam, your equipped special, or Silly Juice. Keys 1–4 work too.</p></div></div>
   <div class="instruction"><b>02</b><div><strong>Space as your attack hits</strong><p>Jump: press as Peanut lands on the enemy. Shell Slam: press as the shells connect. Special moves: press as the projectile or shockwave hits. Every attack deals damage. One well-timed press earns a second stomp or bonus damage. Watch the action itself.</p></div></div>
@@ -89,10 +89,10 @@
   <p class="modal-note">Space, Enter, or a tap on the stage all work.<br>Shell Slam cracks armor. Silly Juice heals 8 HP. Esc pauses. Clear encounters for scrap and one ability upgrade. Spend scrap in the home Arsenal for permanent special moves.</p>
   <label class="relaxed"><input type="checkbox" id="relaxed"> Cozy timing <span>A wider timing window</span></label>
   <button class="ribbon-button" data-close="help-dialog">Close</button>
-</dialog>
+</div></dialog>
 <dialog id="pause-dialog" class="modal paper pause-modal"><button class="game-back modal-back" data-close="pause-dialog" aria-label="Back to game">↶ Back</button><h2>Paused</h2><label class="relaxed"><input id="pause-cozy" type="checkbox"> Cozy timing <span>Wider contact window</span></label><button id="resume" class="ribbon-button">Resume</button><button id="restart" class="text-button">Restart</button><button id="go-home" class="text-button">Home</button></dialog>
 
-<script type="module" src="game.js?v=download-back-20261024"></script>
+<script type="module" src="game.js?v=reconcile-20261024"></script>
 <button id="music" class="game-music music-corner" data-music-key="paper-peanut" type="button" aria-label="Mute music" aria-pressed="true"><span aria-hidden="true">&#9834;</span></button><script src="song.js?v=music-start-20261024" defer></script></body>
 </html>
 

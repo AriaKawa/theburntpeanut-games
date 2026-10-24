@@ -1,5 +1,5 @@
-import {UI_ASSETS} from './assets/runtime/ui-assets.js?v=mp15';
-import {loadImage} from './image-loader.js?v=mp15';
+import {UI_ASSETS} from './assets/runtime/ui-assets.js?v=reconcile-20261024';
+import {loadImage} from './image-loader.js?v=reconcile-20261024';
 export const PACK_IDS=['arcade2005'];
 export const ASSET_IDS=['logo','pickup','range','rpg','speed','paused','won','lost','roundWon','shield','capacity','kick'];
 const cache=new Map();
