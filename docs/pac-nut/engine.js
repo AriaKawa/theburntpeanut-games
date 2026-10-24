@@ -115,7 +115,7 @@ let gunNoise,gunBus,gunOutput,lastGunShot=-Infinity;const gunVoices=new Set();
 function stopGunSound(){for(const node of gunVoices){try{node.stop()}catch{}}gunVoices.clear()}
 function gunShot(){if(!sound)return;try{
  audio??=new(window.AudioContext||window.webkitAudioContext)();audio.resume().catch(()=>{});const now=audio.currentTime;if(now-lastGunShot<.09)return;lastGunShot=now;
- if(!gunBus){gunBus=audio.createDynamicsCompressor();gunBus.threshold.value=-12;gunBus.knee.value=12;gunBus.ratio.value=3;gunBus.attack.value=.006;gunBus.release.value=.12;gunOutput=audio.createGain();gunOutput.gain.value=1.35;gunBus.connect(gunOutput);gunOutput.connect(audio.destination)}
+ if(!gunBus){gunBus=audio.createDynamicsCompressor();gunBus.threshold.value=-12;gunBus.knee.value=12;gunBus.ratio.value=3;gunBus.attack.value=.006;gunBus.release.value=.12;gunOutput=audio.createGain();gunOutput.gain.value=1.08;gunBus.connect(gunOutput);gunOutput.connect(audio.destination)}
  if(!gunNoise){gunNoise=audio.createBuffer(1,Math.ceil(audio.sampleRate*.23),audio.sampleRate);const data=gunNoise.getChannelData(0);let low=0;for(let i=0;i<data.length;i++){low=.65*low+.35*(Math.random()*2-1);data[i]=low}}
  const crack=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain();
  crack.buffer=gunNoise;filter.type='lowpass';filter.frequency.setValueAtTime(1400,now);filter.frequency.exponentialRampToValueAtTime(280,now+.2);filter.Q.value=.7;gain.gain.setValueAtTime(.0001,now);gain.gain.linearRampToValueAtTime(.42,now+.003);gain.gain.exponentialRampToValueAtTime(.0001,now+.22);crack.connect(filter);filter.connect(gain);gain.connect(gunBus);
