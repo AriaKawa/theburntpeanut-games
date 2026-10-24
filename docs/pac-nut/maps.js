@@ -29,27 +29,6 @@ function themedLayout(original,id){
  }
  return grid.map(row=>row.join(''));
 }
-// Cache scenery placements once per layout; every prop stays inside solid walls.
-let mapScenery=[];
-function placeMapScenery(){
- mapScenery=[];const occupied=new Set();
- for(let y=1;y<H-2;y++)for(let x=1;x<W-2;x++){
-  let size=0;
-  for(const n of [3,2])if(Array.from({length:n},(_,dy)=>Array.from({length:n},(_,dx)=>MAP[y+dy]?.[x+dx]==='#'&&!occupied.has((x+dx)+','+(y+dy))).every(Boolean)).every(Boolean)){size=n;break;}
-  if(!size)continue;
-  for(let dy=0;dy<size;dy++)for(let dx=0;dx<size;dx++)occupied.add((x+dx)+','+(y+dy));
-  mapScenery.push({x:x*T+4,y:y*T+4,size:size*T-8});
- }
-}
-function drawMapDetails(theme){
- if(theme.id==='classic')return;
- const image=art['scenery-'+theme.id];
- if(!image?.complete||!image.naturalWidth)return;
- ctx.save();ctx.shadowColor='#0008';ctx.shadowBlur=5;ctx.shadowOffsetY=3;
- for(const prop of mapScenery)ctx.drawImage(image,prop.x,prop.y,prop.size,prop.size);
- ctx.restore();
-}
-
 // Scale each generated material once; patterns stay aligned across adjoining tiles.
 const mapMaterials=new Map();
 function mapMaterial(id,kind){

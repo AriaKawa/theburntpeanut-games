@@ -9,7 +9,7 @@ for(const game of ['bungerman','pac-nut','paper-peanut']) for(const saved of ['o
  assert.equal(source,fs.readFileSync('docs/'+game+'/song.js','utf8'));
  vm.runInNewContext(source,{document:doc,window:{addEventListener:(k,f)=>winEvents[k]=f},Audio,localStorage:{getItem:k=>store[k],setItem:(k,v)=>store[k]=v}});
  await Promise.resolve();
- assert.equal(plays,saved==='on'?1:0);assert.equal(track.volume,.19125);assert.equal(track.loop,true);assert.equal(track.preload,'auto');if(game==='pac-nut'){docEvents['pacnut:weapon']({detail:{armed:true}});assert.equal(track.playbackRate,1.03);assert.equal(track.preservesPitch,false);docEvents['pacnut:weapon']({detail:{armed:false}});assert.equal(track.playbackRate,1);}
+ assert.equal(plays,saved==='on'?1:0);assert.equal(track.volume,.19125);assert.equal(track.loop,true);assert.equal(track.preload,'auto');if(game==='pac-nut'){docEvents['pacnut:weapon']({detail:{armed:true}});assert.equal(track.playbackRate,1.03);assert.equal(track.preservesPitch,true);docEvents['pacnut:weapon']({detail:{armed:false}});assert.equal(track.playbackRate,.9);}
  blocked=false;
  if(saved==='off'){docEvents.pointerdown({target:{closest:()=>false}});assert.equal(plays,0);handlers.click();}
  else docEvents.keydown({target:{closest:()=>false}});
