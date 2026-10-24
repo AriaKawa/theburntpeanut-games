@@ -17,8 +17,11 @@ const root=path.resolve(__dirname,'..');
    await page.goto(base+game+'/',{waitUntil:'networkidle'});
    await page.waitForFunction(()=>!document.querySelector('#start').disabled);
    await page.evaluate(async()=>{await Promise.all([...document.images].map(img=>img.decode()))});
-   const bytes=await page.evaluate(()=>performance.getEntriesByType('resource').reduce((sum,r)=>sum+r.encodedBodySize,0));console.log('Initial bytes',game,bytes);
-   assert(bytes<10000000,`${game} initial resources exceed 10 MB: ${bytes}`);
+   const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({url:r.name,bytes:r.encodedBodySize})));
+   const bytes=resources.reduce((sum,r)=>sum+r.bytes,0),imageBytes=resources.filter(r=>/\.(?:png|webp)(?:\?|$)/.test(r.url)).reduce((sum,r)=>sum+r.bytes,0);console.log('Initial bytes',game,bytes,'images',imageBytes);
+   // Media range requests vary between local HTTP and Pages; bound artwork independently.
+   assert(imageBytes<8000000,`${game} initial artwork exceeds 8 MB: ${imageBytes}`);
+   assert(bytes<12000000,`${game} initial resources exceed 12 MB: ${bytes}`);
    if(game==='pac-nut'){
     assert.deepEqual(await page.evaluate(()=>Object.values(art).filter(im=>!im.complete||!im.naturalWidth).map(im=>im.src)),[]);
     for(const map of ['classic','neighborhood','scifi','fantasy']){
