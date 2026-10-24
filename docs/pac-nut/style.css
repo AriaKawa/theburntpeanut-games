@@ -41,3 +41,16 @@ body>aside[aria-label="Unofficial concept notice"]{top:8px!important;right:8px!i
 .ghost-guide{position:absolute;right:14px;top:8px;z-index:30;font:12px/1.4 monospace;color:#ffe6b2}.ghost-guide summary{cursor:pointer;padding:8px 13px;border:1px solid #c58b40;border-radius:16px;background:#271a0e}.ghost-guide>div{background:#160f09f5;border:1px solid #b77c36;border-radius:10px;padding:10px 14px;max-height:70dvh;overflow:auto;box-shadow:0 8px 30px #000b}.ghost-guide h2{font-size:13px;margin:6px 0}.ghost-guide p{margin:5px 0;display:flex;gap:8px;align-items:center}.ghost-guide i{display:inline-block;width:12px;height:12px;border-radius:50%;flex:none;border:1px solid #ffffff80}@media(max-width:700px){.ghost-guide{font-size:10px}.ghost-guide>div{max-width:270px}}
 
 body.dead .hero,body.dead #post-score{display:none!important}body.dead #overlay{background:#100b08c9;gap:30px}#death-score{font:bold clamp(24px,4vw,48px) monospace;color:#ffe0a0;text-shadow:0 3px 15px #000}body.dead #start{background:linear-gradient(#a56829,#3a210c);border:2px solid #e9b15d;border-radius:12px;color:#ffe6b2;width:190px;height:58px;font:bold 21px monospace}body.dead .controls,body.dead .touch,body.dead .game-navigation,body.dead .ghost-guide{visibility:hidden;pointer-events:none}
+
+/* Keep the title above the playfield and the score strip below it. */
+main{padding-top:3px;gap:3px}
+h1{height:52px;min-height:52px;display:block}
+h1 img{width:260px}
+.cabinet{padding:4px 7px 0;border-radius:15px;border-width:1px;box-shadow:0 20px 80px #000c,inset 0 0 0 2px #1c110c}
+.screen{border-width:1px;border-radius:7px}
+.hud{height:46px;min-height:46px;padding:5px 8px 2px}
+.score-block{display:flex;flex-direction:column;align-items:center;gap:2px}
+.score-label{font:bold 10px/1 monospace;letter-spacing:2px;color:#f9d999}
+#best{font-size:16px;color:#f9d999}
+@media(max-width:700px){h1{height:44px;min-height:44px}h1 img{width:210px}.cabinet{padding:3px 4px 0;border-radius:10px}.hud{height:42px;min-height:42px}.score-label{font-size:8px;letter-spacing:1px}#best{font-size:13px}}
+@media(max-height:600px){h1{height:28px;min-height:28px}h1 img{width:145px}.hud{height:34px;min-height:34px}.score-label{font-size:8px}#best{font-size:12px}}
