@@ -4,7 +4,7 @@ main{width:min(900px,100%);padding:6px;gap:0}
 .game-navigation{height:38px;min-height:38px}
 main>h1{position:absolute;width:1px;height:1px;min-height:0;overflow:hidden;clip-path:inset(50%)}
 .cabinet{--marquee:clamp(38px,8.9vw,98px);--rail:clamp(16px,5.5vw,60px);position:relative;isolation:isolate;border:0!important;border-radius:8px;background:#030507;padding:var(--marquee) var(--rail) 12px;box-shadow:0 12px 50px #000b;overflow:hidden}
-.cabinet:before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;border-style:solid;border-color:transparent;border-width:var(--marquee) var(--rail) 110px;border-image:url('assets/cabinet-blue-orange.png') 112 115 175 115 fill / var(--marquee) var(--rail) 110px / 0 stretch}
+.cabinet:before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;border-style:solid;border-color:transparent;border-width:var(--marquee) var(--rail) 110px;border-image:url('assets/cabinet-blue-orange.webp') 112 115 175 115 fill / var(--marquee) var(--rail) 110px / 0 stretch}
 .map-picker{order:1;min-height:40px;padding:4px 10px;background:linear-gradient(#151e29,#080c12);border:1px solid #34404c;border-bottom:0;flex-wrap:nowrap;border-radius:5px 5px 0 0}
 .map-picker select{background:#101925;border-color:#a65c1e;min-height:32px;color:#ffe8bc}
 .screen{order:2;border:2px solid #080b10;border-radius:0 0 6px 6px;background:#030507;box-shadow:0 0 0 2px #28303b,inset 0 0 20px #000;z-index:0}

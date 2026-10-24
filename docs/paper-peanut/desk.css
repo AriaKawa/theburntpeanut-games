@@ -1,11 +1,11 @@
 /* The approved composition is the UI. Hit regions share its fixed 3:2 coordinates. */
 .desk-home{padding:0;display:grid;place-items:center;background:radial-gradient(ellipse at center,#42253e,#180f20 80%);overflow:hidden}
-.desk-scene{position:relative;width:min(1536px,100vw,calc((100svh - 44px)*1.5));aspect-ratio:3/2;background:url('assets/midnight-scrapbook.png') center/100% 100% no-repeat;container-type:inline-size;box-shadow:0 12px 60px #09051180}
+.desk-scene{position:relative;width:min(1536px,100vw,calc((100svh - 44px)*1.5));aspect-ratio:3/2;background:url('assets/midnight-scrapbook.webp') center/100% 100% no-repeat;container-type:inline-size;box-shadow:0 12px 60px #09051180}
 .desk-menu{position:absolute;inset:0}.desk-menu[hidden]{display:none}
 .desk-arsenal,.desk-play{position:absolute;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;cursor:pointer;transition:filter .18s;isolation:isolate}
 .desk-arsenal{left:15.5%;top:32%;width:32%;height:47%;clip-path:polygon(0 28%,8% 28%,8% 5%,95% 0,100% 100%,0 98%)}
 .desk-play{left:52%;top:67%;width:30%;height:15%;clip-path:polygon(0 29%,10% 7%,86% 0,100% 33%,94% 60%,100% 88%,13% 100%,0 75%,5% 51%)}
-.desk-arsenal::before,.desk-play::before{content:'';position:absolute;inset:0;background-image:url('assets/midnight-scrapbook.png');background-repeat:no-repeat;opacity:0;transition:opacity .18s,filter .18s;pointer-events:none}
+.desk-arsenal::before,.desk-play::before{content:'';position:absolute;inset:0;background-image:url('assets/midnight-scrapbook.webp');background-repeat:no-repeat;opacity:0;transition:opacity .18s,filter .18s;pointer-events:none}
 .desk-arsenal::before{background-size:312.5% 212.765957%;background-position:22.794118% 60.377358%}
 .desk-play::before{background-size:333.333333% 666.666667%;background-position:74.285714% 78.823529%}
 .desk-arsenal:hover::before,.desk-play:hover::before,.desk-arsenal:focus-visible::before,.desk-play:focus-visible::before{opacity:1;filter:brightness(1.18) saturate(1.08)}
@@ -14,7 +14,7 @@
 .desk-arsenal:active::before,.desk-play:active::before{opacity:1;filter:brightness(.88)}
 .desk-play:disabled{cursor:wait}
 .desk-home[data-view=arsenal] .desk-scene::before{content:'';position:absolute;inset:0;background:#1a0d29ba;backdrop-filter:blur(3px)}
-.desk-scene .story-book.arsenal-page{position:absolute;inset:12% 21% 8%;width:auto;height:auto;min-height:0;margin:0;padding:3% 4%;display:flex;background:#f5e1c1 url('assets/ability-sticker.png') center/100% 100% no-repeat;border:12px solid #69436e;border-radius:12px;box-shadow:0 0 0 2px #b990ac,0 16px 35px #11091cc0;filter:none;aspect-ratio:auto;container-type:inline-size;outline:1px dashed #e1bad4;outline-offset:-7px}
+.desk-scene .story-book.arsenal-page{position:absolute;inset:12% 21% 8%;width:auto;height:auto;min-height:0;margin:0;padding:3% 4%;display:flex;background:#f5e1c1 url('assets/ability-sticker.webp') center/100% 100% no-repeat;border:12px solid #69436e;border-radius:12px;box-shadow:0 0 0 2px #b990ac,0 16px 35px #11091cc0;filter:none;aspect-ratio:auto;container-type:inline-size;outline:1px dashed #e1bad4;outline-offset:-7px}
 .desk-scene .arsenal-page[hidden]{display:none}
 .arsenal-page .book-left{width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden}
 .desk-scene .arsenal-page .arsenal-heading{height:54px;min-height:54px;margin:0 0 8px;padding:0 76px}
@@ -41,7 +41,7 @@
 /* Generated fabric page; controls align to the sewn pockets and labels. */
 .desk-home[data-view=arsenal] .desk-scene{width:min(100vw,calc(100svh - 44px));height:auto;aspect-ratio:1;background:none;box-shadow:none}
 .desk-home[data-view=arsenal] .desk-scene::before{display:none}
-.desk-scene .story-book.arsenal-page{inset:0;padding:0;border:0;border-radius:0;outline:0;background:url('assets/arsenal-pockets.png') center/100% 100% no-repeat;box-shadow:none;display:block}
+.desk-scene .story-book.arsenal-page{inset:0;padding:0;border:0;border-radius:0;outline:0;background:url('assets/arsenal-pockets.webp') center/100% 100% no-repeat;box-shadow:none;display:block}
 .desk-scene .arsenal-page .book-left{display:block;padding:0;position:absolute;inset:0;width:100%;height:100%}
 .desk-scene .arsenal-page .arsenal-heading{position:absolute;inset:0;height:18%;min-height:0;margin:0;padding:0;display:block}
 .desk-scene .arsenal-page h2.newspaper-title{position:absolute;left:29%;top:20%;width:42%;height:70%;margin:0;display:flex;align-items:center;justify-content:center;font-size:clamp(19px,4.6cqw,38px);gap:1px}
@@ -58,12 +58,12 @@
 .desk-scene .arsenal-page .unlock-sticker{position:absolute;left:22%;top:82%;width:56%;height:18%;min-height:0;max-width:none;padding:0;border:0;background:none;color:#452841;box-shadow:none;border-radius:8px;font-size:clamp(7px,1.6cqw,13px);font-weight:700;line-height:1;display:grid;place-items:center}
 .desk-scene .arsenal-page .unlock-sticker:not(:disabled):hover{background:#f9d99566;box-shadow:0 0 8px #f5cd7a}
 .desk-scene .arsenal-page .unlock-sticker:disabled{opacity:.65}
-.chapter-page{position:absolute;inset:0;background:url('assets/chapter-spread.png') center/100% 100% no-repeat}
+.chapter-page{position:absolute;inset:0;background:url('assets/chapter-spread.webp') center/100% 100% no-repeat}
 .chapter-page[hidden]{display:none}
 .chapter-page button{position:absolute;padding:0;margin:0;border:0;box-shadow:none;background:none;border-radius:12px;cursor:pointer}
 #close-chapters{left:11%;top:9%;width:7%;height:11%;border-radius:50%}
 #chapter-rats{left:10%;top:18%;width:37%;height:66%;clip-path:polygon(25% 0,75% 0,85% 20%,100% 40%,100% 97%,0 100%,0 74%,8% 60%,0 45%,20% 25%)}
-#chapter-rats::before{content:'';position:absolute;inset:0;background:url('assets/chapter-spread.png') 15.873016% 52.941176%/270.27027% 151.515152% no-repeat;opacity:0;transition:filter .18s,opacity .18s}
+#chapter-rats::before{content:'';position:absolute;inset:0;background:url('assets/chapter-spread.webp') 15.873016% 52.941176%/270.27027% 151.515152% no-repeat;opacity:0;transition:filter .18s,opacity .18s}
 #chapter-rats:hover::before,#chapter-rats:focus-visible::before{opacity:1;filter:brightness(1.15)}
 #chapter-rats:focus-visible{outline:none}#chapter-rats:focus-visible::after{content:'';position:absolute;inset:74% 7% 4%;border:2px dashed #69426d;border-radius:18px}
 #close-chapters:hover,#close-chapters:focus-visible{box-shadow:0 0 12px #ffda9e;outline:2px solid #efd094;outline-offset:2px}

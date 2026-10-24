@@ -840,7 +840,7 @@ canvas.addEventListener('pointerdown',event=>{
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&audio.ctx)audio.ctx.suspend();else if(!state.paused&&audio.on&&audio.ctx)audio.ctx.resume();});
 
 Promise.all(Object.entries({sewer:'goop-depot',bookspread:'peanut-book',hutch:'hutch-cannonball',bookribbon:'storybook-ribbon',pip:'peanut-happy',scrapper:'rat-scrapper',slinger:'rat-slinger',baron:'rat-boss',market:'rat-market.webp',cathedral:'pipe-cathedral.webp',trickster:'rat-trickster.webp',courier:'rat-courier.webp',cantor:'snail-cantor.webp',regent:'market-boss.webp',warden:'cathedral-boss.webp',stitchedLabel:'stitched-label.webp',stitchedPanel:'stitched-panel.webp'}).map(([name,file])=>new Promise((resolve,reject)=>{
-  const img=new Image();img.onload=()=>{images[name]=img;resolve();};img.onerror=reject;img.src=`assets/${file.includes('.')?file:file+'.png'}`;
+  const img=new Image();img.onload=()=>{images[name]=img;resolve();};img.onerror=reject;img.src=`assets/${file.includes('.')?file:file+'.webp'}`;
 }))).then(()=>{
   state.phase='title';makeActors();resize();home();$('start').disabled=false;$('start-label').textContent='Play';
 }).catch(()=>{setHidden('loading-error',false);$('start-label').textContent='A prop is missing';});

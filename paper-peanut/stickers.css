@@ -5,7 +5,7 @@
 .newspaper-title span:nth-child(2n){background:#45372d;color:#f8e8c9;font-family:'Courier New',monospace;transform:rotate(4deg)}
 .newspaper-title span:nth-child(3n){background:#c9a77d;transform:rotate(-2deg);font-style:italic}
 .peanut-book .arsenal-cards{gap:14px 12px;padding:3px 6px 7px;align-content:start;grid-auto-rows:1fr}
-.peanut-book .arsenal-card,.peanut-book .arsenal-card.locked,.peanut-book .arsenal-card.equipped{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:48px 28px minmax(38px,1fr) 18px 18px 32px;gap:0;padding:22px 17px 18px;background:transparent url('assets/ability-sticker.png') center/100% 100% no-repeat;filter:drop-shadow(1px 3px 1px #68472b35);border:0;transform:none;min-width:0;text-align:center}
+.peanut-book .arsenal-card,.peanut-book .arsenal-card.locked,.peanut-book .arsenal-card.equipped{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:48px 28px minmax(38px,1fr) 18px 18px 32px;gap:0;padding:22px 17px 18px;background:transparent url('assets/ability-sticker.webp') center/100% 100% no-repeat;filter:drop-shadow(1px 3px 1px #68472b35);border:0;transform:none;min-width:0;text-align:center}
 .peanut-book .arsenal-card>*{grid-column:1;grid-row:auto;min-width:0}
 .peanut-book .ability-badge{width:46px;height:46px;margin:0 auto;align-self:center;justify-self:center;filter:drop-shadow(1px 2px 0 #fff4dc) drop-shadow(0 1px 1px #6a482c50)}
 .peanut-book .arsenal-card h3{display:flex;align-items:center;justify-content:center;min-height:0;margin:0;font-size:14px;line-height:1.05;color:#493321}
