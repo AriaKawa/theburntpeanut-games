@@ -18,5 +18,14 @@ body.fullscreen main{width:100%;padding:0}body.fullscreen .cabinet{--rail:0px;--
 @media(max-width:600px){:root{--fullscreen-size:60px;--fullscreen-margin:10px}body>.fullscreen-button{padding:12px}.fullscreen-hint{font-size:15px;gap:8px}.fullscreen-hint-arrow{font-size:32px}body.fullscreen .map-picker{padding-right:80px}}
 @media(max-height:500px){body.dead #overlay{justify-content:flex-start}.scores-scroll{max-height:90px}.controls .icon{width:29px;height:29px}.controls{padding-bottom:5px}}
 
-/* Override the published classic-board letterboxing. */
-#game{object-fit:fill;aspect-ratio:auto}.controls .board-button{width:32px;height:32px}body.dead #overlay.over .hero{display:none}body.dead #post-score{display:none!important}
+/* The renderer fits this opening directly; CSS never stretches a fixed bitmap. */
+#game{object-fit:contain;aspect-ratio:auto}.controls .board-button{width:32px;height:32px}body.dead #overlay.over .hero{display:none}body.dead #post-score{display:none!important}
+
+/* Reserve the whole lower control panel inside the cabinet. */
+.cabinet{flex:1 1 0;min-height:0;max-height:100%;margin:0;overflow:hidden}
+.screen{flex:1 1 0;min-height:0}
+.hud,.controls,.map-picker{flex-shrink:0}
+
+@media(orientation:landscape) and (max-height:500px){
+ .cabinet{width:min(100%,calc((100dvh - 170px)*1.35 + 40px));--marquee:34px;--rail:20px;align-self:center}
+}
