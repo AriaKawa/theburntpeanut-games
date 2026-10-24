@@ -28,14 +28,14 @@ function sound(kind) {
     if (kind === 'hover') lastHover = now;
     if (voices.size >= 6) return;
     const hover = kind === 'hover';
-    const duration = hover ? 0.14 : 0.22;
+    const duration = hover ? 0.09 : 0.12;
     const oscillator = audio.createOscillator();
     const gain = audio.createGain();
     oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(hover ? 660 : 440, now);
-    oscillator.frequency.exponentialRampToValueAtTime(hover ? 622 : 392, now + duration);
+    oscillator.frequency.setValueAtTime(hover ? 740 : 520, now);
+    oscillator.frequency.exponentialRampToValueAtTime(hover ? 620 : 360, now + duration);
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(hover ? 0.009 : 0.018, now + 0.018);
+    gain.gain.linearRampToValueAtTime(hover ? 0.045 : 0.075, now + 0.008);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     oscillator.connect(gain);
     gain.connect(audio.destination);
@@ -68,13 +68,28 @@ document.addEventListener('pointerover', event => {
 document.addEventListener('focusin', event => {
   if (control(event.target)?.matches(':focus-visible')) sound('hover');
 });
+let navigating = false;
 document.addEventListener('click', event => {
   const element = control(event.target);
-  if (!element || element === toggle) return;
+  if (!element || element === toggle || event.defaultPrevented || !enabled) return;
   unlock();
+  // Give ordinary same-tab links a brief sound tail before unloading the page.
+  // Modified clicks, downloads and new tabs retain native browser behavior.
+  const link = element.closest('a[href]');
+  const sameTab = link && (!link.target || link.target === '_self') &&
+    !link.hasAttribute('download') && event.button === 0 &&
+    !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey &&
+    /^https?:$/.test(link.protocol) && link.origin === location.origin;
+  if (sameTab && context) {
+    event.preventDefault();
+    if (navigating) return;
+    navigating = true;
+    setTimeout(() => location.assign(link.href), 150);
+  }
   if (context?.state === 'running') sound('click');
   else context?.resume().then(() => sound('click')).catch(() => {});
 });
+
 toggle.addEventListener('click', () => {
   enabled = !enabled;
   if (!enabled) {
