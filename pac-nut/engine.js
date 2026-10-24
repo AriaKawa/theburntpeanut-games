@@ -32,19 +32,19 @@ const MAP=[
 '#.##########.##.##########.#',
 '#..........................#',
 '############################'];
-// Original single classic maze; all ten enemies share its central house.
+// Original single classic maze; all five enemies share its central house.
 const ORIGINAL_MAP=MAP.slice();
 let selectedMap='classic',activeTheme=MAP_THEMES[0];
 function applyMap(){activeTheme=MAP_THEMES.find(t=>t.id===selectedMap)||MAP_THEMES[0];MAP.splice(0,MAP.length,...themedLayout(ORIGINAL_MAP,activeTheme.id));document.body.dataset.map=activeTheme.id;}
 const BASES=[{x:13,y:14,exitY:11}];
-const ROLES=['hunter', 'ambusher', 'flanker', 'sweeper', 'shy', 'patroller', 'gatekeeper', 'interceptor', 'lurker', 'herder'];
-const GHOST_COLORS=['#ff4040', '#ff80c0', '#43dcff', '#ff962f', '#b58aff', '#66ed62', '#ffe34c', '#4e83ff', '#ffffff', '#18c7ad'];
+const ROLES=['hunter', 'ambusher', 'flanker', 'sweeper', 'beatkeeper'];
+const GHOST_COLORS=['#ff4040', '#ff80c0', '#43dcff', '#ff962f', '#b58aff'];
 const $=s=>document.querySelector(s),canvas=$('#game'),ctx=canvas.getContext('2d'),T=30,W=28,H=31;
 canvas.width=W*T;canvas.height=H*T;
 let boardScale=1;const WALL_INSET=6;
 const dirs={up:{x:0,y:-1},left:{x:-1,y:0},down:{x:0,y:1},right:{x:1,y:0}},reverse={up:'down',down:'up',left:'right',right:'left'},angles={right:0,down:Math.PI/2,left:Math.PI,up:-Math.PI/2};
 const keys={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',a:'left',d:'right',w:'up',s:'down'};
-const art={};for(const name of [...['neighborhood','scifi','fantasy'].flatMap(id=>[id+'-floor',id+'-wall']),'character-ghost0','character-ghost1','character-ghost2','character-ghost3','burger',...['down','left','right','up'].flatMap(d=>[0,1].map(f=>'peanut-'+d+'-'+f)),'peanut','can','ghost0','ghost1','ghost2','ghost3','ghost4','floor','wall','ak','blood','flash','eyes','bullet',...Array.from({length:8},(_,i)=>'fruit'+i)]){art[name]=new Image();art[name].src='assets/'+name+'.webp'}
+const art={};for(const name of [...['neighborhood','scifi','fantasy'].flatMap(id=>[id+'-floor',id+'-wall']),'character-ghost0','character-ghost1','character-ghost2','character-ghost3','character-ghost4','burger',...['down','left','right','up'].flatMap(d=>[0,1].map(f=>'peanut-'+d+'-'+f)),'peanut','can','ghost0','ghost1','ghost2','ghost3','ghost4','floor','wall','ak','blood','flash','eyes','bullet',...Array.from({length:8},(_,i)=>'fruit'+i)]){art[name]=new Image();art[name].src='assets/'+name+(name==='character-ghost4'?'.png':'.webp')}
 let spawnHighlight=0;
 let mode='ready',score=0,best=0,level=1,lives=1,bonusLife=true,dots=new Map(),totalDots=244,eaten=0,player,ghosts=[],power=0,weapon=0,powerId=0,combo=0,clock=0,last=0,acc=0,phase=0,phaseTime=0,roundTime=0,noDotTime=0,deathTimer=0,freeze=0,readyTimer=0,fruit=null,fruitTriggers=new Set(),bullets=[],splats=[],effects=[],popups=[],fireHeld=false,fireCooldown=0,flashTimer=0,sound=true,audio,lastLives=-1,lastScore=-1,lastBest=-1,lastWeapon=-1;
 try{best=Number(localStorage.getItem('pacnut-arcade-best'))||0}catch{}
@@ -65,7 +65,9 @@ function reverseActor(a){if(a.progress>0){let x=a.x,y=a.y;a.x=a.px;a.y=a.py;a.px
 function setDirection(d){if(mode!=='playing')return;player.next=d;if(d===reverse[player.dir]){reverseActor(player)}}
 function schedule(){return level===1?[7,20,7,20,5,20,5,Infinity]:level<5?[7,20,7,20,5,1033,1/60,Infinity]:[5,20,5,20,5,1037,1/60,Infinity]}
 function frightTime(){return [6,5,4,3,2,5,2,2,1,5,2,1,1,3,1,1,0,1][level-1]||0}
-function speed(a){const base=75.75757625/8;let band=level===1?0:level<5?1:2;if(a===player)return base*(power?[.9,.95,1][band]:level>=21?.9:[.8,.9,1][band])*(weapon>0?1.1:1);if(a.state==='eyes')return base*1.8;if(a.state==='exiting')return base*.55;if(a.y===14&&(a.x<6||a.x>W-7))return base*[.4,.45,.5][band];if(a.frightened)return base*[.5,.55,.6][band];let scale=[.75,.85,.95][band];if(a.id===0){let limit=level===1?20:level===2?30:level<6?40:level<9?50:level<12?60:level<15?80:level<19?100:120;if(dots.size<=limit)scale=[.8,.9,1][band];if(dots.size<=limit/2)scale=[.85,.95,1.05][band]}return base*scale}
+// A six-second phrase: trail, signal the drop, then rush. Pauses freeze roundTime.
+function beatPhase(){return roundTime%6}
+function speed(a){const base=75.75757625/8;let band=level===1?0:level<5?1:2;if(a===player)return base*(power?[.9,.95,1][band]:level>=21?.9:[.8,.9,1][band])*(weapon>0?1.1:1);if(a.state==='eyes')return base*1.8;if(a.state==='exiting')return base*.55;if(a.y===14&&(a.x<6||a.x>W-7))return base*[.4,.45,.5][band];if(a.frightened)return base*[.5,.55,.6][band];let scale=[.75,.85,.95][band];if(a.id===0){let limit=level===1?20:level===2?30:level<6?40:level<9?50:level<12?60:level<15?80:level<19?100:120;if(dots.size<=limit)scale=[.8,.9,1][band];if(dots.size<=limit/2)scale=[.85,.95,1.05][band]}if(a.role==='beatkeeper'&&a.state==='active'&&phase%2===1)scale*=beatPhase()>=4.5?1.25:.85;return base*scale}
 function pos(a){const v=dirs[a.dir];let p=a.progress;return{x:((p?a.px+v.x*p:a.x)+a.offsetX*(a.offsetRemaining/.25))*T+T/2,y:((p?a.py+v.y*p:a.y)+a.offsetY*(a.offsetRemaining/.25))*T+T/2}}
 function playerTile(){const p=pos(player);return{x:wrap(Math.floor(p.x/T)),y:Math.floor(p.y/T)}}
 // Chase personalities are separate from the shared scatter/frightened schedule.
@@ -76,19 +78,8 @@ function target(g){
  if(role==='hunter')return p;
  if(role==='ambusher')return{x:p.x+v.x*4,y:p.y+v.y*4};
  if(role==='flanker'){const lead=ghosts[0];return{x:2*(p.x+v.x*2)-lead.x,y:2*(p.y+v.y*2)-lead.y};}
- if(role==='patroller'){
-  if(p.x>=14)return p;
-  return [{x:15,y:5},{x:26,y:5},{x:26,y:26},{x:15,y:29}][Math.floor(roundTime/6)%4];
- }
  if(role==='sweeper'){if(p.x<14)return p;return [{x:1,y:5},{x:26,y:5},{x:26,y:26},{x:1,y:29}][Math.floor(roundTime/6)%4];}
- if(role==='interceptor')return{x:p.x+v.x*8,y:p.y+v.y*8};
- if(role==='herder')return{x:p.x-v.x*4,y:p.y-v.y*4};
- if(role==='lurker'){const pickups=[...dots].filter(([k,value])=>value==='power').map(([k])=>{const[x,y]=k.split(',').map(Number);return{x,y}});return pickups.sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0]||p;}
- if(role==='gatekeeper'){
-  // Intercept at a central corridor in the single maze.
-  const y=[5,14,20,29].reduce((a,b)=>Math.abs(b-p.y)<Math.abs(a-p.y)?b:a);
-  return{x:p.x<14?15:12,y};
- }
+ if(role==='beatkeeper'){const ahead=beatPhase()>=4.5?6:-3;return{x:p.x+v.x*ahead,y:p.y+v.y*ahead};}
  return Math.hypot(g.x-p.x,g.y-p.y)>=8?p:corners[g.id];
 }
 function shortestDirection(g,tx,ty){let q=[[g.x,g.y,null]],seen=new Set([g.x+','+g.y]);while(q.length){const[x,y,first]=q.shift();if(x===tx&&y===ty)return first||g.dir;for(const[d,v]of Object.entries(dirs)){const nx=wrap(x+v.x),ny=y+v.y,k=nx+','+ny;if(!wall(x+v.x,ny,g)&&!seen.has(k)){seen.add(k);q.push([nx,ny,first||d])}}}return g.dir}
@@ -143,7 +134,8 @@ function sprite(name,x,y,w,h){
 function rotated(name,x,y,w,h,angle){ctx.save();ctx.translate(x,y);ctx.rotate(angle);sprite(name,0,0,w,h);ctx.restore()}
 const ghostTints=new Map();
 function coloredGhost(g,p){
- const special={0:0,2:1,1:2,3:3}[g.id];
+ const special={0:0,2:1,1:2,3:3,4:4}[g.id];
+ if(g.role==='beatkeeper'&&g.state==='active'&&!g.frightened&&phase%2===1&&beatPhase()>=3.75){ctx.save();ctx.strokeStyle=beatPhase()>=4.5?'#ffe34c':'#b58aff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,19+Math.sin(roundTime*16)*2,0,Math.PI*2);ctx.stroke();ctx.restore();}
  if(special!==undefined){sprite('character-ghost'+special,p.x,p.y, g.id===0?36:32,34);return;}
  const im=art.ghost0;if(!im.complete||!im.naturalWidth)return;
  let tinted=ghostTints.get(g.id);if(!tinted){tinted=document.createElement('canvas');tinted.width=tinted.height=64;const c=tinted.getContext('2d');c.drawImage(im,0,0,64,64);c.globalCompositeOperation='source-atop';c.globalAlpha=.82;c.fillStyle=g.color;c.fillRect(0,0,64,64);ghostTints.set(g.id,tinted);}

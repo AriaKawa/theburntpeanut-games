@@ -1,0 +1,4 @@
+Asset: pac-nut/assets/character-ghost4.png (mirrored in docs/pac-nut/assets/).
+Generated with the built-in imagegen tool, transparent background.
+Prompt: Create one T-Pain-inspired Pacnut ghost sprite matching character-ghost0.png and character-ghost3.png: chunky low-resolution pixel art, black stepped outline, front-facing rounded arcade ghost with scalloped bottom. Purple body, black top hat with purple band, black sunglasses, dark beard and dreadlocks, chunky gold chain. Compact readable silhouette at 34 pixels tall, crisp pixel edges, full character centered on transparent canvas, no scene, text, microphone or arms.
+Behavior: On the Beat. During chase, trails three tiles behind at 85% normal ghost speed for 4.5 seconds; a purple ring warns for the final 0.75 seconds. Then targets six tiles ahead at 125% normal speed for 1.5 seconds with a gold ring. Shared scatter, frightened, tunnel, house and eyes rules retain priority.
