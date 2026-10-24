@@ -3,35 +3,16 @@
 
 .game-navigation .view-controls{margin-right:92px}.fullscreen-hint{top:100px;right:12px;max-width:180px;min-height:0;font-size:12px;align-items:flex-start}.fullscreen-hint-arrow svg{width:24px;height:24px}@media(max-width:600px){.game-navigation .view-controls{margin-right:70px}}@media(max-width:900px){.fullscreen-hint{display:none}}
 
-/* On shorter desktop screens, use the existing screen-only presentation rather
-   than cropping a tall cabinet or squeezing the selection controls together. */
-@media (max-height:1000px) and (min-width:761px){
-body:not(.fullscreen):not(.handheld):not(.playing) .cabinet{top:calc(50% + 40px);width:min(94vw,calc((100svh - 120px)*416/402 / max(1,var(--view-scale,1))));aspect-ratio:416/402;transform:translate(-50%,-50%) scale(var(--view-scale,1));transform-origin:center;filter:none}
-body:not(.fullscreen):not(.handheld):not(.playing) .cabinet-art,body:not(.fullscreen):not(.handheld):not(.playing) .deck-controls{display:none}
-body:not(.fullscreen):not(.handheld):not(.playing) .machine{inset:0;width:100%;height:100%;border:2px solid #465863;border-radius:8px;box-shadow:0 10px 60px #000a}
-body:not(.fullscreen):not(.handheld):not(.playing) .hud{height:12cqw;min-height:36px;padding:1cqw 2cqw;gap:1.5cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .screen{inset:max(12cqw,36px) 0 0}
-body:not(.fullscreen):not(.handheld):not(.playing) #hud-face{width:7cqw;height:9cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) #hearts{font-size:5cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) #score,body:not(.fullscreen):not(.handheld):not(.playing) #timer{font-size:5cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .icon-button{width:8cqw;height:8cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .time svg{width:3cqw;height:3cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .menu{padding:3cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .selection-content{gap:3cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .selection-content .portrait{height:13cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .selection-content .character span{font-size:2.5cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .perk canvas{width:3cqw;height:3cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .perk small{font-size:1.5cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .drop-row img{width:7cqw;height:8cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .drop-row p{font-size:2.5cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .drop-row strong{font-size:2.8cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .map-picker{flex-basis:35cqw;gap:1cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .map-card{width:23cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .map-card canvas{height:10cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .map-card span{font-size:2cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .map-picker button{width:5cqw;height:7cqw}
-body:not(.fullscreen):not(.handheld):not(.playing) .menu-actions .pixel-button{font-size:2.5cqw;padding:2cqw}
-}
+/* The opening cabinet fits below the navigation at the default zoom. */
+body:not(.fullscreen) .cabinet{top:90px;left:50%;width:min(calc(96vw / max(1,var(--view-scale,1))),calc((100svh - 106px)*740/1532 / max(1,var(--view-scale,1))));aspect-ratio:740/1532;transform:translateX(-50%) scale(var(--view-scale,1));transform-origin:50% 0}
+body:not(.fullscreen) .cabinet-art{display:block}
+body:not(.fullscreen) .menu{padding:1cqw}
+body:not(.fullscreen) .selection-content .character span{font-size:1.25cqw}
+body:not(.fullscreen) .perk small{font-size:1cqw}
+body:not(.fullscreen) .perk{margin-top:.25cqw}
+body:not(.fullscreen) .drop-row p{font-size:1.45cqw}
+body:not(.fullscreen) .drop-row strong{font-size:1.6cqw}
+body:not(.fullscreen) .drop-guide{gap:.7cqw}
 /* Give selection and footer independent rows: tall portraits cannot overlap maps. */
 #select-view{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto;gap:.8cqw}
 #select-view #pack-status:empty{display:none}
