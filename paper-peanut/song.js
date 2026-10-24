@@ -3,7 +3,7 @@
   const track = new Audio('assets/music.mp3');
   track.loop = true;
   track.preload = 'auto';
-  track.volume = .225;
+  track.volume = .19125;
   const key = button.dataset.musicKey + '-song';
   let enabled = true, leaving = false;
   try { enabled = localStorage.getItem(key) !== 'off'; } catch {}

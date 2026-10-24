@@ -54,3 +54,11 @@ h1 img{width:260px}
 #best{font-size:16px;color:#f9d999}
 @media(max-width:700px){h1{height:44px;min-height:44px}h1 img{width:210px}.cabinet{padding:3px 4px 0;border-radius:10px}.hud{height:42px;min-height:42px}.score-label{font-size:8px;letter-spacing:1px}#best{font-size:13px}}
 @media(max-height:600px){h1{height:28px;min-height:28px}h1 img{width:145px}.hud{height:34px;min-height:34px}.score-label{font-size:8px}#best{font-size:12px}}
+
+/* Classic 28-column board, enlarged to use the available height without cropping. */
+main{width:min(900px,100%)}
+.cabinet{width:min(100%,calc((100dvh - 150px)*28/31 + 18px));align-self:center}
+.screen{aspect-ratio:28/31;flex:1;min-height:0}
+canvas{width:100%;height:100%;object-fit:contain;aspect-ratio:28/31}
+@media(max-width:700px){.cabinet{width:100%}}
+@media(max-height:600px){.cabinet{width:min(100%,calc((100dvh - 110px)*28/31 + 18px))}}

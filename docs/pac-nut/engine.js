@@ -32,16 +32,11 @@ const MAP=[
 '#.##########.##.##########.#',
 '#..........................#',
 '############################'];
-// Two classic mazes, joined through the tunnel and three crossways.
-const CLASSIC=MAP.slice();
-for(let y=0;y<31;y++){
- const passage=[5,14,20,29].includes(y);
- MAP[y]=CLASSIC[y].slice(0,27)+(passage?'.':CLASSIC[y][27])+(passage?'.':CLASSIC[y][0])+CLASSIC[y].slice(1);
-}
-const BASES=[{x:13,y:14,exitY:11},{x:41,y:14,exitY:11}];
+// Original single classic maze; all ten enemies share its central house.
+const BASES=[{x:13,y:14,exitY:11}];
 const ROLES=['hunter', 'ambusher', 'flanker', 'sweeper', 'shy', 'patroller', 'gatekeeper', 'interceptor', 'lurker', 'herder'];
 const GHOST_COLORS=['#ff4040', '#ff80c0', '#43dcff', '#ff962f', '#b58aff', '#66ed62', '#ffe34c', '#4e83ff', '#ffffff', '#18c7ad'];
-const $=s=>document.querySelector(s),canvas=$('#game'),ctx=canvas.getContext('2d'),T=30,W=56,H=31;
+const $=s=>document.querySelector(s),canvas=$('#game'),ctx=canvas.getContext('2d'),T=30,W=28,H=31;
 canvas.width=W*T;canvas.height=H*T;
 const dirs={up:{x:0,y:-1},left:{x:-1,y:0},down:{x:0,y:1},right:{x:1,y:0}},reverse={up:'down',down:'up',left:'right',right:'left'},angles={right:0,down:Math.PI/2,left:Math.PI,up:-Math.PI/2};
 const keys={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',a:'left',d:'right',w:'up',s:'down'};
@@ -53,7 +48,7 @@ const wrap=x=>(x+W)%W;
 function wall(x,y,actor){if(y===14&&(x<0||x>=W))return false;const c=MAP[y]?.[x];if(!c||c==='#'||c==='%')return true;if(c==='=')return !(actor&&(actor.state==='eyes'||actor.state==='exiting'));return false}
 function canGo(a,d){const v=dirs[d];return !wall(a.x+v.x,a.y+v.y,a)}
 function actor(x,y,dir){return{x,y,px:x,py:y,dir,next:dir,progress:0,hold:0,offsetX:0,offsetY:0,offsetRemaining:0}}
-function positions(){player=actor(27,14,'left');ghosts=BASES.flatMap((base,b)=>[actor(base.x,11,'left'),actor(base.x-2,14,'up'),actor(base.x+2,14,'up'),actor(base.x-2,15,'up'),actor(base.x+2,15,'up')].map((g,j)=>Object.assign(g,{id:b*5+j,base:b,role:ROLES[b*5+j],color:GHOST_COLORS[b*5+j],state:j?'house':'active',frightened:false,reversePending:false,releaseAt:roundTime+j*4,revivedPower:-1,capturedPower:-1})));power=weapon=0;combo=0;phase=phaseTime=0;bullets=[];fireHeld=false;fireCooldown=0;readyTimer=2.5;spawnHighlight=6;freeze=0;noDotTime=0}
+function positions(){player=actor(13,23,'left');ghosts=ROLES.map((role,id)=>Object.assign(id?actor(11+(id%3)*2,14+Math.floor((id-1)/5),'up'):actor(13,11,'left'),{id,base:0,role,color:GHOST_COLORS[id],state:id?'house':'active',frightened:false,reversePending:false,releaseAt:roundTime+id*4,revivedPower:-1,capturedPower:-1}));power=weapon=0;combo=0;phase=phaseTime=0;bullets=[];fireHeld=false;fireCooldown=0;readyTimer=2.5;spawnHighlight=6;freeze=0;noDotTime=0}
 function makeLevel(){dots.clear();MAP.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='.'||c==='o')dots.set(x+','+y,c==='o'?'power':'can')}));totalDots=dots.size;eaten=0;roundTime=0;fruit=null;fruitTriggers.clear();splats=[];effects=[];popups=[];positions()}
 function ui(){const armed=weapon>0;if(lastWeapon!==armed){lastWeapon=armed;document.dispatchEvent(new CustomEvent('pacnut:weapon',{detail:{armed}}));}if(lastScore!==score){$('#score').textContent=String(score).padStart(6,'0');lastScore=score}if(lastBest!==best){$('#best').textContent=String(best).padStart(6,'0');lastBest=best}if(lastLives!==lives){$('#lives').innerHTML='<img src="assets/peanut-down-0.png" alt="">'.repeat(lives);$('#lives').setAttribute('aria-label',lives+(lives===1?' life':' lives'));lastLives=lives}$('#pause').disabled=!['playing','paused'].includes(mode);$('#pause').className='icon '+(mode==='paused'?'play':'pause');$('#pause').setAttribute('aria-label',mode==='paused'?'Resume':'Pause');$('#progress').style.setProperty('--progress',(100*eaten/totalDots)+'%');$('#progress').setAttribute('aria-valuenow',Math.round(100*eaten/totalDots));$('#fire').disabled=weapon<=0||mode!=='playing';$('#fire').classList.toggle('armed',weapon>0);$('#fire').style.setProperty('--ammo',Math.min(1,weapon/6));$('#fire').setAttribute('aria-label',weapon>0?'AK-47 automatic fire':'AK-47 pickup required');}
 function addScore(n,x,y){score+=n;if(!bonusLife&&score>=10000){bonusLife=true;lives++;beep(1200,.4)}if(score>best){best=score;try{localStorage.setItem('pacnut-arcade-best',best)}catch{}}if(x!==undefined)popups.push({x,y,n,life:1.2});ui()}
@@ -72,23 +67,23 @@ function playerTile(){const p=pos(player);return{x:wrap(Math.floor(p.x/T)),y:Mat
 // Chase personalities are separate from the shared scatter/frightened schedule.
 function target(g){
  const p=playerTile(),v=dirs[player.dir],role=g.role||ROLES[g.id],base=BASES[g.base||0];
- const corners=[{x:26,y:1},{x:1,y:1},{x:1,y:29},{x:26,y:29},{x:6,y:26},{x:54,y:1},{x:29,y:29},{x:54,y:29},{x:50,y:3},{x:34,y:26}];
+ const corners=[{x:26,y:1},{x:1,y:1},{x:1,y:29},{x:26,y:29},{x:6,y:26},{x:26,y:1},{x:1,y:29},{x:26,y:29},{x:22,y:3},{x:6,y:26}];
  if(phase%2===0)return corners[g.id];
  if(role==='hunter')return p;
  if(role==='ambusher')return{x:p.x+v.x*4,y:p.y+v.y*4};
  if(role==='flanker'){const lead=ghosts[0];return{x:2*(p.x+v.x*2)-lead.x,y:2*(p.y+v.y*2)-lead.y};}
  if(role==='patroller'){
-  if(p.x>=28)return p;
-  return [{x:29,y:5},{x:54,y:5},{x:54,y:26},{x:29,y:29}][Math.floor(roundTime/6)%4];
+  if(p.x>=14)return p;
+  return [{x:15,y:5},{x:26,y:5},{x:26,y:26},{x:15,y:29}][Math.floor(roundTime/6)%4];
  }
- if(role==='sweeper'){if(p.x<28)return p;return [{x:1,y:5},{x:26,y:5},{x:26,y:26},{x:1,y:29}][Math.floor(roundTime/6)%4];}
+ if(role==='sweeper'){if(p.x<14)return p;return [{x:1,y:5},{x:26,y:5},{x:26,y:26},{x:1,y:29}][Math.floor(roundTime/6)%4];}
  if(role==='interceptor')return{x:p.x+v.x*8,y:p.y+v.y*8};
  if(role==='herder')return{x:p.x-v.x*4,y:p.y-v.y*4};
- if(role==='lurker'){const pickups=[...dots].filter(([k,value])=>value==='power'&&Number(k.split(',')[0])>=28).map(([k])=>{const[x,y]=k.split(',').map(Number);return{x,y}});return pickups.sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0]||p;}
+ if(role==='lurker'){const pickups=[...dots].filter(([k,value])=>value==='power').map(([k])=>{const[x,y]=k.split(',').map(Number);return{x,y}});return pickups.sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0]||p;}
  if(role==='gatekeeper'){
-  // Intercept at the nearest seam crossing instead of tailing the player.
+  // Intercept at a central corridor in the single maze.
   const y=[5,14,20,29].reduce((a,b)=>Math.abs(b-p.y)<Math.abs(a-p.y)?b:a);
-  return{x:p.x<28?29:26,y};
+  return{x:p.x<14?15:12,y};
  }
  return Math.hypot(g.x-p.x,g.y-p.y)>=8?p:corners[g.id];
 }
@@ -116,11 +111,11 @@ function splatSound(){if(!sound)return;try{
  splash.onended=()=>{splash.disconnect();filter.disconnect();gain.disconnect()};body.onended=()=>{body.disconnect();bodyGain.disconnect()};splash.start(now);splash.stop(now+.21);body.start(now);body.stop(now+.21);
  }catch{}}
 // Original synthesized rifle report: short filtered crack, low body, no audio samples.
-let gunNoise,gunBus,lastGunShot=-Infinity;const gunVoices=new Set();
+let gunNoise,gunBus,gunOutput,lastGunShot=-Infinity;const gunVoices=new Set();
 function stopGunSound(){for(const node of gunVoices){try{node.stop()}catch{}}gunVoices.clear()}
 function gunShot(){if(!sound)return;try{
  audio??=new(window.AudioContext||window.webkitAudioContext)();audio.resume().catch(()=>{});const now=audio.currentTime;if(now-lastGunShot<.09)return;lastGunShot=now;
- if(!gunBus){gunBus=audio.createDynamicsCompressor();gunBus.threshold.value=-18;gunBus.knee.value=12;gunBus.ratio.value=4;gunBus.attack.value=.002;gunBus.release.value=.06;gunBus.connect(audio.destination)}
+ if(!gunBus){gunBus=audio.createDynamicsCompressor();gunBus.threshold.value=-18;gunBus.knee.value=12;gunBus.ratio.value=4;gunBus.attack.value=.002;gunBus.release.value=.06;gunOutput=audio.createGain();gunOutput.gain.value=1.35;gunBus.connect(gunOutput);gunOutput.connect(audio.destination)}
  if(!gunNoise){gunNoise=audio.createBuffer(1,Math.ceil(audio.sampleRate*.11),audio.sampleRate);const data=gunNoise.getChannelData(0);let low=0;for(let i=0;i<data.length;i++){low=.45*low+.55*(Math.random()*2-1);data[i]=low}}
  stopGunSound();const crack=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain(),body=audio.createOscillator(),bodyGain=audio.createGain();
  crack.buffer=gunNoise;filter.type='bandpass';filter.frequency.value=1850;filter.Q.value=.55;gain.gain.setValueAtTime(.0001,now);gain.gain.linearRampToValueAtTime(.24,now+.002);gain.gain.exponentialRampToValueAtTime(.0001,now+.105);crack.connect(filter);filter.connect(gain);gain.connect(gunBus);
