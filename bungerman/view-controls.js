@@ -1,14 +1,17 @@
-const dock=document.createElement('div');dock.className='view-controls';dock.setAttribute('role','group');dock.setAttribute('aria-label','Game view');
-const fullscreen=document.getElementById('fullscreen');
-fullscreen.insertAdjacentHTML('beforeend','<span id="fullscreen-label">Fullscreen</span>');
-dock.insertAdjacentHTML('beforeend',`<div class="zoom-controls" role="group" aria-label="Zoom"><button id="zoom-out" aria-label="Zoom out" type="button">−</button><div id="zoom-dial" class="zoom-dial" role="slider" tabindex="0" aria-label="Game zoom" aria-valuemin="60" aria-valuemax="140" aria-valuenow="100" aria-valuetext="100 percent" title="Zoom: scroll or drag the dial; arrow keys adjust"></div><button id="zoom-in" aria-label="Zoom in" type="button">+</button><button id="zoom-reset" class="zoom-reset" type="button" aria-label="Reset zoom to 100 percent">100%</button></div>`);document.querySelector('.game-navigation').append(dock);
-const dial=document.getElementById('zoom-dial'),reset=document.getElementById('zoom-reset');let zoom=100,drag=null;
-function setZoom(value){zoom=Math.max(60,Math.min(140,Math.round(value/5)*5));document.body.style.setProperty('--view-scale',zoom/100);dial.style.setProperty('--dial-angle',((zoom-100)*3)+'deg');dial.setAttribute('aria-valuenow',zoom);dial.setAttribute('aria-valuetext',zoom+' percent');reset.textContent=zoom+'%';document.getElementById('zoom-out').disabled=zoom===60;document.getElementById('zoom-in').disabled=zoom===140;}
-document.getElementById('zoom-out').onclick=()=>setZoom(zoom-5);document.getElementById('zoom-in').onclick=()=>setZoom(zoom+5);reset.onclick=()=>setZoom(100);
-dial.addEventListener('wheel',e=>{e.preventDefault();e.stopPropagation();if(e.deltaY)setZoom(zoom+(e.deltaY<0?5:-5));},{passive:false});
-dial.addEventListener('keydown',e=>{const change={ArrowUp:5,ArrowRight:5,ArrowDown:-5,ArrowLeft:-5,PageUp:20,PageDown:-20};if(e.key in change){e.preventDefault();e.stopPropagation();setZoom(zoom+change[e.key]);}else if(['Home','End','Enter',' '].includes(e.key)){e.preventDefault();e.stopPropagation();setZoom(e.key==='Home'?60:e.key==='End'?140:100);}});
-dock.addEventListener('keydown',e=>{if(e.code!=='Escape')e.stopPropagation();});dock.addEventListener('keyup',e=>{if(e.code!=='Escape')e.stopPropagation();});
-dial.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();dial.focus();drag={y:e.clientY,zoom};dial.setPointerCapture(e.pointerId);});dial.addEventListener('pointermove',e=>{if(drag)setZoom(drag.zoom+(drag.y-e.clientY));});for(const type of ['pointerup','pointercancel','lostpointercapture'])dial.addEventListener(type,()=>drag=null);
+// Wheel zoom applies to the complete page, including cabinet art and navigation.
+let pageZoom=1;
+function setPageZoom(value){
+ pageZoom=Math.max(.6,Math.min(1.4,Math.round(value*100)/100));
+ document.body.style.setProperty('--page-zoom',pageZoom);
+}
+window.addEventListener('wheel',event=>{
+ if(event.ctrlKey||event.metaKey||!event.deltaY)return;
+ event.preventDefault();
+ setPageZoom(pageZoom+(event.deltaY<0?.05:-.05));
+},{passive:false});
 let expanded=document.body.classList.contains('fullscreen');
-function updateFullscreen(){const next=document.body.classList.contains('fullscreen');if(next!==expanded){expanded=next;setZoom(100);}document.getElementById('fullscreen-label').textContent=document.body.classList.contains('fullscreen')?'Arcade cabinet':'Expand game';}
-new MutationObserver(updateFullscreen).observe(document.body,{attributes:true,attributeFilter:['class']});updateFullscreen();setZoom(100);
+new MutationObserver(()=>{
+ const next=document.body.classList.contains('fullscreen');
+ if(next!==expanded){expanded=next;setPageZoom(1);}
+}).observe(document.body,{attributes:true,attributeFilter:['class']});
+setPageZoom(1);
