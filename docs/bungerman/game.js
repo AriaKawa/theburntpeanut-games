@@ -6,14 +6,10 @@ import {loadPack,drawAsset} from './packs.js?v=reconcile-20261024';
 import {drawCharacter,loadCharacterSprites} from './characters.js?v=reconcile-20261024';
 import {drawArena,drawBomb,drawFlames,drawClosingWalls,drawRockets} from './arena.js?v=mp15';
 const $=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d');
-const fullscreenHintKey='bungerman-fullscreen-hint-dismissed-v1';
-let fullscreenHintDismissed=false;
-function restoreFullscreenHint(){try{fullscreenHintDismissed=fullscreenHintDismissed||localStorage.getItem(fullscreenHintKey)==='1';}catch{}$('fullscreen-hint').hidden=fullscreenHintDismissed;}
-function dismissFullscreenHint(){fullscreenHintDismissed=true;$('fullscreen-hint').hidden=true;try{localStorage.setItem(fullscreenHintKey,'1');}catch{}}
+function restoreFullscreenHint(){$('fullscreen-hint').hidden=false;}
+function dismissFullscreenHint(){$('fullscreen-hint').hidden=true;}
 restoreFullscreenHint();
-$('fullscreen').addEventListener('pointerenter',dismissFullscreenHint);
 window.addEventListener('pageshow',restoreFullscreenHint);
-window.addEventListener('storage',e=>{if(e.key===fullscreenHintKey&&e.newValue==='1'){fullscreenHintDismissed=true;$('fullscreen-hint').hidden=true;}});
 const W=416,H=352,T=30,OX=13,OY=11;
 canvas.width=W*3;canvas.height=H*3;ctx.scale(3,3);
 ctx.imageSmoothingEnabled=false;
