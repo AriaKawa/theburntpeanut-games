@@ -10,10 +10,11 @@ body:not(.fullscreen) .perk{margin-top:.25cqw}
 body:not(.fullscreen) .drop-row p{font-size:1.45cqw}
 body:not(.fullscreen) .drop-row strong{font-size:1.6cqw}
 body:not(.fullscreen) .drop-guide{gap:.7cqw}
-/* Zoom changes the expanded game surface, never the painted cabinet or toolbar. */
-body.fullscreen:not(.handheld) .cabinet{top:calc(50% + 48px);width:calc(min(94vw,calc((100svh - 130px)*416/402)) * .71 * var(--view-scale,1));transform:translate(-50%,-50%)}
-body.handheld.fullscreen .cabinet{top:130px;width:calc(min(94vw,calc((100svh - 340px)*416/402)) * .71 * var(--view-scale,1));transform:none}
-@media(orientation:landscape){body.handheld.fullscreen .cabinet{top:calc(50% + 45px);width:calc(min(64vw,calc((100svh - 110px)*416/402)) * .71 * var(--view-scale,1));transform:translateY(-50%)}}
+/* Zoom only the machine in cabinet view; fullscreen uses the full fitted size at 100%. */
+body:not(.fullscreen) .machine{transform:scale(var(--view-scale,1));transform-origin:center;z-index:1}
+body.fullscreen:not(.handheld) .cabinet{top:calc(50% + 48px);width:calc(min(94vw,calc((100svh - 130px)*416/402)) * .994 * var(--view-scale,1));transform:translate(-50%,-50%)}
+body.handheld.fullscreen .cabinet{top:130px;width:calc(min(94vw,calc((100svh - 340px)*416/402)) * .994 * var(--view-scale,1));transform:none}
+@media(orientation:landscape){body.handheld.fullscreen .cabinet{top:calc(50% + 45px);width:calc(min(64vw,calc((100svh - 110px)*416/402)) * .994 * var(--view-scale,1));transform:translateY(-50%)}}
 .game-navigation .view-controls{margin-right:92px;--control-size:38px}
 .fullscreen-hint{top:96px;right:16px;max-width:240px;min-height:0;font-size:16px;display:flex;align-items:center}
 .fullscreen-hint-arrow{order:2;transform:rotate(-90deg)}
