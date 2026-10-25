@@ -3,3 +3,10 @@
 
 /* Center the reminder beside the fullscreen button, with its arrow aimed at it. */
 .fullscreen-hint{top:max(var(--fullscreen-margin),env(safe-area-inset-top));right:calc(max(var(--fullscreen-margin),env(safe-area-inset-right)) + var(--fullscreen-size) + 10px);width:max-content;max-width:none;white-space:nowrap;gap:8px;min-height:var(--fullscreen-size);font:700 16px/1.2 Arial,Helvetica,sans-serif;align-items:center}.fullscreen-hint-arrow{display:flex;align-items:center}.fullscreen-hint-arrow svg{width:24px;height:24px}@media(max-width:900px){.fullscreen-hint{display:none}}
+
+/* Anchor navigation to the viewport while retaining its layout space above the cabinet. */
+.game-navigation{height:38px!important;min-height:38px;max-width:none;padding:0}
+.game-navigation .game-back{position:fixed;left:6px;top:4px;min-height:32px;height:32px;padding:0 12px;font-size:11px;box-shadow:inset 0 0 0 2px #180e08}
+.game-navigation .preview-notice{position:fixed!important;inset:auto!important;top:5px!important;left:50%!important;transform:translateX(-50%);width:480px;max-width:calc(100vw - 220px)!important;min-height:26px;padding:5px 9px;display:flex;align-items:center;justify-content:center;font-size:10px;line-height:1.2}
+body.fullscreen .game-back{top:4px;min-height:28px;height:28px;padding:0 10px;font-size:10px;letter-spacing:1px}
+@media(max-width:600px){.game-navigation .game-back{padding:0 8px;font-size:9px;gap:4px;letter-spacing:1px}.game-navigation .preview-notice{max-width:calc(100vw - 170px)!important;font-size:8px;padding:3px 5px;min-height:28px;top:3px!important}}

@@ -37,7 +37,7 @@ const ORIGINAL_MAP=MAP.slice();
 let selectedMap='classic',activeTheme=MAP_THEMES[0];
 function applyMap(){activeTheme=MAP_THEMES.find(t=>t.id===selectedMap)||MAP_THEMES[0];MAP.splice(0,MAP.length,...themedLayout(ORIGINAL_MAP,activeTheme.id));document.body.dataset.map=activeTheme.id;}
 const BASES=[{x:13,y:14,exitY:11}];
-const ROLES=['hunter', 'ambusher', 'flanker', 'sweeper', 'beatkeeper'];
+const ROLES=['hunter', 'ambusher', 'flanker', 'sweeper', 'rightSweeper'];
 const GHOST_COLORS=['#ff4040', '#ff80c0', '#43dcff', '#ff962f', '#b58aff'];
 const $=s=>document.querySelector(s),canvas=$('#game'),T=30,W=28,H=31;
 let ctx=canvas.getContext('2d');
@@ -67,21 +67,19 @@ function reverseActor(a){if(a.progress>0){let x=a.x,y=a.y;a.x=a.px;a.y=a.py;a.px
 function setDirection(d){if(mode!=='playing')return;player.next=d;if(d===reverse[player.dir]){reverseActor(player)}}
 function schedule(){return level===1?[7,20,7,20,5,20,5,Infinity]:level<5?[7,20,7,20,5,1033,1/60,Infinity]:[5,20,5,20,5,1037,1/60,Infinity]}
 function frightTime(){return [6,5,4,3,2,5,2,2,1,5,2,1,1,3,1,1,0,1][level-1]||0}
-// A six-second phrase: trail, signal the drop, then rush. Pauses freeze roundTime.
-function beatPhase(){return roundTime%6}
-function speed(a){const base=75.75757625/8;let band=level===1?0:level<5?1:2;if(a===player)return base*(power?[.9,.95,1][band]:level>=21?.9:[.8,.9,1][band])*(weapon>0?1.1:1);if(a.state==='eyes')return base*1.8;if(a.state==='exiting')return base*.55;if(a.y===14&&(a.x<6||a.x>W-7))return base*[.4,.45,.5][band];if(a.frightened)return base*[.5,.55,.6][band];let scale=[.75,.85,.95][band];if(a.id===0){let limit=level===1?20:level===2?30:level<6?40:level<9?50:level<12?60:level<15?80:level<19?100:120;if(dots.size<=limit)scale=[.8,.9,1][band];if(dots.size<=limit/2)scale=[.85,.95,1.05][band]}if(a.role==='beatkeeper'&&a.state==='active'&&phase%2===1)scale*=beatPhase()>=4.5?1.25:.85;return base*scale}
+function speed(a){const base=75.75757625/8;let band=level===1?0:level<5?1:2;if(a===player)return base*(power?[.9,.95,1][band]:level>=21?.9:[.8,.9,1][band])*(weapon>0?1.1:1);if(a.state==='eyes')return base*1.8;if(a.state==='exiting')return base*.55;if(a.y===14&&(a.x<6||a.x>W-7))return base*[.4,.45,.5][band];if(a.frightened)return base*[.5,.55,.6][band];let scale=[.75,.85,.95][band];if(a.id===0){let limit=level===1?20:level===2?30:level<6?40:level<9?50:level<12?60:level<15?80:level<19?100:120;if(dots.size<=limit)scale=[.8,.9,1][band];if(dots.size<=limit/2)scale=[.85,.95,1.05][band]}return base*scale}
 function pos(a){const v=dirs[a.dir];let p=a.progress;return{x:((p?a.px+v.x*p:a.x)+a.offsetX*(a.offsetRemaining/.25))*T+T/2,y:((p?a.py+v.y*p:a.y)+a.offsetY*(a.offsetRemaining/.25))*T+T/2}}
 function playerTile(){const p=pos(player);return{x:wrap(Math.floor(p.x/T)),y:Math.floor(p.y/T)}}
 // Chase personalities are separate from the shared scatter/frightened schedule.
 function target(g){
  const p=playerTile(),v=dirs[player.dir],role=g.role||ROLES[g.id],base=BASES[g.base||0];
- const corners=[{x:26,y:1},{x:1,y:1},{x:1,y:29},{x:26,y:29},{x:6,y:26},{x:26,y:1},{x:1,y:29},{x:26,y:29},{x:22,y:3},{x:6,y:26}];
+ const corners=[{x:26,y:1},{x:1,y:1},{x:1,y:29},{x:26,y:29},{x:26,y:26},{x:26,y:1},{x:1,y:29},{x:26,y:29},{x:22,y:3},{x:6,y:26}];
  if(phase%2===0)return corners[g.id];
  if(role==='hunter')return p;
  if(role==='ambusher')return{x:p.x+v.x*4,y:p.y+v.y*4};
  if(role==='flanker'){const lead=ghosts[0];return{x:2*(p.x+v.x*2)-lead.x,y:2*(p.y+v.y*2)-lead.y};}
  if(role==='sweeper'){if(p.x<14)return p;return [{x:1,y:5},{x:26,y:5},{x:26,y:26},{x:1,y:29}][Math.floor(roundTime/6)%4];}
- if(role==='beatkeeper'){const ahead=beatPhase()>=4.5?6:-3;return{x:p.x+v.x*ahead,y:p.y+v.y*ahead};}
+ if(role==='rightSweeper'){if(p.x>=14)return p;return [{x:26,y:5},{x:21,y:8},{x:26,y:26},{x:15,y:29}][Math.floor(roundTime/6)%4];}
  return Math.hypot(g.x-p.x,g.y-p.y)>=8?p:corners[g.id];
 }
 function shortestDirection(g,tx,ty){let q=[[g.x,g.y,null]],seen=new Set([g.x+','+g.y]);while(q.length){const[x,y,first]=q.shift();if(x===tx&&y===ty)return first||g.dir;for(const[d,v]of Object.entries(dirs)){const nx=wrap(x+v.x),ny=y+v.y,k=nx+','+ny;if(!wall(x+v.x,ny,g)&&!seen.has(k)){seen.add(k);q.push([nx,ny,first||d])}}}return g.dir}
@@ -137,7 +135,6 @@ function rotated(name,x,y,w,h,angle){ctx.save();ctx.translate(x,y);ctx.rotate(an
 const ghostTints=new Map();
 function coloredGhost(g,p){
  const special={0:0,2:1,1:2,3:3,4:4}[g.id];
- if(g.role==='beatkeeper'&&g.state==='active'&&!g.frightened&&phase%2===1&&beatPhase()>=3.75){ctx.save();ctx.strokeStyle=beatPhase()>=4.5?'#ffe34c':'#b58aff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,19+Math.sin(roundTime*16)*2,0,Math.PI*2);ctx.stroke();ctx.restore();}
  if(special!==undefined){sprite('character-ghost'+special,p.x,p.y, g.id===0?36:32,34);return;}
  const im=art.ghost0;if(!im.complete||!im.naturalWidth)return;
  let tinted=ghostTints.get(g.id);if(!tinted){tinted=document.createElement('canvas');tinted.width=tinted.height=64;const c=tinted.getContext('2d');c.drawImage(im,0,0,64,64);c.globalCompositeOperation='source-atop';c.globalAlpha=.82;c.fillStyle=g.color;c.fillRect(0,0,64,64);ghostTints.set(g.id,tinted);}
