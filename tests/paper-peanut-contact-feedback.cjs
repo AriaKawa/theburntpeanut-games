@@ -55,16 +55,11 @@ fs.mkdirSync(path.join(__dirname,'artifacts'),{recursive:true});
    a.armorCalls=0;a.koCalls=[];a.audio.armorBreak=()=>a.armorCalls++;a.audio.knockout=final=>a.koCalls.push(final);
   });
   await page.setViewportSize({width:1280,height:860});
-  await page.evaluate(()=>{
-   const a=window.feedbackAudit;a.state.phase='enemy';
-   const timer=setInterval(()=>{if(document.querySelector('#action-motion').textContent==='Contact.'&&a.state.command)a.state.command.inputAt=a.state.time;},5);
-   a.strike=a.enemyStrike(a.state.actors[1],a.state.actors[0],{kind:'scrapper',travel:180,windup:50}).finally(()=>clearInterval(timer));
+  await page.evaluate(async()=>{
+   const a=window.feedbackAudit,s=a.state;s.phase='enemy';const hp=s.run.hp;
+   await a.enemyStrike(s.actors[1],s.actors[0],{kind:'scrapper',travel:180,windup:50});
+   if(s.run.hp>=hp||s.command!==null)throw Error('Automatic enemy attack failed');
   });
-  await page.waitForFunction(()=>window.feedbackAudit.state.actors[0].blockAt!==undefined);
-  const block=await page.evaluate(()=>{const a=window.feedbackAudit;a.state.paused=true;return {hp:a.state.run.hp,rot:a.state.actors[1].rot};});
-  await page.screenshot({path:path.join(__dirname,'artifacts/paper-peanut-shield.png')});
-  await page.evaluate(()=>{window.feedbackAudit.state.paused=false;});await page.evaluate(()=>window.feedbackAudit.strike);
-  assert.equal(await page.evaluate(()=>window.feedbackAudit.state.run.hp),block.hp);
   await page.evaluate(async()=>{
    const a=window.feedbackAudit,s=a.state;s.phase='attack';s.actors[1].enemy.armor=true;
    await a.hurtEnemy(s.actors[1],1,'bonk','perfect');
@@ -78,6 +73,6 @@ fs.mkdirSync(path.join(__dirname,'artifacts'),{recursive:true});
    if(a.koCalls.length!==2||a.koCalls[1]!==true)throw Error('Final knockout cue missing');
   });
   assert.deepEqual(errors,[]);
-  console.log('PASS: keyboard timing, muted/mobile feedback, damage hold/drain/repeated hits/healing, player trail, shield block, armor break, normal/final knockouts, no browser errors');
+  console.log('PASS: keyboard timing, muted/mobile feedback, damage hold/drain/repeated hits/healing, player trail, automatic enemy attacks, armor break, normal/final knockouts, no browser errors');
  } finally {await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

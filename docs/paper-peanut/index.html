@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#20211f">
-  <meta name="description" content="Paper Peanut. A fullscreen Burnt Peanut fan adventure in a paper sewer. Press Space right at contact to attack and defend.">
+  <meta name="description" content="Paper Peanut. A fullscreen Burnt Peanut fan adventure in a paper sewer. Time Space with your attacks for bonus damage.">
   <title>Paper Peanut</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd73b'/%3E%3Ctext y='48' x='7' font-size='47'%3E🥜%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css?v=download-back-20261024">
@@ -66,7 +66,7 @@
           <button id="special-move" class="move" data-move="whirl" aria-describedby="move-hint"><span class="move-icon">✺</span><strong>Goop Burst</strong><small>2 ✦</small></button>
           <button class="move" data-move="cheese" aria-describedby="move-hint"><span class="move-icon">◩</span><strong>Silly Juice</strong><small id="cheese-count">+8 ♥ · ×2</small></button>
         </div>
-        <p id="move-hint" class="sr-only">Press Space right as your attack connects. Time your blocks the same way.</p>
+        <p id="move-hint" class="sr-only">Press Space right as your attack connects. Enemy attacks resolve automatically.</p>
       </section>
       <div id="targets" class="sr-only" aria-label="Select an enemy" hidden></div>
       <section id="action-cue" class="action-cue" hidden aria-label="Contact action command">
@@ -85,14 +85,14 @@
   <button class="game-back modal-back" data-close="help-dialog" aria-label="Back to game">↶ Back</button><button class="close" data-close="help-dialog" aria-label="Close instructions">×</button><span class="eyebrow">CONTROLS</span><h2>Watch the characters.<br>Press at contact.</h2>
   <div class="instruction"><b>01</b><div><strong>Choose your move</strong><p>Click an enemy or use ← → to pick a target. Choose Jump, Shell Slam, your equipped special, or Silly Juice. Keys 1–4 work too.</p></div></div>
   <div class="instruction"><b>02</b><div><strong>Space as your attack hits</strong><p>Jump: press as Peanut lands on the enemy. Shell Slam: press as the shells connect. Special moves: press as the projectile or shockwave hits. Every attack deals damage. One well-timed press earns a second stomp or bonus damage. Watch the action itself.</p></div></div>
-  <div class="instruction"><b>03</b><div><strong>Space as they hit you</strong><p>Each rat winds up, then pounces, fires a bolt, or rolls toward you. Press right as it reaches Peanut to block the hit and take no damage. An early press uses your attempt, so wait for contact instead of mashing or holding the key.</p></div></div>
+  <div class="instruction"><b>03</b><div><strong>Enemy turns are automatic</strong><p>Rats pounce, fire bolts, and roll into Peanut automatically. No Space press is needed on their turns. On your attacks, purple +X shows the extra damage earned by successful timing.</p></div></div>
   <p class="modal-note">Space, Enter, or a tap on the stage all work.<br>Shell Slam cracks armor. Silly Juice heals 8 HP. Esc pauses. Clear encounters for scrap and one ability upgrade. Spend scrap in the home Arsenal for permanent special moves.</p>
   <label class="relaxed"><input type="checkbox" id="relaxed"> Cozy timing <span>A wider timing window</span></label>
   <button class="ribbon-button" data-close="help-dialog">Close</button>
 </div></dialog>
 <dialog id="pause-dialog" class="modal paper pause-modal"><button class="game-back modal-back" data-close="pause-dialog" aria-label="Back to game">↶ Back</button><h2>Paused</h2><label class="relaxed"><input id="pause-cozy" type="checkbox"> Cozy timing <span>Wider contact window</span></label><button id="resume" class="ribbon-button">Resume</button><button id="restart" class="text-button">Restart</button><button id="go-home" class="text-button">Home</button></dialog>
 
-<script type="module" src="game.js?v=reconcile-20261024"></script>
+<script type="module" src="game.js?v=attack-bonus-20261025"></script>
 <button id="music" class="game-music music-corner" data-music-key="paper-peanut" type="button" aria-label="Mute music" aria-pressed="true"><span aria-hidden="true">&#9834;</span></button><script src="song.js?v=music-start-20261024" defer></script></body>
 </html>
 
