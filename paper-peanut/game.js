@@ -308,12 +308,13 @@ async function finishContact() {
   state.command = null; setHidden('action-cue', true); gameEl.dataset.action = '';
   if (success) {
     state.run.perfect++; state.run.score += 20;
-    if (command.type !== 'jump') state.run.sp = Math.min(state.run.maxSp, state.run.sp + 1);
+    if (command.type === 'block') state.run.blocks++;
+    else if (command.type !== 'jump') state.run.sp = Math.min(state.run.maxSp, state.run.sp + 1);
     state.actors[0].contactGlowAt = state.fxTime;
     audio.contactSuccess();
   }
-  const text = success ? 'NICE!' : outcome === 'early' ? 'TOO EARLY' : outcome === 'late' ? 'TOO LATE' : 'HIT!';
-  showCallout(text, success ? 'perfect' : 'miss', success ? (command.type === 'jump' ? 'BONUS STOMP!' : 'BONUS DAMAGE · +1 GOOP POWER') : 'Base damage');
+  const text = success ? (command.type === 'block' ? 'BLOCKED!' : 'NICE!') : outcome === 'early' ? 'TOO EARLY' : outcome === 'late' ? 'TOO LATE' : command.type === 'block' ? 'OUCH!' : 'HIT!';
+  showCallout(text, success ? 'perfect' : 'miss', success ? (command.type === 'jump' ? 'DOUBLE STOMP!' : command.type === 'block' ? 'NO DAMAGE' : '+1 GOOP POWER') : command.type==='block'?'Space right at contact':'Base damage');
   updateHUD(); return success ? 'perfect' : 'miss';
 }
 
@@ -510,7 +511,7 @@ async function playerAction(name) {
   await enemiesTurn();
 }
 async function enemyAttack(enemy,hero) {
-  // Enemy turns resolve automatically; no defensive timing input.
+  // Keep the original depot encounters' rhythm intact.
   if(state.run.campaign===0){
     await enemyStrike(enemy,hero,{kind:enemy.kind,travel:enemy.kind==='scrapper'?900:enemy.kind==='slinger'?1050:1150,windup:PACE.enemyWindup});
     return;
@@ -521,7 +522,7 @@ async function enemyAttack(enemy,hero) {
   const shots=enemy.kind==='cantor'||enemy.kind==='warden'||enemy.kind==='slinger';
   const count=combo?2:1;
   const intent=$('enemy-intent');setHidden('enemy-intent',false);
-  intent.textContent=`${enemy.enemy.name}${enemy.enemy.boss?` · PHASE ${phase}`:''} · ${feint?'Feint, then lunge':shots?(enemy.kind==='cantor'||(enemy.kind==='warden'&&phase===1)?'Slow drifting note':enemy.kind==='warden'&&phase===2?'Slow note, then fast bolt':'Fast scrap shot'):combo?'Two-hit combo':'Watch the wind-up'}`;
+  intent.textContent=`${enemy.enemy.name}${enemy.enemy.boss?` · PHASE ${phase}`:''} · ${feint?'Feint — wait for the real lunge':shots?(enemy.kind==='cantor'||(enemy.kind==='warden'&&phase===1)?'Slow drifting note':enemy.kind==='warden'&&phase===2?'Slow note, then fast bolt':'Fast scrap shot'):combo?'Two hits — press once for EACH hit':'Watch the wind-up'}`;
   if(feint){
     motion('A feint. Wait.');await move(enemy,{x:enemy.homeX-65,rot:-.18},260);
     await wait(380);await move(enemy,{x:enemy.homeX,rot:0},220);
@@ -531,15 +532,14 @@ async function enemyAttack(enemy,hero) {
     const slow=enemy.kind==='cantor'||(enemy.kind==='warden'&&(phase===1||hit===0));
     const travel=shots?(slow?1600:620):enemy.kind==='baron'?1150:780;
     const windup=[420,740,1050][(state.run.round+enemy.enemy.id+hit)%3];
-    if(combo)intent.textContent=`${enemy.enemy.name} · ${enemy.enemy.boss?'PHASE 2 · ':''}HIT ${hit+1} / ${count} — ${shots?(slow?'slow note':'fast bolt'):'incoming attack'}`;
+    if(combo)intent.textContent=`${enemy.enemy.name} · ${enemy.enemy.boss?'PHASE 2 · ':''}HIT ${hit+1} / ${count} — ${shots?(slow?'slow note':'fast bolt'):'block each contact'}`;
     await enemyStrike(enemy,hero,{kind:shots?'slinger':enemy.kind==='baron'?'baron':'scrapper',travel,windup});
   }
   setHidden('enemy-intent',true);
 }
 async function enemyStrike(enemy,hero,{kind,travel,windup}) {
   const hitX=hero.homeX+hero.width*.35,hitY=hero.homeY-actorHeight(hero)*.38;
-  windup*=.8;travel*=.8;
-  state.command=null;setHidden('action-cue',true);gameEl.dataset.action='';
+  beginContact('block',windup+travel,'at visible contact');
   await move(enemy,{x:enemy.homeX+(kind==='slinger'?6:20),rot:kind==='slinger'?.08:-.14,stretchX:kind==='slinger'?.92:1.18,stretchY:kind==='slinger'?1.05:.8},windup);
   const startX=enemy.x,contactX=hero.x;
   if(kind==='slinger'){
@@ -559,8 +559,8 @@ async function enemyStrike(enemy,hero,{kind,travel,windup}) {
     const end=firstContact(path,()=>touches(actorShape(enemy),actorShape(hero)));
     await animate(travel,p=>{path(p*end);motion((1-p)*travel>70?'The rat is pouncing.':'The rat is about to hit Peanut.');});
   }
-  state.projectiles=[];enemy.rolling=false;enemy.rot=0;
-  const damage=incomingDamage(enemy.enemy,'miss');state.run.hp=Math.max(0,state.run.hp-damage);
+  const grade=await finishContact();state.projectiles=[];enemy.rolling=false;enemy.rot=0;
+  const damage=incomingDamage(enemy.enemy,grade);state.run.hp=Math.max(0,state.run.hp-damage);
   if(damage>0){
     impact(hitX,hitY,'good');hero.hit=state.time+240;float(`−${damage}`,hero,'#ffb990');
     hero.x-=24;hero.rot=-.16;hero.stretchX=.8;hero.stretchY=1.1;
@@ -613,7 +613,7 @@ function endEncounter() {
     $('upgrade-choices').querySelector('button').focus({preventScroll:true});
   }else{
     r.score+=r.hp*5;best=Math.max(best,r.score,profile.best);try{localStorage.setItem('goop-run-best',String(best));}catch{}
-    $('result').innerHTML=`<span class="eyebrow">RUN CLEARED · +${scrap} SCRAP BANKED</span><div class="stars">★ ★ ★</div><h2>Cleared</h2><div class="rewards"><span>${r.score} points</span><span>◆ ${profile.scrap} scrap</span></div><div class="run-stats">${r.perfect} perfect timings · ${r.hp} HP left</div><div class="best">CHAPTER BEST · ${profile.chapterBest[r.campaign]}</div>`;
+    $('result').innerHTML=`<span class="eyebrow">RUN CLEARED · +${scrap} SCRAP BANKED</span><div class="stars">★ ★ ★</div><h2>Cleared</h2><div class="rewards"><span>${r.score} points</span><span>◆ ${profile.scrap} scrap</span></div><div class="run-stats">${r.perfect} perfect timings · ${r.blocks} blocks · ${r.hp} HP left</div><div class="best">CHAPTER BEST · ${profile.chapterBest[r.campaign]}</div>`;
     resultButton('Run it back',startGame);
     if(r.campaign<2)resultButton('Next chapter',()=>{selectedCampaign=r.campaign+1;startGame();});
     for(let i=0;i<6;i++)burst(state.W*(.2+Math.random()*.6),state.H*.25,['#ee896a','#f7cf6a','#add7bc'][i%3],20);
@@ -623,7 +623,7 @@ function endEncounter() {
 function lose() {
   $('result').classList.remove('upgrade-screen');
   state.phase='result';hideCombat();$('pause').disabled=true;state.actors[0].rot=-.6;setHidden('result',false);
-  $('result').innerHTML=`<span class="eyebrow">RUN OVER</span><h2>Defeated</h2><p>Scrap saved.</p><div class="rewards"><span>◆ ${profile.scrap} scrap banked</span></div><div class="run-stats">${state.run.perfect} perfect timings</div>`;
+  $('result').innerHTML=`<span class="eyebrow">RUN OVER</span><h2>Defeated</h2><p>Scrap saved.</p><div class="rewards"><span>◆ ${profile.scrap} scrap banked</span></div><div class="run-stats">${state.run.perfect} perfect timings · ${state.run.blocks} blocks</div>`;
   audio.defeat();resultButton('Requeue the run',startGame);homeResultButton();
 }
 
@@ -723,7 +723,7 @@ function draw(dt) {
   for(let i=0;i<18;i++){const x=(i*97.37+Math.sin(state.time*.0004+i)*15)%W,y=(i*57.93-state.time*.009)%H;ctx.fillStyle=`rgba(246,219,158,${.1+(Math.sin(state.time*.001+i)+1)*.09})`;ctx.beginPath();ctx.arc(x,y<0?y+H:y,1.5,0,Math.PI*2);ctx.fill();}
   for(const p of state.particles){p.x+=p.vx*dt/1000;p.y+=p.vy*dt/1000;p.vy+=330*dt/1000;p.life-=dt/1100;p.rot+=dt*.003;ctx.globalAlpha=Math.max(0,p.life);if(p.liquid){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.color;ctx.beginPath();ctx.ellipse(0,0,p.size,p.size*.55,0,0,Math.PI*2);ctx.fill();ctx.restore();}else if(p.star)star(p.x,p.y,p.size,p.rot,p.color);else{ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.color;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*.6);ctx.restore();}}
   ctx.globalAlpha=1;state.particles=state.particles.filter(p=>p.life>0);
-  for(const f of state.floats){const age=state.fxTime-f.born;const y=f.y-age*.065;ctx.save();ctx.translate(f.x,y);const pop=1+Math.max(0,1-age/180)*.35;ctx.scale(pop,pop);ctx.globalAlpha=Math.max(0,Math.min(1,(1000-age)/300));ctx.font=`600 ${f.small?19:50}px Fredoka, sans-serif`;ctx.textAlign='center';ctx.lineWidth=f.small?4:7;ctx.strokeStyle='#33321d';const bonus=f.bonus>0?` +${f.bonus}`:'';const width=ctx.measureText(f.text).width;const total=width+ctx.measureText(bonus).width;ctx.textAlign='left';ctx.strokeText(f.text,-total/2,0);ctx.fillStyle=f.color;ctx.fillText(f.text,-total/2,0);if(bonus){ctx.strokeText(bonus,-total/2+width,0);ctx.fillStyle='#c785ff';ctx.fillText(bonus,-total/2+width,0);}ctx.restore();}
+  for(const f of state.floats){const age=state.fxTime-f.born;const y=f.y-age*.065;ctx.save();ctx.translate(f.x,y);const pop=1+Math.max(0,1-age/180)*.35;ctx.scale(pop,pop);ctx.globalAlpha=Math.max(0,Math.min(1,(1000-age)/300));ctx.font=`600 ${f.small?19:50}px Fredoka, sans-serif`;ctx.textAlign='center';ctx.lineWidth=f.small?4:7;ctx.strokeStyle='#33321d';const bonus=f.bonus>0?` −${f.bonus}`:'';const width=ctx.measureText(f.text).width;const total=width+ctx.measureText(bonus).width;ctx.textAlign='left';ctx.strokeText(f.text,-total/2,0);ctx.fillStyle=f.color;ctx.fillText(f.text,-total/2,0);if(bonus){ctx.strokeText(bonus,-total/2+width,0);ctx.fillStyle='#c785ff';ctx.fillText(bonus,-total/2+width,0);}ctx.restore();}
   state.floats=state.floats.filter(f=>state.fxTime-f.born<1000);
   ctx.restore();
 }

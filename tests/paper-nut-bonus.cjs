@@ -34,9 +34,13 @@ fs.mkdirSync(path.join(__dirname,'artifacts'),{recursive:true});
    const hp=s.run.hp;const spam=setInterval(()=>a.pressCommand(),5);
    await a.enemyStrike(t,h,{kind:'scrapper',travel:180,windup:50});clearInterval(spam);
    if(s.command!==null||!document.querySelector('#action-cue').hidden||s.run.hp>=hp)throw Error('Enemy block');
-   s.floats=[{text:'4',bonus:2,x:640,y:350,color:'#fff0c8',born:s.fxTime}];
+   const before=s.run.hp,blocks=s.run.blocks,sp=s.run.sp;
+   const timing=setInterval(()=>{if(s.command&&document.querySelector('#action-motion').textContent==='Contact.')s.command.inputAt=s.time;},1);
+   await a.enemyStrike(t,h,{kind:'slinger',travel:180,windup:50});clearInterval(timing);
+   if(s.run.hp!==before||s.run.blocks!==blocks+1||s.run.sp!==sp)throw Error('Successful block failed');
+   s.floats=[{text:'−4',bonus:2,x:640,y:350,color:'#fff0c8',born:s.fxTime}];
   });
   await page.screenshot({path:path.join(__dirname,'artifacts/paper-nut-purple-bonus.png')});
-  assert.deepEqual(errors,[]);console.log('PASS 20 damage/armor/timing cases, bonus stomp, automatic enemy damage, no browser errors');
+  assert.deepEqual(errors,[]);console.log('PASS 20 damage/armor/timing cases, bonus stomp, missed and successful blocks, no browser errors');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exit(1);});
