@@ -1,4 +1,9 @@
-// Wheel zoom applies to the complete page, including cabinet art and navigation.
+// Only the cabinet shares a zoom surface. Corner controls stay viewport-anchored.
+const zoomSurface=document.createElement('div');
+zoomSurface.className='zoom-surface';
+const cabinet=document.querySelector('.cabinet');
+cabinet.before(zoomSurface);
+zoomSurface.append(cabinet);
 let pageZoom=1;
 function setPageZoom(value){
  pageZoom=Math.max(.6,Math.min(1.4,Math.round(value*100)/100));

@@ -11,11 +11,11 @@ const server = http.createServer((req, res) => {
     res.end(fs.readFileSync(file));
   } catch { res.statusCode = 404; res.end(); }
 }).listen(5198, '127.0.0.1');
-const selectors = ['#game-back','#fullscreen','#sound','#play','#multiplayer','.character.selected','.character:not(.selected)'];
+const selectors = ['#game-back','#fullscreen','#music','#sound','#play','#multiplayer','.character.selected','.character:not(.selected)'];
 async function inspect(page) {
   return page.evaluate(selectors => selectors.map(selector => {
     const el = document.querySelector(selector), s = getComputedStyle(el), r = el.getBoundingClientRect();
-    return {selector, width:r.width, height:r.height, paint:[s.color,s.backgroundColor,s.backgroundImage,s.borderColor,s.opacity,s.filter]};
+    return {selector, left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width, height:r.height, paint:[s.color,s.backgroundColor,s.backgroundImage,s.borderColor,s.opacity,s.filter]};
   }), selectors);
 }
 async function backdrop(page) {
@@ -59,6 +59,8 @@ async function backdrop(page) {
                 assert.deepEqual(item.paint,before[i].paint,`${item.selector} palette at ${target}`);
                 assert(Math.abs(item.width/before[i].width-target)<.005,`${item.selector} width at ${target}`);
                 assert(Math.abs(item.height/before[i].height-target)<.005,`${item.selector} height at ${target}`);
+                const edges=item.selector==='#game-back'?['left','top']:item.selector==='#fullscreen'?['right','top']:item.selector==='#music'?['right','bottom']:[];
+                for(const edge of edges) assert(Math.abs(item[edge]-before[i][edge])<.1,`${item.selector} ${edge} must stay anchored at ${target}`);
               });
               assert.deepEqual(await backdrop(page),background,'Viewport background must not shrink or change');
             }
