@@ -1,5 +1,8 @@
-/* Scale the entire page as one surface. Fixed controls share this containing block. */
-body{transform:scale(var(--page-zoom,1));transform-origin:50% 50%;width:100vw;height:100svh}
+/* Keep the backdrop on the viewport. Only the game and its controls scale.
+   The authored palette must not be reclassified by automatic darkening as
+   controls cross size thresholds during zoom. */
+:root{min-height:100%;overflow:hidden;color-scheme:only light;background:radial-gradient(ellipse at 50% 16%,#3b3b3d 0%,transparent 62%),repeating-linear-gradient(125deg,#ffffff02 0 1px,transparent 1px 5px),#242426}
+body{overflow:visible;background:transparent;transform:scale(var(--page-zoom,1));transform-origin:50% 50%;width:100vw;height:100svh}
 body .game-navigation{position:fixed;z-index:20;top:max(12px,env(safe-area-inset-top));left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));width:auto;transform:none;padding:0;align-items:flex-start;pointer-events:none;--nav-size:46px}
 .game-navigation>*{pointer-events:auto}
 .game-navigation .game-back{min-height:var(--nav-size);font-size:13px;padding:0 .8em}
