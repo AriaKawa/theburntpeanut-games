@@ -6,8 +6,11 @@ import {loadPack,drawAsset} from './packs.js?v=reconcile-20261024';
 import {drawCharacter,loadCharacterSprites} from './characters.js?v=reconcile-20261024';
 import {drawArena,drawBomb,drawFlames,drawClosingWalls,drawRockets} from './arena.js?v=mp15';
 const $=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d');
-function restoreFullscreenHint(){$('fullscreen-hint').hidden=false;}
-function dismissFullscreenHint(){$('fullscreen-hint').hidden=true;}
+let fullscreenHintDismissed=false;
+function restoreFullscreenHint(){$('fullscreen-hint').hidden=fullscreenHintDismissed;}
+function dismissFullscreenHint(){fullscreenHintDismissed=true;$('fullscreen-hint').hidden=true;}
+$('fullscreen').addEventListener('pointerenter',dismissFullscreenHint);
+$('fullscreen').addEventListener('click',dismissFullscreenHint);
 restoreFullscreenHint();
 window.addEventListener('pageshow',restoreFullscreenHint);
 const W=416,H=352,T=30,OX=13,OY=11;
