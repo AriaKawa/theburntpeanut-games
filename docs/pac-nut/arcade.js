@@ -20,10 +20,14 @@
  $('initials').addEventListener('input',()=>{$('initials').value=clean($('initials').value);if($('initials').value.length===3)write(initialsKey,$('initials').value)});
  $('initials-form').addEventListener('submit',e=>{e.preventDefault();void save()});
  window.pacnutArcade={show(dead,score,map,level=1){$('arcade-scoreboard').hidden=!dead;if(!dead){pending=null;++revision;return}if(!pending){pending={score,map,level};saved=false;entries=[];++revision;$('initials').disabled=false;$('initials').value=clean(read(initialsKey,''));document.querySelector('.board-caption').textContent=PacnutScores.maps[map]+' · ONLINE TOP 10';$('save-status').textContent=score?'Enter three letters · shared online scores':'Score some points to join this map’s board.';$('initials-form').querySelector('button').disabled=!score;render('LOADING ONLINE SCORES…');void refresh(map,revision);requestAnimationFrame(()=>{$('initials').focus();$('initials').select()})}},finish:save};
- // Keep the fullscreen reminder visible whenever the game is outside fullscreen.
- $('fullscreen-hint').hidden=false;
+ const hintKey='pacnut-fullscreen-hint-dismissed-v2';let dismissed=false;
+ function restore(){try{dismissed=dismissed||localStorage.getItem(hintKey)==='1'}catch{}$('fullscreen-hint').hidden=dismissed}
+ function dismiss(){dismissed=true;$('fullscreen-hint').hidden=true;try{localStorage.setItem(hintKey,'1')}catch{}}
+ $('fullscreen').addEventListener('pointerenter',dismiss);
+ window.addEventListener('pageshow',restore);
+ window.addEventListener('storage',e=>{if(e.key===hintKey&&e.newValue==='1'){dismissed=true;restore()}});restore();
  function fullscreenUI(on){document.body.classList.toggle('fullscreen',on);$('fullscreen').setAttribute('aria-pressed',String(on));$('fullscreen').setAttribute('aria-label',on?'Exit fullscreen game':'Enter fullscreen game')}
- $('fullscreen').addEventListener('click',async()=>{const on=!document.body.classList.contains('fullscreen');fullscreenUI(on);try{if(on)await document.documentElement.requestFullscreen?.();else if(document.fullscreenElement)await document.exitFullscreen()}catch{}});
+ $('fullscreen').addEventListener('click',async()=>{dismiss();const on=!document.body.classList.contains('fullscreen');fullscreenUI(on);try{if(on)await document.documentElement.requestFullscreen?.();else if(document.fullscreenElement)await document.exitFullscreen()}catch{}});
  document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)fullscreenUI(false)});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')fullscreenUI(false)});
 

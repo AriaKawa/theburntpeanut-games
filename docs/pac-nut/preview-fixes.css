@@ -1,5 +1,5 @@
 .preview-notice{position:static!important;inset:auto!important;max-width:none!important;margin:0;padding:5px 9px;border:1px solid #ffcf5a66;border-radius:6px;background:#100f15f2;color:#f4efe6;font:11px/1.35 system-ui,sans-serif;text-align:center;pointer-events:none;box-sizing:border-box}
 .game-navigation{position:relative;top:auto;display:flex;gap:10px;height:auto!important;min-height:38px;flex-shrink:0;padding-right:92px}.game-navigation .preview-notice{flex:1;min-width:0;max-width:440px!important;font-size:10px}.game-back{flex-shrink:0}@media(max-width:600px){.game-navigation{padding-right:70px;gap:5px}.game-navigation .preview-notice{font-size:9px;padding:4px}}
 
-/* Match Bungerman's fullscreen reminder and responsive visibility. */
-.fullscreen-hint{top:100px;right:12px;max-width:180px;min-height:0;font:700 12px/1.2 Arial,Helvetica,sans-serif;align-items:flex-start}.fullscreen-hint-arrow svg{width:24px;height:24px}@media(max-width:900px){.fullscreen-hint{display:none}}
+/* Center the reminder beside the fullscreen button, with its arrow aimed at it. */
+.fullscreen-hint{top:max(var(--fullscreen-margin),env(safe-area-inset-top));right:calc(max(var(--fullscreen-margin),env(safe-area-inset-right)) + var(--fullscreen-size) + 10px);max-width:230px;min-height:var(--fullscreen-size);font:700 12px/1.2 Arial,Helvetica,sans-serif;align-items:center}.fullscreen-hint-arrow{display:flex;align-items:center}.fullscreen-hint-arrow svg{width:24px;height:24px}@media(max-width:900px){.fullscreen-hint{display:none}}
