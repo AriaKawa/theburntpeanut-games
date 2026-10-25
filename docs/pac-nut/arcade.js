@@ -24,10 +24,12 @@
  function restore(){try{dismissed=dismissed||localStorage.getItem(hintKey)==='1'}catch{}$('fullscreen-hint').hidden=dismissed}
  function dismiss(){dismissed=true;$('fullscreen-hint').hidden=true;try{localStorage.setItem(hintKey,'1')}catch{}}
  $('fullscreen').addEventListener('pointerenter',dismiss);
+ // A pointer toggle must not take keyboard movement away from the canvas.
+ $('fullscreen').addEventListener('pointerdown',e=>e.preventDefault());
  window.addEventListener('pageshow',restore);
  window.addEventListener('storage',e=>{if(e.key===hintKey&&e.newValue==='1'){dismissed=true;restore()}});restore();
  function fullscreenUI(on){document.body.classList.toggle('fullscreen',on);$('fullscreen').setAttribute('aria-pressed',String(on));$('fullscreen').setAttribute('aria-label',on?'Exit fullscreen game':'Enter fullscreen game')}
- $('fullscreen').addEventListener('click',async()=>{dismiss();const on=!document.body.classList.contains('fullscreen');fullscreenUI(on);try{if(on)await document.documentElement.requestFullscreen?.();else if(document.fullscreenElement)await document.exitFullscreen()}catch{}});
+ $('fullscreen').addEventListener('click',async()=>{dismiss();const on=!document.body.classList.contains('fullscreen');fullscreenUI(on);try{if(on)await document.documentElement.requestFullscreen?.();else if(document.fullscreenElement)await document.exitFullscreen()}catch{}finally{document.dispatchEvent(new Event('pacnut:fullscreen-settled'))}});
  document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)fullscreenUI(false)});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')fullscreenUI(false)});
 
