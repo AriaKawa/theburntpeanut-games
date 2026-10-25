@@ -1,7 +1,7 @@
 import {ArcadeMusic} from './music.js?v=mp15';
 import {ArcadeAudio} from './audio.js?v=mp15';
-import {setupMultiplayer} from './multiplayer-ui.js?v=mp15';
-import {Game,CAST,COLS,ROWS,MAPS,PERKS} from './engine.js?v=reconcile-20261024';
+import {setupMultiplayer} from './multiplayer-ui.js?v=equal-characters-20261024';
+import {Game,CAST,COLS,ROWS,MAPS} from './engine.js?v=equal-characters-20261024';
 import {loadPack,drawAsset} from './packs.js?v=reconcile-20261024';
 import {drawCharacter,loadCharacterSprites} from './characters.js?v=reconcile-20261024';
 import {drawArena,drawBomb,drawFlames,drawClosingWalls,drawRockets} from './arena.js?v=mp15';
@@ -25,7 +25,7 @@ let pack=null,loadTicket=0,packReady=false;
 function rect(c,x,y,w,h,color){c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
 function drawCast(c,x,bottom,height,character,frame=0,flip=false,alpha=1){drawCharacter(c,x,bottom,height,character,{time:clock,walk:clock*7,dir:flip?'left':'down',action:frame?'walk':'idle',alpha,reduced});}
 function smallCanvas(id,w,h){const el=typeof id==='string'?$(id):id;if(el.width!==w*3){el.width=w*3;el.height=h*3;}const c=el.getContext('2d');c.setTransform(3,0,0,3,0,0);c.clearRect(0,0,w,h);return c;}
-function drawPortraits(){document.querySelectorAll('[data-perk]').forEach(el=>drawAsset(smallCanvas(el,24,24),pack,PERKS[el.dataset.perk].icon,0,0,24,24));document.querySelectorAll('.portrait').forEach(p=>{const c=smallCanvas(p,88,100),char=p.dataset.portrait;drawCast(c,44,94,char==='hutch'?84:76,char);});drawCast(smallCanvas('hud-face',32,36),16,35,34,game.character);}
+function drawPortraits(){document.querySelectorAll('.portrait').forEach(p=>{const c=smallCanvas(p,88,100),char=p.dataset.portrait;drawCast(c,44,94,char==='hutch'?84:76,char);});drawCast(smallCanvas('hud-face',32,36),16,35,34,game.character);}
 function drawLogo(){drawAsset(smallCanvas('logo',320,84),pack,'logo',0,4,320,76);}
 function drawMenuArt(state){const c=smallCanvas('menu-art',160,124);if(['paused','won','lost','roundWon'].includes(state))drawAsset(c,pack,state,5,4,150,116);}
 async function choosePack(id){

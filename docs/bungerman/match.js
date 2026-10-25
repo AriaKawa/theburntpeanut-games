@@ -1,4 +1,4 @@
-import {Game,CAST,applyPerk} from './engine.js?v=reconcile-20261024';
+import {Game,CAST,initializeLoadout} from './engine.js?v=equal-characters-20261024';
 
 // The room transport binds authenticated member IDs to slots. It must never accept
 // a slot, position, health or character supplied by an input packet as authority.
@@ -10,7 +10,7 @@ export class MultiplayerMatch extends Game {
   if(sorted.some(p=>!Number.isInteger(p.slot)||p.slot<0||p.slot>3||!CAST[p.character]||typeof p.id!=='string'||!p.id)||new Set(sorted.map(p=>p.slot)).size!==sorted.length||new Set(sorted.map(p=>p.id)).size!==sorted.length)throw new Error('Invalid match roster.');
   super(sorted[0].character,seed,mapId);
   const spawns=[[1,1],[11,9],[11,1],[1,9]],template={...this.player};
-  this.actors=sorted.map(p=>{const [x,y]=spawns[p.slot];return applyPerk({...template,x,y,rx:x,ry:y,id:p.id,slot:p.slot,character:p.character,hp:1,inv:1.2,cooldown:0});});
+  this.actors=sorted.map(p=>{const [x,y]=spawns[p.slot];return initializeLoadout({...template,x,y,rx:x,ry:y,id:p.id,slot:p.slot,character:p.character,hp:1,inv:1.2,cooldown:0});});
   this.player=this.actors[0];this.bots=this.actors.slice(1);this.inputs=new Map();this.history=[];this.eventSeq=0;this.tick=0;this.winnerSlot=null;this.multiplayer=true;
  }
  emit(type,data={}){if(['lost','won','roundWon'].includes(type))return;const event={type,...data,seq:++this.eventSeq};this.events.push(event);this.history?.push(event);if(this.history?.length>160)this.history.splice(0,this.history.length-160);}

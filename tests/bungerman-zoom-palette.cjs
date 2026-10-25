@@ -40,6 +40,7 @@ async function backdrop(page) {
           page.on('pageerror', e => errors.push(e.message));
           await page.goto('http://127.0.0.1:5198/bungerman/');
           await page.waitForFunction(() => !document.querySelector('#play').disabled);
+          assert.equal(await page.locator('.perk,[data-perk],#lobby-perk').count(),0);
           await page.mouse.move(width/2,0);
           assert.equal(await page.locator('meta[name="darkreader-lock"]').count(),1);
           assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).colorScheme),'light only');

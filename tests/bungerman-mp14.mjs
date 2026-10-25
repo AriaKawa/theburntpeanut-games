@@ -4,10 +4,13 @@ import {MultiplayerMatch,hydrateMatch} from '../bungerman/match.js';
 const open=g=>{g.grid=g.grid.map((row,y)=>row.map((_,x)=>x===0||y===0||x===12||y===10?1:0));g.start();for(const e of [g.player,...g.bots])e.inv=0;return g;};
 for(const character of Object.keys(CAST)){
  const g=open(new Game(character,1));assert.equal(g.player.capacity,2);
- assert.equal(g.player.rangeUp,character==='peanut'?1:0);
- assert.equal(g.player.shield,character==='hutch'?1:0);
- assert.equal(g.player.canKick,character==='tpain');
- assert.equal(g.speedFor(g.player),5.4*(character==='ninja'?1.1:1));
+ assert.equal(g.player.rangeUp,0);
+ assert.equal(g.player.shield,0);
+ assert.equal(g.player.canKick,false);
+ assert.equal(g.speedFor(g.player),5.4);
+ for(const actor of [g.player,...g.bots]){
+  assert.equal(g.bombRange(actor),2);assert.equal(actor.shield,0);assert.equal(actor.canKick,false);assert.equal(g.speedFor(actor),5.4);
+ }
  for(const type of ['capacity','shield']){g.pickups.push({x:1,y:1,type});g.update(.01);}
  assert.equal(g.player.capacity,3);assert.equal(g.player.shield,1);
  g.hit(g.player,'blast',g.bots[0]);assert(g.player.alive);assert.equal(g.player.shield,0);
@@ -15,14 +18,14 @@ for(const character of Object.keys(CAST)){
 }
 {
  const g=open(new Game('tpain',2)),p=g.player;g.bombs.push({x:2,y:1,owner:g.bots[0],range:2,fuse:2});
- assert(g.move(p,1,0));assert.equal(g.bombs[0].x,3);assert.equal(p.x,2);assert(g.hazards().has('5,1'));
+ assert(!g.move(p,1,0));assert.equal(g.bombs[0].x,2);assert.equal(p.x,1);
  assert.equal(g.bombs[0].fuse,2);assert.equal(g.bombs[0].owner,g.bots[0]);
- p.cooldown=0;g.grid[1][4]=1;assert(!g.move(p,1,0));assert.equal(g.bombs[0].x,3);
+ p.cooldown=0;g.grid[1][4]=1;assert(!g.move(p,1,0));assert.equal(g.bombs[0].x,2);
 }
 {
  const g=open(new Game('peanut',12));for(let i=0;i<8;i++){g.pickups.push({x:g.player.x,y:g.player.y,type:'capacity'});g.update(.01);}assert.equal(g.player.capacity,4);
  for(let i=1;i<=4;i++){g.player.x=i;assert(g.plantBomb());}g.player.x=5;assert(!g.plantBomb());
- const mp=new MultiplayerMatch({players:[{id:'host',slot:0,character:'peanut'},{id:'guest',slot:1,character:'tpain'}]});open(mp);const guest=mp.actors[1];guest.x=2;guest.y=1;mp.bombs.push({x:3,y:1,owner:mp.player,range:2,fuse:.1});assert(mp.move(guest,1,0));assert.equal(mp.bombs[0].x,4);
+ const mp=new MultiplayerMatch({players:[{id:'host',slot:0,character:'peanut'},{id:'guest',slot:1,character:'tpain'}]});open(mp);const guest=mp.actors[1];guest.x=2;guest.y=1;mp.bombs.push({x:3,y:1,owner:mp.player,range:2,fuse:.1});assert(!mp.move(guest,1,0));assert.equal(mp.bombs[0].x,3);
 }
 {
  const g=open(new Game('hutch',3));g.hit(g.player,'wall',null);assert(!g.player.alive);
@@ -31,9 +34,9 @@ for(const character of Object.keys(CAST)){
 }
 {
  const g=new MultiplayerMatch({players:[{id:'host',slot:0,character:'peanut'},{id:'guest',slot:1,character:'hutch'}]});g.start();
- assert.equal(g.actors[1].shield,1);assert.equal(g.actors[1].rangeUp,0);
+ assert.equal(g.actors[1].shield,0);assert.equal(g.actors[1].rangeUp,0);
  g.setInput(1,{slot:0,x:9,hp:99,character:'ninja',dx:5,dy:5,bombSeq:1});assert.equal(g.actors[1].hp,1);assert.equal(g.inputs.get(1).dx,1);assert.equal(g.inputs.get(1).dy,0);
- g.actors[1].inv=0;g.hit(g.actors[1],'blast',g.player);assert(g.actors[1].alive);g.actors[1].inv=0;g.hit(g.actors[1],'blast',g.player,'rpg');
+ g.actors[1].inv=0;g.hit(g.actors[1],'blast',g.player,'rpg');assert(!g.actors[1].alive);
  const view=hydrateMatch(g.snapshot(),1);assert(view.spectating);assert.equal(view.deathInfo.kind,'rpg');assert.equal(view.deathInfo.killer,'peanut');
 }
 // Balanced spawn rotation: identical AI policy for all four actors, 3 maps, 40 seeds.
