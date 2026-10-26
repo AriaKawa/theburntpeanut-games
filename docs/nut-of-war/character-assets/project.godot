@@ -1,0 +1,14 @@
+config_version=5
+
+[application]
+config/name="Age of Nut Animation Workshop"
+run/main_scene="res://workshop.tscn"
+
+[display]
+window/size/viewport_width=960
+window/size/viewport_height=540
+window/stretch/mode="canvas_items"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.22,0.34,0.4,1)

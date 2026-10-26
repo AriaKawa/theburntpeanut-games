@@ -1,0 +1,79 @@
+{
+  "generation": "Built-in image_gen",
+  "references": {
+    "original": "https://www.newgrounds.com/portal/view/408209",
+    "hutch_identity": "https://x.com/HutchMF",
+    "hutch_photo": "https://pbs.twimg.com/profile_images/1549372835965112324/GUpBJ2vw_400x400.jpg",
+    "peanut_identity": "Existing site assets/floaters/p-1.webp",
+    "style": "Original cave_melee_idle.png0001.png from downloaded game"
+  },
+  "prompts": [
+    {
+      "key": "roughPeanut",
+      "prompt": "The FIRST image is the overwhelmingly dominant art direction. Make a BurntPeanut unit that could actually be another sprite from that SAME primitive 2007 Flash game. Match its crude, skinny, uneven hand-drawn black outlines, flat muted fills, awkward simple anatomy, tiny featureless hands, very limited shading, amateur Flash vector drawing. NOT clean modern vector art, not mascot/logo illustration, not thick bold outlines, no gradients, no glow, no render, no soft lighting, no texture detailing. The SECOND image supplies ONLY identity: a peanut-shaped tan body, black helmet, tiny blue eye and pink mouth. Right-facing side profile in the exact idle pose of the FIRST sprite, crude stick-like legs and arm, wooden club held low horizontally. Simplify shell to about 8 sparse brown marks, helmet to 3 flat shapes, eye to one tiny blue dot with white. Head/body must remain an hourglass peanut. Small old browser-game unit proportions, roughly 90x170 pixels worth of detail even if delivered on larger canvas. Full isolated unit on true transparent background, absolutely no halo or background. Prioritize matching the game reference over prettiness. No text.",
+      "referenced_image_paths": [
+        "cave_melee_idle.png0001.png",
+        "p-1.webp"
+      ],
+      "transparent_background": true
+    },
+    {
+      "key": "roughHutch",
+      "prompt": "The FIRST image is the overwhelmingly dominant art direction. Create a HutchMF unit drawn as if by the SAME artist for the original 2007 Age of War Flash game. Copy the reference's crude thin uneven black contour lines, flat desaturated fills, extremely minimal facial detail, awkward simple hands and legs, sparse flat shadow shapes. This must look like a low-budget 2007 Flash sprite, NOT polished vector, not a modern mascot, not detailed illustration. SECOND image is ONLY HutchMF identity: broad stocky build, backwards black cap, ginger brown beard, black polo, blue jeans, simple white sneakers. Strict RIGHT-facing side view idle stance matching FIRST image with club carried low horizontally. Face reduced to large simple pointed nose, tiny dark eye, solid jagged beard shape; forearm tattoo reduced to a few crude dark marks, no detailed stars or graphics. No gradients, no lighting, no glow, no thick smooth cartoon outline. About 90x170 pixels worth of detail even if output is larger. Full isolated unit on true transparent background with no ground or halo. No text. Faithfulness to rough original game assets is much more important than attractiveness.",
+      "referenced_image_paths": [
+        "cave_melee_idle.png0001.png",
+        "hutchmf-profile.jpg"
+      ],
+      "transparent_background": true
+    },
+    {
+      "key": "peanutParts",
+      "prompt": "Create an 8-piece modular nonhuman cartoon peanut puppet kit for a 2D video game, in a precise 4-column by 2-row grid on transparent 1536x1024. No grid lines or text. Eight isolated items with large margins within their cells, none touching. Top row left to right: 1) hourglass peanut shell torso with simple blue eye and pink cartoon mouth, no limbs or helmet; 2) detached black tactical helmet with chin strap; 3) ochre cartoon upper-arm segment; 4) ochre cartoon forearm and mitten hand. Bottom row left to right: 5) brown trouser upper-leg segment; 6) brown trouser lower-leg segment; 7) simple brown right-facing boot; 8) horizontal wooden club with handle left. This is a clothed cartoon game puppet assembly sheet, no human anatomy. Reference 2 overwhelmingly controls style: primitive original 2007 Age of War graphics, thin wobbly black outline, flat muted fill, no gradients, no polish, no thick modern mascot border. Reference 1 controls peanut identity. Draw each part complete so it can overlap other pieces at joints. No backdrop, no glow, no ground, no annotations.",
+      "referenced_image_paths": [
+        "exec-c1890ab8-f512-4871-98fb-54bd94813af9.png",
+        "cave_melee_idle.png0001.png"
+      ],
+      "transparent_background": true
+    },
+    {
+      "key": "hutchParts",
+      "prompt": "Create an animation rig parts atlas, NOT a complete character and NOT a pose sheet. Transparent 1536x1024 canvas divided into exactly FOUR EQUAL COLUMNS and TWO EQUAL ROWS (8 cells). No visible grid or labels. Each cell contains ONLY the named isolated body part, centered within its cell with 15 percent empty margin on all sides. Each part must be complete with rounded joint ends to overlap when assembled. No piece may cross its cell. Keep the crude 2007 Age of War style from reference 2: thin uneven dark contours, flat muted fills, almost no shading, intentionally simple rough Flash artwork. Preserve reference 1 character identity and simple style. No glow, gradients, background, text or ground. Parts orient for RIGHT-facing side profile; limbs hang vertically in neutral pose. Eight cells read left-to-right across top row then bottom row. Reference 1 is HutchMF. Cell 1: ONLY black polo torso with stocky belly and collar, no neck/head, NO arms, NO legs. Cell 2: ONLY head including backwards black cap, ginger beard, small nose and eye, short neck stub, facing right. Cell 3: ONLY upper arm with black sleeve ending mid-bicep and pale elbow. Cell 4: ONLY pale tattooed forearm elbow to fist, NO weapon. Cell 5: ONLY blue-jeans upper leg hip to knee. Cell 6: ONLY blue-jeans lower leg knee to ankle, no shoe. Cell 7: ONLY simple white sneaker right-facing with heel LEFT and toe RIGHT. Cell 8: ONLY wooden club horizontal handle LEFT and heavy end RIGHT. Exactly eight disconnected parts. No detailed branding or tattoo graphics, just simple rough dark marks.",
+      "referenced_image_paths": [
+        "exec-89af2833-8980-43b9-a794-bdca155967cf.png",
+        "cave_melee_idle.png0001.png"
+      ],
+      "transparent_background": true
+    }
+  ],
+  "animation": {
+    "frame_size": [
+      384,
+      256
+    ],
+    "origin": [
+      190,
+      220
+    ],
+    "columns": 12,
+    "rows": [
+      "idle",
+      "walk",
+      "attack",
+      "die"
+    ],
+    "loop": [
+      true,
+      true,
+      true,
+      false
+    ],
+    "duration_seconds": [
+      1.2,
+      0.8,
+      0.9,
+      0.8
+    ],
+    "suggested_hit_frame": 5,
+    "stage": "Starter animations prepared from editable separate-part rigs; combat timing must be set to these frames when integrating."
+  }
+}
