@@ -1,0 +1,1 @@
+Apply these files at their original Godot paths: units/cave/melee/cave_melee.gd and scenes/main_menu.gd/.tscn. Character SpriteFrames and PNGs live in assets/age-of-nut/characters in the local age-of-war-reference project. The title art and gold shine shader are in assets/age-of-nut. Full editable local project: age-of-war-reference. Build: Godot 4.7 Web, no threads.
