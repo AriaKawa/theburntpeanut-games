@@ -2,7 +2,7 @@ AGE OF NUT - FULL-BODY ANIMATION REDRAWS
 
 Peanut and Hutch are whole-body frames, not limb rigs. Each original cave-melee pose atlas was supplied as the primary image-generation reference.
 
-Idle: 50 frames; Walk: 43; Attack: 40; Die: 24. All 30 fps, original frame durations and loops retained. Attack sound: zero-based frame 12; damage: zero-based frame 19. Final death frame is empty.
+Idle: 50 frames; Walk: 43; Attack: 40; Die: 23. All 30 fps, original frame durations and loops retained. Attack sound: zero-based frame 12; damage: zero-based frame 19. The scene uses 23 visible death frames; its extra empty source PNG is not played.
 
 animations.json is the authoritative atlas map: src is the PNG crop, dst is its placement in a 320x320 canvas, origin (160,270). Atlas row spacing is irregular, so do not slice using a uniform grid. Registration follows the original bounding-box bottom and horizontal center; character scale is fixed from its idle height. No raster artwork was altered during registration.
 

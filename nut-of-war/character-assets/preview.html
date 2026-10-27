@@ -10,7 +10,7 @@ const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d'),scrub=
 let data,images={},state='walk',frame=0,elapsed=0,last=0,paused=false,flip=false,speed=1;
 const people=['original','peanut','hutch'],names=['Original reference','Burnt Peanut','HutchMF'];
 function pause(value){paused=value;document.querySelector('#pause').textContent=paused?'Play':'Pause'}
-document.querySelector('#pause').onclick=()=>{if(state==='die'&&frame===23){frame=0;elapsed=0}pause(!paused)};
+document.querySelector('#pause').onclick=()=>{if(state==='die'&&frame===data.animations[state].count-1){frame=0;elapsed=0}pause(!paused)};
 document.querySelectorAll('[data-state]').forEach(b=>b.onclick=()=>{state=b.dataset.state;frame=0;elapsed=0;scrub.max=data.animations[state].count-1;document.querySelectorAll('[data-state]').forEach(x=>x.setAttribute('aria-pressed',x===b));pause(false)});
 function step(n){pause(true);frame=(frame+n+data.animations[state].count)%data.animations[state].count;elapsed=0}
 document.querySelector('#prev').onclick=()=>step(-1);document.querySelector('#next').onclick=()=>step(1);
