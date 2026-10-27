@@ -11,13 +11,15 @@ func _ready():
 	move_speed = 50
 	money_die_reward = 20
 	
-	# Full-body atlases share origin (160,270), at the original half scale.
+	# Habibi: 320x320 frames, ground at (160,270). Hutch: 384x256 frames baked from the
+	# original SWF timeline, ground at (192,236). Both at the original half scale.
 	$AnimatedSprite2D.sprite_frames = preload("res://assets/age-of-nut/characters/habibi/frames.tres") if is_player_owned else preload("res://assets/age-of-nut/characters/hutch/frames.tres")
 	$AnimatedSprite2D.scale = Vector2(0.5,0.5)
-	sprite_walk_position = Vector2(0,-55)
-	sprite_idle_position = Vector2(0,-55)
-	sprite_die_position = Vector2(0,-55)
-	sprite_attack_position = Vector2(0,-55)
+	var sprite_origin = Vector2(0,-55) if is_player_owned else Vector2(0,-54)
+	sprite_walk_position = sprite_origin
+	sprite_idle_position = sprite_origin
+	sprite_die_position = sprite_origin
+	sprite_attack_position = sprite_origin
 	
 	hit_sfx = get_node("sfx/hit_sfx")
 	
