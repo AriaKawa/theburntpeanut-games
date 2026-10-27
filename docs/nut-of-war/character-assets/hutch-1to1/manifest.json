@@ -1,0 +1,58 @@
+{
+ "frame_size": [
+  384,
+  256
+ ],
+ "ground_pivot": [
+  192,
+  236
+ ],
+ "px_per_flash_unit": 4.0,
+ "fps": 40,
+ "animations": {
+  "idle": {
+   "frames": 50,
+   "columns": 10,
+   "loop": true
+  },
+  "walk": {
+   "frames": 43,
+   "columns": 10,
+   "loop": true
+  },
+  "attack": {
+   "frames": 40,
+   "columns": 10,
+   "loop": true,
+   "hit_frame": 20
+  },
+  "die": {
+   "frames": 24,
+   "columns": 10,
+   "loop": false
+  }
+ },
+ "source": "Age of War (2007) SWF timeline: unit clip 246, idle=230 walk=231 attack=237 die=245; Hutch art in place of symbols 219,221,223,225,227,229,233",
+ "atlases": {
+  "cell": [
+   384,
+   256
+  ],
+  "columns": 8,
+  "files": {
+   "idle": "idle.png",
+   "walk": "walk.png",
+   "attack": "attack.png",
+   "die": "die.png"
+  }
+ },
+ "godot": {
+  "resource": "frames.tres",
+  "sprite_scale": 0.5,
+  "sprite_position": [
+   0,
+   -54
+  ],
+  "speed_fps": 40
+ }
+}
