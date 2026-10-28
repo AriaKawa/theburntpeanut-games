@@ -11,11 +11,11 @@ func _ready():
 	move_speed = 50
 	money_die_reward = 20
 	
-	# Habibi: 320x320 frames, ground at (160,270). Hutch: 384x256 frames baked from the
-	# original SWF timeline, ground at (192,236). Both at the original half scale.
+	# Both are 384x256 frames baked from the original SWF timelines at half scale.
+	# Habibi (military rifleman puppet) stands at (192,222), Hutch (cave melee puppet) at (192,236).
 	$AnimatedSprite2D.sprite_frames = preload("res://assets/age-of-nut/characters/habibi/frames.tres") if is_player_owned else preload("res://assets/age-of-nut/characters/hutch/frames.tres")
 	$AnimatedSprite2D.scale = Vector2(0.5,0.5)
-	var sprite_origin = Vector2(0,-55) if is_player_owned else Vector2(0,-54)
+	var sprite_origin = Vector2(0,-47) if is_player_owned else Vector2(0,-54)
 	sprite_walk_position = sprite_origin
 	sprite_idle_position = sprite_origin
 	sprite_die_position = sprite_origin
@@ -89,8 +89,9 @@ func launcher_attack():
 		rocket_fired=false
 		change_state(state.walk)
 		return
-	if $AnimatedSprite2D.frame!=19: rocket_fired=false
-	if $AnimatedSprite2D.frame==19 and not rocket_fired:
+	# Rifleman shoot timeline fires on zero-based frame 9.
+	if $AnimatedSprite2D.frame!=9: rocket_fired=false
+	if $AnimatedSprite2D.frame==9 and not rocket_fired:
 		rocket_fired=true
 		var rocket=Node2D.new()
 		rocket.set_script(preload("res://assets/age-of-nut/rocket.gd"))
@@ -98,5 +99,5 @@ func launcher_attack():
 		rocket.destination=victim.global_position+Vector2(0,-30)
 		rocket.is_player_owned=true
 		get_node("/root/main_game").add_child(rocket)
-		rocket.global_position=global_position+Vector2(30,-55)
+		rocket.global_position=global_position+Vector2(47,-65)
 		rocket.rotation=(rocket.destination-rocket.global_position).angle()

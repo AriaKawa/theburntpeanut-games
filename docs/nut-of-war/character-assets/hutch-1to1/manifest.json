@@ -10,29 +10,30 @@
  "px_per_flash_unit": 4.0,
  "fps": 40,
  "animations": {
-  "idle": {
-   "frames": 50,
-   "columns": 10,
-   "loop": true
-  },
-  "walk": {
-   "frames": 43,
-   "columns": 10,
-   "loop": true
-  },
   "attack": {
    "frames": 40,
-   "columns": 10,
+   "columns": 8,
    "loop": true,
    "hit_frame": 20
   },
   "die": {
    "frames": 24,
-   "columns": 10,
+   "columns": 8,
    "loop": false
+  },
+  "idle": {
+   "frames": 50,
+   "columns": 8,
+   "loop": true
+  },
+  "walk": {
+   "frames": 43,
+   "columns": 8,
+   "loop": true
   }
  },
  "source": "Age of War (2007) SWF timeline: unit clip 246, idle=230 walk=231 attack=237 die=245; Hutch art in place of symbols 219,221,223,225,227,229,233",
+ "build": "fat: torso widened up to 1.82x at the belly, thighs 1.35x, arms 1.12x",
  "atlases": {
   "cell": [
    384,

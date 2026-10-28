@@ -1,0 +1,36 @@
+{
+ "frame_size": [
+  384,
+  256
+ ],
+ "ground_pivot": [
+  192,
+  222
+ ],
+ "px_per_flash_unit": 3.0,
+ "fps": 40,
+ "animations": {
+  "attack": {
+   "frames": 53,
+   "columns": 8,
+   "loop": true,
+   "fire_frame": 10
+  },
+  "die": {
+   "frames": 90,
+   "columns": 8,
+   "loop": false
+  },
+  "idle": {
+   "frames": 94,
+   "columns": 8,
+   "loop": true
+  },
+  "walk": {
+   "frames": 47,
+   "columns": 8,
+   "loop": true
+  }
+ },
+ "source": "Age of War (2007) SWF military rifleman, unit clip 552: idle=521 walk=522 shoot=542 die=533. Attack = 21 shoot frames + 32-frame hold on the last shoot frame. Habibi art in place of symbols 501,503,505,507,509,511,520 (rifle -> RPG)."
+}

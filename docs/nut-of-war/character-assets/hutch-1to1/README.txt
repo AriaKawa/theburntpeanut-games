@@ -11,6 +11,8 @@ Frames: idle 50, walk 43, attack 40, die 24. 40 fps (the original Flash rate).
 Hit on attack frame 20 (zero-based 19). Atlases: 384x256 cells, 8 columns,
 ground point (192,236). In Godot: frames.tres, AnimatedSprite2D scale 0.5,
 position (0,-54). This is what the live Age of Nut enemy cave melee uses.
+Build: noticeably fat - torso widened up to 1.82x at the belly, thighs 1.35x,
+arms 1.12x; head lowered onto the collar so there is no neck gap.
 
 parts/ - each Hutch piece in its symbol's local space. parts-sheet-chatgpt.png -
 the generated parts kit the pieces were cut from. preview.gif - all four loops.
